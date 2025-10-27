@@ -1,0 +1,119 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum AssessmentCategory {
+  FINANCIAL_THREAT
+  IDENTITY_THEFT_RISK
+  PROFESSIONAL_EXPOSURE
+  SOCIAL_MEDIA_VULNERABILITY
+  HEALTHCARE_PRIVACY_RISK
+  LOCATION_PRIVACY_THREAT
+  COMMUNICATION_SECURITY
+  DIGITAL_FOOTPRINT_RISK
+  ACCOUNT_SECURITY_THREAT
+  FAMILY_PERSONAL_SAFETY
+  LEGAL_COMPLIANCE_RISK
+  EDUCATIONAL_RECORDS_EXPOSURE
+  DIGITAL_REPUTATION_THREAT
+}
+
+enum IncidentSeverity {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum GameStatus {
+  IN_PROGRESS
+  COMPLETED
+}
+
+model User {
+  id            String      @id @default(uuid())
+  email         String      @unique
+  password      String
+  username      String      @unique
+  profileImage  String?
+  emailVerified Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now())
+  documents     Document[]
+  assessments   Assessment[]
+  incidents     Incident[]
+  gameProgress  GameProgress[]
+  achievements  Achievement[]
+}
+
+model Document {
+  id               String   @id @default(uuid())
+  userId           String
+  fileUrl          String
+  documentType     String  
+  scanResults      Json?   
+  riskScore        Int
+  uploadedAt       DateTime  @default(now())
+  user             User      @relation(fields: [userId], references: [id])
+}
+
+model Assessment {
+  id                String      @id @default(uuid())
+  userId            String
+  startedAt         DateTime    @default(now())
+  finishedAt        DateTime?
+  score             Int 
+  recommendations   Json? 
+  categories        AssessmentCategoryScore[]
+  createdAt         DateTime    @default(now())
+  user              User        @relation(fields: [userId], references: [id])
+}
+
+model AssessmentCategoryScore {
+  id            String        @id @default(uuid())
+  assessmentId  String        
+  category      AssessmentCategory
+  score         Int
+  assessment    Assessment     @relation(fields: [assessmentId], references: [id])
+}
+
+model Incident {
+  id            String           @id @default(uuid())
+  userId        String
+  severity      IncidentSeverity
+  description   String
+  createdAt     DateTime         @default(now())
+  updatedAt     DateTime         @updatedAt
+  user          User             @relation(fields: [userId], references: [id])
+}
+
+model GameProgress {
+  id            String   @id @default(uuid())
+  userId        String
+  module        String
+  level         Int
+  xp            Int
+  completedAt   DateTime?
+  currentStatus GameStatus
+  user          User     @relation(fields: [userId], references: [id])
+}
+
+model Achievement {
+  id           String   @id @default(uuid())
+  userId       String
+  title        String 
+  description  String?
+  badgeImage   String?
+  achievedAt   DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
+}
