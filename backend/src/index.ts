@@ -11,10 +11,17 @@ import { REDIS_SESSION_SECRET } from "./config/env";
 import swaggerOptions from "./config/swaggerOptions";
 import swaggerJsdoc from "swagger-jsdoc";
 import swaggerUi from "swagger-ui-express";
+import { requestLogger } from "./middlewares/requestLogger";
+import { errorHandler } from "./middlewares/errorHandler";
+import helmet from "helmet";
 
 const app = express();
+// Helmetjs is used to add security headers to every request to protect the app from common vulnerabilties 
+app.use(helmet());
 app.use(cors());
 app.use(express.json());
+
+app.use(requestLogger);
 
 const store = new (RedisStore)({
     client: redisClient,
@@ -47,7 +54,9 @@ app.get('/', (req: Request, res: Response) => {
 
 
 // Routes
-app.use('/api/auth', authRouter);
+app.use('/api/v1/auth', authRouter);
+
+app.use(errorHandler);
 
 app.listen(3001, () => {
     console.log("Listening to port 3001");

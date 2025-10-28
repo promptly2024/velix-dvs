@@ -3,7 +3,7 @@ import { loginUser, logoutUser, profile, registerUser, resetPassword, updateProf
 import asyncHandler from "../utils/asyncHandler";
 import { requireAuth } from "../middlewares/requireAuth";
 
-// Base URl : http://localhost:3001/api/auth
+// Base URl : http://localhost:3001/api/v1/auth
 export const authRouter = Router();
 
 // Auth Routes
