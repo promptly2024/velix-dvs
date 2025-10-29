@@ -29,3 +29,15 @@ export const CLOUDINARY_API_KEY = process.env.CLOUDINARY_API_KEY || (() => {
 export const CLOUDINARY_API_SECRET = process.env.CLOUDINARY_API_SECRET || (() => {
     throw new Error("CLOUDINARY_API_SECRET not set in environment variables");
 })();
+
+export const SMTP_USER = process.env.SMTP_USER || (() => {
+    throw new Error("SMTP_USER not set in environment variables");
+})();
+
+export const SMTP_PASS = process.env.SMTP_PASS || (() => {
+    throw new Error("SMTP_PASS not set in environment variables");
+})();
+
+export const SMTP_FROM_EMAIL = process.env.SMTP_FROM_EMAIL || (() => {
+    throw new Error("SMTP_FROM_EMAIL not set in environment variables");
+})();
