@@ -1,0 +1,33 @@
+@import "tailwindcss";
+
+.animated-gradient-border {
+  position: absolute;
+  z-index: 0;
+  inset: -4px;
+  border-radius: 20px;
+  padding: 0;
+  background: conic-gradient(from 0deg, #343FB9, #4B54B9 50%, #343FB9 100%);
+  animation: rotate-border 2s linear infinite;
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+  content: "";
+}
+
+@keyframes rotate-border {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+
+.border-inner {
+  position: relative;
+  z-index: 10;
+  border-radius: 16px;
+  background: #FDFEFE;
+}
