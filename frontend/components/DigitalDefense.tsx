@@ -50,6 +50,16 @@ const DigitalDefense: React.FC = () => {
     }
   ];
 
+  const getArrowImage = (index: number): string => {
+    const arrowMap: { [key: number]: string } = {
+      0: 'arrow1.gif',
+      1: 'arrow2.gif',
+      2: 'arrow3.gif',
+      3: 'arrow4.gif'
+    };
+    return arrowMap[index] || 'arrow1.gif';
+  };
+
   return (
     <section 
       className="relative w-full overflow-visible flex flex-col"
@@ -77,7 +87,7 @@ const DigitalDefense: React.FC = () => {
             </p>
           </div>
           <div className="hidden lg:block relative w-full py-8 md:py-12 lg:py-16">
-            <div className="relative flex justify-between items-stretch w-full gap-2 md:gap-4 lg:gap-6">
+            <div className="relative flex justify-between items-stretch w-full">
               {steps.map((step, index) => (
                 <React.Fragment key={step.number}>
                   <div 
@@ -127,18 +137,21 @@ const DigitalDefense: React.FC = () => {
                   </div>
                   {index < steps.length - 1 && (
                     <div 
-                      className="flex-1 flex items-center justify-center"
+                      className="flex items-center justify-center"
                       style={{
-                        marginTop: step.number % 2 === 1 ? '0px' : '-80px',
+                        marginTop: step.number % 2 === 1 ? '50px' : '0px',
+                        marginLeft: '-20px',
+                        marginRight: '-20px',
+                        zIndex: 5
                       }}
                     >
                       <Image
-                        src="/arrows.gif"
-                        alt="arrow"
-                        width={100}
-                        height={200}
+                        src={`/${getArrowImage(index)}`}
+                        alt={`arrow between step ${step.number} and ${step.number + 1}`}
+                        width={120}
+                        height={120}
                         unoptimized
-                        className="object-contain drop-shadow-lg"
+                        className="object-contain bg-transparent "
                       />
                     </div>
                   )}
