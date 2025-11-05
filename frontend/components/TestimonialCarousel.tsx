@@ -48,7 +48,7 @@ const TestimonialCarousel = () => {
   return (
     <div className="w-full bg-[#202020] py-4 xs:py-6 sm:py-8 md:py-12 lg:py-16 px-2 xs:px-3 sm:px-4 md:px-6 lg:px-8 overflow-hidden">
       <div className="max-w-xs xs:max-w-sm sm:max-w-2xl md:max-w-4xl lg:max-w-6xl xl:max-w-7xl 2xl:max-w-full mx-auto">
-        <h2 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-4 xs:mb-6 sm:mb-8 md:mb-12 lg:mb-16">
+        <h2 className="text-xl xs:text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-medium text-white mb-4 xs:mb-6 sm:mb-8 md:mb-12 lg:mb-16">
           What people say
         </h2>
 

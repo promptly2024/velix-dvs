@@ -49,7 +49,7 @@ const FAQAccordion = () => {
     setExpandedId(expandedId === id ? null : id);
   };
 
-  return (
+  return ( 
     <div className="w-full bg-[#202020] py-8 md:py-12 lg:py-16 px-4 md:px-6 lg:px-8">
       <div className="max-w-xs xs:max-w-sm sm:max-w-2xl md:max-w-3xl lg:max-w-5xl xl:max-w-6xl 2xl:max-w-7xl mx-auto">
         <div className="text-center mb-8 md:mb-12 lg:mb-16">

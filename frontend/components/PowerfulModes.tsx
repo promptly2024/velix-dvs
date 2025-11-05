@@ -1,6 +1,5 @@
 'use client';
 
-import React from 'react';
 import Image from 'next/image';
 
 interface Mode {
@@ -9,7 +8,7 @@ interface Mode {
   icon: string;
 }
 
-const PowerfulModes: React.FC = () => {
+const PowerfulModes = () => {
   const modes: Mode[] = [
     {
       title: 'Guardian mode',

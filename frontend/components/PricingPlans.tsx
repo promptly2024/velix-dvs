@@ -17,8 +17,8 @@ const PricingPlans = () => {
   const plans: PricingPlan[] = [
     {
       name: 'Free',
-      price: '₹0',
-      period: '/week',
+      price: '₹0/',
+      period: 'week',
       buttonText: 'Get started for free',
       isPopular: false,
       features: [
@@ -50,8 +50,8 @@ const PricingPlans = () => {
     },
     {
       name: 'Basic',
-      price: '₹99',
-      period: '/month',
+      price: '₹99/',
+      period: 'month',
       buttonText: 'Buy now',
       isPopular: true,
       features: [
@@ -83,8 +83,8 @@ const PricingPlans = () => {
     },
     {
       name: 'Premium',
-      price: '₹299',
-      period: '/month',
+      price: '₹299/',
+      period: 'month',
       buttonText: 'Buy now',
       isPopular: false,
       features: [
