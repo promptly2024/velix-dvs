@@ -3,7 +3,7 @@
 import React from 'react';
 import Image from 'next/image';
 
-const GuardianVsMentor: React.FC = () => {
+const GuardianVsMentor = () => {
   return (
     <section 
       className="relative w-full overflow-hidden"

@@ -11,7 +11,7 @@ interface DefenseStep {
   gifName: string;
 }
 
-const DigitalDefense: React.FC = () => {
+const DigitalDefense = () => {
   const steps: DefenseStep[] = [
     {
       number: 1,
