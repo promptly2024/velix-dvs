@@ -14,6 +14,7 @@
   "type": "commonjs",
   "dependencies": {
     "@prisma/client": "^6.18.0",
+    "axios": "^1.13.2",
     "bcryptjs": "^3.0.2",
     "cloudinary": "^2.8.0",
     "connect-redis": "^9.0.0",
@@ -40,8 +41,6 @@
     "@types/jsonwebtoken": "^9.0.10",
     "@types/multer": "^2.0.0",
     "@types/nodemailer": "^7.0.3",
-    "@types/swagger-jsdoc": "^6.0.4",
-    "@types/swagger-ui-express": "^4.1.8",
     "nodemon": "^3.1.10",
     "prisma": "^6.18.0",
     "ts-node": "^10.9.2"

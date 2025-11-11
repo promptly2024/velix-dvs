@@ -56,6 +56,8 @@ model User {
   incidents     Incident[]
   gameProgress  GameProgress[]
   achievements  Achievement[]
+  breachChecks    BreachCheck[]
+  passwordChecks  PasswordCheck[]
 }
 
 model Document {
@@ -118,4 +120,53 @@ model Achievement {
   badgeImage   String?
   achievedAt   DateTime @default(now())
   user         User     @relation(fields: [userId], references: [id])
+}
+
+model BreachCheck {
+  id            String   @id @default(uuid())
+  userId        String
+  email         String
+  checkType     CheckType
+  breachesFound Int      @default(0)
+  checkedAt     DateTime @default(now())
+  user          User     @relation(fields: [userId], references: [id])
+  breachRecords BreachRecord[]
+}
+
+enum CheckType {
+  EMAIL
+  PASSWORD
+  BATCH
+}
+
+model BreachRecord {
+  id              String       @id @default(uuid())
+  breachCheckId   String
+  breachName      String
+  breachTitle     String
+  domain          String?
+  breachDate      DateTime
+  addedDate       DateTime
+  pwnCount        Int
+  description     String       @db.Text
+  dataClasses     String[]
+  isVerified      Boolean
+  isSensitive     Boolean
+  isRetired       Boolean
+  isFabricated    Boolean
+  breachCheck     BreachCheck  @relation(fields: [breachCheckId], references: [id])
+  createdAt       DateTime     @default(now())
+  
+  @@index([breachCheckId])
+  @@index([breachName])
+}
+
+model PasswordCheck {
+  id              String   @id @default(uuid())
+  userId          String
+  passwordHash    String
+  isPwned         Boolean
+  pwnCount        Int      @default(0)
+  checkedAt       DateTime @default(now())
+  user            User     @relation(fields: [userId], references: [id])
 }

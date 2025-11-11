@@ -8,12 +8,10 @@ import { RedisStore } from "connect-redis";
 import session from 'express-session';
 import redisClient from "./lib/redisClient";
 import { REDIS_SESSION_SECRET } from "./config/env";
-import swaggerOptions from "./config/swaggerOptions";
-import swaggerJsdoc from "swagger-jsdoc";
-import swaggerUi from "swagger-ui-express";
 import { requestLogger } from "./middlewares/requestLogger";
 import { errorHandler } from "./middlewares/errorHandler";
 import helmet from "helmet";
+import { breachRouter } from "./routes/breach.route";
 
 const app = express();
 // Helmetjs is used to add security headers to every request to protect the app from common vulnerabilties 
@@ -41,9 +39,6 @@ app.use(
     })
 )
 
-const swaggerSpec = swaggerJsdoc(swaggerOptions);
-app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
-
 app.get('/', (req: Request, res: Response) => {
     if (!req.session) {
         return res.send('No session');
@@ -55,10 +50,10 @@ app.get('/', (req: Request, res: Response) => {
 
 // Routes
 app.use('/api/v1/auth', authRouter);
+app.use("/api/v1/breach", breachRouter);
 
 app.use(errorHandler);
 
 app.listen(3001, () => {
     console.log("Listening to port 3001");
-    console.log("Swagger docs available at http://localhost:3001/api-docs");
 })

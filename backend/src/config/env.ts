@@ -41,3 +41,7 @@ export const SMTP_PASS = process.env.SMTP_PASS || (() => {
 export const SMTP_FROM_EMAIL = process.env.SMTP_FROM_EMAIL || (() => {
     throw new Error("SMTP_FROM_EMAIL not set in environment variables");
 })();
+
+export const HIBP_API_KEY = process.env.HIBP_API_KEY || (() => {
+    throw new Error("HIBP_API_KEY not set in environment variables");
+})();

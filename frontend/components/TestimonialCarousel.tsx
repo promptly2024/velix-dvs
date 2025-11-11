@@ -53,8 +53,8 @@ const TestimonialCarousel = () => {
         </h2>
 
         <div className="relative w-full overflow-hidden">
-          <div className="absolute left-0 top-0 z-20 h-full w-8 xs:w-12 sm:w-16 md:w-20 lg:w-32 bg-gradient-to-r from-[#202020] via-[#202020] to-transparent pointer-events-none"></div>
-          <div className="absolute right-0 top-0 z-20 h-full w-8 xs:w-12 sm:w-16 md:w-20 lg:w-32 bg-gradient-to-l from-[#202020] via-[#202020] to-transparent pointer-events-none"></div>
+          <div className="absolute left-0 top-0 z-20 h-full w-8 xs:w-12 sm:w-16 md:w-20 lg:w-32 bg-linear-to-r from-[#202020] via-[#202020] to-transparent pointer-events-none"></div>
+          <div className="absolute right-0 top-0 z-20 h-full w-8 xs:w-12 sm:w-16 md:w-20 lg:w-32 bg-linear-to-l from-[#202020] via-[#202020] to-transparent pointer-events-none"></div>
           <div className="flex gap-2 xs:gap-3 sm:gap-4 md:gap-6 lg:gap-8 animate-scroll">
             {allTestimonials.map((testimonial, index) => (
               <div

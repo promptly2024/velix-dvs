@@ -4,45 +4,6 @@ import { prisma } from "../lib/prisma";
 import crypto from "crypto"
 import { sendOTPEmail } from "../utils/emailService";
 
-/**
- * @swagger
- * tags:
- *   name: Auth
- *   description: Authentication API
- */
-
-/**
- * @swagger
- * /auth/register:
- *   post:
- *     summary: Register a new user and send email verification OTP
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *               - username
- *             properties:
- *               email:
- *                 type: string
- *                 format: email
- *               password:
- *                 type: string
- *               username:
- *                 type: string
- *     responses:
- *       201:
- *         description: User registered. Please verify your email.
- *       400:
- *         description: Bad request
- *       409:
- *         description: Email already in use
- */
 export const registerUser = async (req: Request, res: Response) => {
   const { email, password, username } = req.body;
   if (!email || !password || !username) return res.status(400).json({ error: "All fields are required." });
@@ -69,34 +30,6 @@ export const registerUser = async (req: Request, res: Response) => {
   }
 };
 
-/**
- * @swagger
- * /auth/login:
- *   post:
- *     summary: Login user and generate JWT token
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - password
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       200:
- *         description: Successful login with JWT token
- *       400:
- *         description: Bad request
- *       401:
- *         description: Invalid credentials
- */
 export const loginUser = async (req: Request, res: Response) => {
   const { email, password } = req.body;
   if (!email || !password) return res.status(400).json({ error: "Email and password required." });
@@ -111,35 +44,6 @@ export const loginUser = async (req: Request, res: Response) => {
   return res.status(200).json({ user: { id: user.id, email: user.email, username: user.username }, token });
 };
 
-
-/**
- * @swagger
- * /auth/verify-email:
- *   post:
- *     summary: Verify user's email using OTP
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             required:
- *               - email
- *               - otp
- *             properties:
- *               email:
- *                 type: string
- *               otp:
- *                 type: string
- *     responses:
- *       200:
- *         description: Email verified successfully
- *       400:
- *         description: Bad request, invalid or expired OTP
- *       404:
- *         description: User not found
- */
 export const verifyEmail = async (req: Request, res: Response) => {
   const { email, otp } = req.body;
   if (!email || !otp){
