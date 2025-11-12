@@ -58,6 +58,8 @@ model User {
   achievements  Achievement[]
   breachChecks    BreachCheck[]
   passwordChecks  PasswordCheck[]
+  webPresences      WebPresence[]
+  digitalFootprints DigitalFootprint[]
 }
 
 model Document {
@@ -169,4 +171,69 @@ model PasswordCheck {
   pwnCount        Int      @default(0)
   checkedAt       DateTime @default(now())
   user            User     @relation(fields: [userId], references: [id])
+}
+
+model WebPresence {
+  id            String   @id @default(uuid())
+  userId        String
+  email         String
+  scanDate      DateTime @default(now())
+  totalFindings Int      @default(0)
+  riskScore     Int      @default(0)
+  user          User     @relation(fields: [userId], references: [id])
+  findings      WebPresenceFinding[]
+  
+  @@index([userId])
+  @@index([email])
+}
+
+model WebPresenceFinding {
+  id              String        @id @default(uuid())
+  webPresenceId   String
+  platform        String
+  platformType    PlatformType
+  url             String
+  snippet         String?       @db.Text
+  profileName     String?
+  exposureLevel   ExposureLevel
+  detectedAt      DateTime      @default(now())
+  webPresence     WebPresence   @relation(fields: [webPresenceId], references: [id])
+  
+  @@index([webPresenceId])
+  @@index([platform])
+}
+
+model DigitalFootprint {
+  id                  String   @id @default(uuid())
+  userId              String
+  email               String
+  totalExposure       Int      @default(0)
+  socialMediaCount    Int      @default(0)
+  professionalCount   Int      @default(0)
+  dataBreachCount     Int      @default(0)
+  overallRiskScore    Int      @default(0)
+  lastScanned         DateTime @default(now())
+  user                User     @relation(fields: [userId], references: [id])
+  
+  @@unique([userId, email]) 
+  @@index([userId])
+  @@index([email])
+}
+
+enum PlatformType {
+  SOCIAL_MEDIA
+  PROFESSIONAL
+  FORUM
+  BLOG
+  NEWS
+  MARKETPLACE
+  DATING
+  GAMING
+  OTHER
+}
+
+enum ExposureLevel {
+  HIGH
+  MEDIUM
+  LOW
 }
