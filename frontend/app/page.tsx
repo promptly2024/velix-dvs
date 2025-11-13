@@ -13,16 +13,16 @@ import TestimonialCarousel from "@/components/TestimonialCarousel";
 export default function Home() {
   return (
     <>
-    <HeroWithNavbar />
-    <DigitalDefense />
-    <PowerfulModes />
-    <GuardianVsMentor />
-    <PromoCarousel />
-    <PricingPlans />
-    <TestimonialCarousel />
-    <FAQAccordion />
-    <DownloadCTA />
-    <Footer />
+      <HeroWithNavbar />
+      <DigitalDefense />
+      <PowerfulModes />
+      <GuardianVsMentor />
+      <PromoCarousel />
+      <PricingPlans />
+      <TestimonialCarousel />
+      <FAQAccordion />
+      <DownloadCTA />
+      <Footer />
     </>
   );
 }

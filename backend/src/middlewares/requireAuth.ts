@@ -5,7 +5,7 @@ import { JWT_SECRET } from "../config/env";
 export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
   const authHeader = req.headers.authorization;
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
-    return res.status(401).json({ error: "Unauthorized." });
+    return res.status(401).json({ error: "Unauthorized access. No token provided." });
   }
   const token = authHeader.split(" ")[1];
   try {
@@ -13,6 +13,7 @@ export const requireAuth = (req: Request, res: Response, next: NextFunction) => 
     req.user = decoded;
     next();
   } catch {
-    return res.status(401).json({ error: "Invalid token." });
+    console.error("Invalid token provided in requireAuth middleware.");
+    return res.status(401).json({ error: "Invalid token provided." });
   }
 };

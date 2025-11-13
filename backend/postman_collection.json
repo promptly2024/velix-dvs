@@ -40,8 +40,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/register",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "register"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
             },
             "description": "Register a new user account. An OTP will be sent to the provided email for verification.\n\n**Request Body:**\n- `email` (string, required): User's email address\n- `password` (string, required): User's password\n- `username` (string, required): Unique username\n\n**Responses:**\n- `201`: User registered successfully\n- `400`: Invalid input data\n- `409`: Email already exists"
           },
@@ -63,8 +68,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/verify-email",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "verify-email"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "verify-email"
+              ]
             },
             "description": "Verify email address using OTP sent during registration.\n\n**Request Body:**\n- `email` (string, required): User's email address\n- `otp` (string, required): 6-digit OTP code\n\n**Responses:**\n- `200`: Email verified successfully\n- `400`: Invalid or expired OTP\n- `404`: User not found"
           },
@@ -103,8 +113,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/login",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "login"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
             },
             "description": "Login with email and password. Returns JWT token for authenticated requests.\n\n**Request Body:**\n- `email` (string, required): User's email\n- `password` (string, required): User's password\n\n**Responses:**\n- `200`: Login successful, returns user data and JWT token\n- `401`: Invalid credentials\n- `400`: Missing email or password\n\n**Note:** The JWT token is automatically saved to environment variable `authToken`."
           },
@@ -123,8 +138,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/auth/profile",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "profile"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "profile"
+              ]
             },
             "description": "Get current user's profile information.\n\n**Authentication:** Required (Bearer Token)\n\n**Responses:**\n- `200`: Profile retrieved successfully\n- `401`: Unauthorized or invalid token\n- `404`: Profile not found"
           },
@@ -151,8 +171,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/update",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "update"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "update"
+              ]
             },
             "description": "Update user profile information.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, optional): New email address\n- `username` (string, optional): New username\n\n**Responses:**\n- `200`: Profile updated successfully\n- `401`: Unauthorized\n- `500`: Update failed"
           },
@@ -174,8 +199,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/auth/reset-password",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "reset-password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "reset-password"
+              ]
             },
             "description": "Reset user password.\n\n**Request Body:**\n- `email` (string, required): User's email\n- `newPassword` (string, required): New password\n\n**Responses:**\n- `200`: Password reset successfully\n- `400`: Missing required fields\n- `404`: User not found"
           },
@@ -188,8 +218,13 @@
             "header": [],
             "url": {
               "raw": "{{baseUrl}}/auth/logout",
-              "host": ["{{baseUrl}}"],
-              "path": ["auth", "logout"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "logout"
+              ]
             },
             "description": "Logout current user.\n\n**Responses:**\n- `200`: Logged out successfully"
           },
@@ -239,8 +274,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/breach/check-email",
-              "host": ["{{baseUrl}}"],
-              "path": ["breach", "check-email"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "breach",
+                "check-email"
+              ]
             },
             "description": "Check if an email address has been compromised in any known data breaches.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, required): Email address to check\n\n**Responses:**\n- `200`: Check completed successfully\n- `400`: Invalid email format\n- `401`: Unauthorized\n- `500`: Check failed\n\n**Rate Limiting:** This endpoint is rate-limited to prevent HIBP API abuse. Wait 6-7 seconds between requests.\n\n**Note:** The `checkId` is automatically saved for use with the Report endpoint."
           },
@@ -267,8 +307,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/breach/check-password",
-              "host": ["{{baseUrl}}"],
-              "path": ["breach", "check-password"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "breach",
+                "check-password"
+              ]
             },
             "description": "Check if a password has been exposed in data breaches using k-anonymity model.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `password` (string, required): Password to check\n\n**Security:** The password is hashed locally and only the first 5 characters of the hash are sent to the API. The full password never leaves your server.\n\n**Responses:**\n- `200`: Check completed\n- `400`: Password is required\n- `401`: Unauthorized\n- `500`: Check failed\n\n**No Rate Limiting:** Password checks don't count toward HIBP rate limits."
           },
@@ -295,8 +340,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/breach/check-batch",
-              "host": ["{{baseUrl}}"],
-              "path": ["breach", "check-batch"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "breach",
+                "check-batch"
+              ]
             },
             "description": "Check multiple email addresses for breaches in a single request.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `emails` (array, required): Array of email addresses (max 10)\n\n**Responses:**\n- `200`: Batch check completed\n- `400`: Invalid input or too many emails\n- `401`: Unauthorized\n- `500`: Check failed\n\n**Rate Limiting:** This endpoint will take time to complete as it respects HIBP rate limits (6-7s delay between each email check).\n\n**Max emails per request:** 10"
           },
@@ -321,8 +371,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/breach/history?limit=20&offset=0",
-              "host": ["{{baseUrl}}"],
-              "path": ["breach", "history"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "breach",
+                "history"
+              ],
               "query": [
                 {
                   "key": "limit",
@@ -353,8 +408,14 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/breach/report/{{lastCheckId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["breach", "report", "{{lastCheckId}}"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "breach",
+                "report",
+                "{{lastCheckId}}"
+              ]
             },
             "description": "Generate a detailed breach report for a specific check.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `checkId` (string, required): UUID of the breach check\n\n**Responses:**\n- `200`: Report generated successfully\n- `401`: Unauthorized\n- `404`: Check not found\n- `500`: Report generation failed\n\n**Note:** Use the `checkId` returned from the \"Check Email\" endpoint. It's automatically saved to `lastCheckId` environment variable."
           },
@@ -373,8 +434,13 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/breach/stats",
-              "host": ["{{baseUrl}}"],
-              "path": ["breach", "stats"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "breach",
+                "stats"
+              ]
             },
             "description": "Get comprehensive statistics about user's breach checks.\n\n**Authentication:** Required (Bearer Token)\n\n**Responses:**\n- `200`: Statistics retrieved successfully\n- `401`: Unauthorized\n- `500`: Failed to fetch statistics\n\n**Returns:**\n- Total breach checks performed\n- Total breaches found\n- Checks in last 30 days\n- Number of compromised passwords\n- Recent activity"
           },
@@ -382,6 +448,47 @@
         }
       ],
       "description": "Endpoints for viewing breach history, generating reports, and accessing statistics."
+    },
+    {
+      "name": "Documents",
+      "item": [
+        {
+          "name": "Upload Document",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "file",
+                  "type": "file",
+                  "src": ""
+                }
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/document/upload",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "document",
+                "upload"
+              ]
+            },
+            "description": "Upload a single document file. Requires authentication (Bearer token). Use multipart/form-data with field name 'file'. Supported types: PDF and common images."
+          },
+          "response": []
+        }
+      ],
+      "description": "Document upload endpoints"
     }
   ],
   "auth": {
@@ -399,14 +506,18 @@
       "listen": "prerequest",
       "script": {
         "type": "text/javascript",
-        "exec": [""]
+        "exec": [
+          ""
+        ]
       }
     },
     {
       "listen": "test",
       "script": {
         "type": "text/javascript",
-        "exec": [""]
+        "exec": [
+          ""
+        ]
       }
     }
   ],
