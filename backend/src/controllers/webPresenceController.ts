@@ -21,18 +21,19 @@ interface PlatformConfig {
 const PLATFORMS: PlatformConfig[] = [
   { domain: 'instagram.com', type: 'SOCIAL_MEDIA', name: 'Instagram' },
   { domain: 'facebook.com', type: 'SOCIAL_MEDIA', name: 'Facebook' },
-  { domain: 'twitter.com', type: 'SOCIAL_MEDIA', name: 'Twitter' },
   { domain: 'x.com', type: 'SOCIAL_MEDIA', name: 'X' },
   { domain: 'linkedin.com', type: 'PROFESSIONAL', name: 'LinkedIn' },
   { domain: 'github.com', type: 'PROFESSIONAL', name: 'GitHub' },
-  { domain: 'reddit.com', type: 'FORUM', name: 'Reddit' },
-  { domain: 'medium.com', type: 'BLOG', name: 'Medium' },
-  { domain: 'pinterest.com', type: 'SOCIAL_MEDIA', name: 'Pinterest' },
-  { domain: 'tiktok.com', type: 'SOCIAL_MEDIA', name: 'TikTok' },
-  { domain: 'snapchat.com', type: 'SOCIAL_MEDIA', name: 'Snapchat' },
   { domain: 'youtube.com', type: 'SOCIAL_MEDIA', name: 'YouTube' },
-  { domain: 'twitch.tv', type: 'GAMING', name: 'Twitch' },
-  { domain: 'discord.com', type: 'GAMING', name: 'Discord' },
+  { domain: '', type: 'OTHER', name:'All' }
+  // { domain: 'discord.com', type: 'GAMING', name: 'Discord' },
+  // { domain: 'snapchat.com', type: 'SOCIAL_MEDIA', name: 'Snapchat' },
+  // { domain: 'twitter.com', type: 'SOCIAL_MEDIA', name: 'Twitter' },
+  // { domain: 'reddit.com', type: 'FORUM', name: 'Reddit' },
+  // { domain: 'medium.com', type: 'BLOG', name: 'Medium' },
+  // { domain: 'pinterest.com', type: 'SOCIAL_MEDIA', name: 'Pinterest' },
+  // { domain: 'tiktok.com', type: 'SOCIAL_MEDIA', name: 'TikTok' },
+  // { domain: 'twitch.tv', type: 'GAMING', name: 'Twitch' },
 ];
 
 export const scanWebPresence = async (req: Request, res: Response) => {
@@ -59,7 +60,6 @@ export const scanWebPresence = async (req: Request, res: Response) => {
     for (const platform of PLATFORMS) {
       try {
         const results = await searchEmailOnPlatform(email, platform.domain);
-
         if (results.items && results.items.length > 0) {
           for (const item of results.items) {
             const finding = await prisma.webPresenceFinding.create({
