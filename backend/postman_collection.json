@@ -356,6 +356,185 @@
       "description": "Endpoints for checking emails and passwords against the Have I Been Pwned database."
     },
     {
+      "name": "Web Presence Scanning",
+      "item": [
+        {
+          "name": "Scan Web Presence",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set(\"webPresenceId\", jsonData.data.webPresenceId);",
+                  "    pm.test(\"Web presence scan successful\", function () {",
+                  "        pm.expect(jsonData.data).to.have.property('totalFindings');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/web-presence/scan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "web-presence",
+                "scan"
+              ]
+            },
+            "description": "Scan multiple social media and professional platforms to discover where an email address appears online.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, required): Email address to scan across platforms\n\n**Platforms Scanned:**\n- Instagram\n- Facebook\n- X (Twitter)\n- LinkedIn\n- GitHub\n- YouTube\n- General web search\n\n**Responses:**\n- `200`: Scan completed successfully\n  - Returns: webPresenceId, email, totalFindings, riskScore, and detailed findings array\n- `400`: Email is required\n- `401`: Unauthorized\n- `500`: Scan failed\n\n**Rate Limiting:** Uses Google Custom Search API with delays between platform checks (1 second between each platform).\n\n**Note:** The `webPresenceId` is automatically saved to environment for use with other endpoints."
+          },
+          "response": []
+        },
+        {
+          "name": "Analyze Digital Footprint",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/web-presence/analyze",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "web-presence",
+                "analyze"
+              ]
+            },
+            "description": "Analyze the complete digital footprint by combining web presence findings with breach data to generate an overall risk assessment.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, required): Email address to analyze\n\n**Prerequisites:** Must run a web presence scan first.\n\n**Analysis Includes:**\n- Total online exposure count\n- Social media platform count\n- Professional platform count\n- Data breach count\n- Overall risk score (0-100)\n- Last scan timestamp\n\n**Responses:**\n- `200`: Analysis completed successfully\n  - Returns: footprint summary, web presence details, and breach information\n- `400`: Email is required\n- `401`: Unauthorized\n- `404`: No web presence data found (scan required)\n- `500`: Analysis failed\n\n**Risk Score Calculation:** Combines web presence exposure, breach count, and platform distribution."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Risk Assessment",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/web-presence/risk-assessment?email=test@example.com",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "web-presence",
+                "risk-assessment"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "test@example.com",
+                  "description": "Email address to get risk assessment for"
+                }
+              ]
+            },
+            "description": "Get detailed risk assessment breakdown for a specific email's digital footprint.\n\n**Authentication:** Required (Bearer Token)\n\n**Query Parameters:**\n- `email` (string, required): Email address to assess\n\n**Prerequisites:** Must have completed footprint analysis.\n\n**Risk Assessment Details:**\n- Overall risk score (0-100)\n- Risk level classification (LOW/MEDIUM/HIGH)\n  - HIGH: Score >= 70\n  - MEDIUM: Score >= 40\n  - LOW: Score < 40\n- Category breakdowns:\n  - Web presence exposure\n  - Social media exposure\n  - Professional network exposure\n  - Data breach exposure\n- Individual scores per category\n- Last scanned timestamp\n\n**Responses:**\n- `200`: Risk assessment retrieved successfully\n- `400`: Email is required\n- `401`: Unauthorized\n- `404`: No footprint data found\n- `500`: Failed to retrieve risk assessment"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Web Presence History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/web-presence/history?email=test@example.com",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "web-presence",
+                "history"
+              ],
+              "query": [
+                {
+                  "key": "email",
+                  "value": "test@example.com",
+                  "description": "Optional: Filter history by specific email"
+                }
+              ]
+            },
+            "description": "Get historical web presence scan records for the authenticated user.\n\n**Authentication:** Required (Bearer Token)\n\n**Query Parameters:**\n- `email` (string, optional): Filter results by specific email address\n\n**Returns:** Up to 10 most recent scans including:\n- Scan ID\n- Email scanned\n- Scan date\n- Total findings count\n- Risk score\n- Detailed findings per scan:\n  - Platform name\n  - Platform type (SOCIAL_MEDIA, PROFESSIONAL, FORUM, etc.)\n  - URL where email was found\n  - Exposure level (HIGH/MEDIUM/LOW)\n  - Profile name extracted\n  - Detection timestamp\n\n**Responses:**\n- `200`: History retrieved successfully\n- `401`: Unauthorized\n- `500`: Failed to retrieve history\n\n**Note:** Results are ordered by scan date (most recent first) and limited to 10 records."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Detailed Report",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/web-presence/report/{{webPresenceId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "web-presence",
+                "report",
+                "{{webPresenceId}}"
+              ]
+            },
+            "description": "Generate a comprehensive detailed report for a specific web presence scan.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `scanId` (string, required): UUID of the web presence scan\n\n**Report Contents:**\n- Scan metadata (ID, email, date)\n- Total findings count\n- Risk score\n- Exposure summary:\n  - High exposure count\n  - Medium exposure count\n  - Low exposure count\n- Findings grouped by platform type\n- Complete list of all findings with details\n\n**Finding Details Include:**\n- Platform name\n- Platform type\n- Profile URL\n- Text snippet\n- Extracted profile name\n- Exposure level\n- Detection timestamp\n\n**Responses:**\n- `200`: Report generated successfully\n- `401`: Unauthorized\n- `404`: Scan not found or access denied\n- `500`: Failed to generate report\n\n**Note:** Use the `webPresenceId` saved from the scan endpoint."
+          },
+          "response": []
+        }
+      ],
+      "description": "Endpoints for scanning online presence across social media and professional platforms, analyzing digital footprint, and assessing privacy risks."
+    },
+    {
       "name": "Reports & History",
       "item": [
         {
@@ -454,6 +633,31 @@
       "item": [
         {
           "name": "Upload Document",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set(\"documentUrl\", jsonData.data.url);",
+                  "    pm.environment.set(\"documentPublicId\", jsonData.data.publicId);",
+                  "    pm.test(\"Document uploaded successfully\", function () {",
+                  "        pm.expect(jsonData.success).to.be.true;",
+                  "        pm.expect(jsonData.data).to.have.property('url');",
+                  "    });",
+                  "    if (jsonData.pan) {",
+                  "        pm.environment.set(\"extractedPAN\", jsonData.pan);",
+                  "    }",
+                  "    if (jsonData.aadhaar) {",
+                  "        pm.environment.set(\"extractedAadhaar\", jsonData.aadhaar);",
+                  "    }",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
           "request": {
             "method": "POST",
             "header": [
@@ -469,7 +673,8 @@
                 {
                   "key": "file",
                   "type": "file",
-                  "src": ""
+                  "src": "",
+                  "description": "Document file to upload (PDF or image)"
                 }
               ]
             },
@@ -483,12 +688,12 @@
                 "upload"
               ]
             },
-            "description": "Upload a single document file. Requires authentication (Bearer token). Use multipart/form-data with field name 'file'. Supported types: PDF and common images."
+            "description": "Upload a document file (PDF or image) with automatic OCR processing and PAN/Aadhaar extraction.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body (multipart/form-data):**\n- `file` (file, required): Document file to upload\n\n**Supported File Types:**\n- Images: JPEG, PNG, and other common image formats\n- Documents: PDF files\n\n**Processing Pipeline:**\n1. File validation and buffer check\n2. Upload to Cloudinary (documents folder)\n3. Automatic OCR processing using Gemini API\n4. PAN and Aadhaar number extraction from OCR text\n\n**Features:**\n- Automatic file type detection (image vs document)\n- OCR text extraction from uploaded files\n- Intelligent PAN card number extraction (format: XXXXX1234X)\n- Aadhaar number extraction (12-digit format)\n- Cloudinary integration for secure file storage\n\n**Response (201 - Success):**\n``````\n\n**Response Codes:**\n- `201`: Document uploaded and processed successfully\n- `400`: Bad Request\n  - No file uploaded\n  - File buffer not available\n  - Unsupported file type\n  - Invalid file format\n- `401`: Unauthorized (missing or invalid token)\n- `413`: Payload Too Large (file size exceeds limit)\n- `502`: Bad Gateway (Cloudinary upload failed)\n- `504`: Gateway Timeout (upload timed out)\n- `500`: Internal Server Error\n\n**Error Messages:**\n- \"No file uploaded\" - File is missing from request\n- \"Uploaded file is not available in memory\" - Multer configuration issue\n- \"File too large\" - File exceeds size limit\n- \"Unsupported file type\" - File format not supported\n- \"Upload timed out\" - Upload process exceeded time limit\n- \"Failed to upload file\" - Cloudinary upload error\n\n**Notes:**\n- OCR processing is automatic but may fail silently; document will still upload\n- If OCR fails, you'll receive: \"Document uploaded successfully. OCR processing failed or is unavailable.\"\n- PAN and Aadhaar extraction returns `null` if not found in document\n- Document URL, public ID, PAN, and Aadhaar are automatically saved to environment variables\n- Multer is configured with `memoryStorage` for in-memory file processing\n- Files are stored in Cloudinary under the \"documents\" folder\n\n**Configuration Requirements:**\n- Multer with `memoryStorage` enabled\n- Cloudinary credentials configured\n- Google Gemini API key for OCR processing\n\n**Rate Limiting:**\n- Depends on Cloudinary and Gemini API quotas\n- Consider implementing application-level rate limiting for production use"
           },
           "response": []
         }
       ],
-      "description": "Document upload endpoints"
+      "description": "Document upload endpoints with OCR processing and automated PAN/Aadhaar extraction capabilities."
     }
   ],
   "auth": {
