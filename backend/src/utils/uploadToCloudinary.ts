@@ -1,16 +1,6 @@
 import cloudinary from "../config/cloudinary";
 import path from "path";
 
-/**
- * Upload a file buffer to Cloudinary.
- * Supports auto detection (images, pdf, etc.).
- *
- * @param fileBuffer - The file buffer from multer
- * @param fileName - Original filename (for naming)
- * @param folder - Folder name on Cloudinary (default: 'uploads')
- * @param maxSizeInBytes - Maximum allowed file size in bytes (default: 10 MB)
- * @returns {Promise<{ secureUrl: string; publicId: string; resourceType: string; size?: number; }>}
- */
 export const uploadToCloudinary = (
     fileBuffer: Buffer,
     fileName: string,
