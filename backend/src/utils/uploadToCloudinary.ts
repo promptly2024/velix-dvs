@@ -44,7 +44,7 @@ export const uploadToCloudinary = (
 
         if (ext === ".pdf") {
             detectedType = "pdf";
-            resourceTypeOption = "raw"; // Cloudinary treats pdfs as raw
+            resourceTypeOption = "raw";
         } else {
             // basic image extensions
             const imageExts = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp", ".tiff"];

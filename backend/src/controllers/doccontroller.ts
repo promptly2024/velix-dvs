@@ -1,9 +1,10 @@
 // backendsrc/controllers/doccontroller.ts
 import { Request, Response } from "express";
 import { uploadToCloudinary } from "../utils/uploadToCloudinary";
+import { performOCR } from "../helper/OCR";
 
 export const uploadDocumentHandler = async (req: Request, res: Response) => {
-    console.log("Received file:", req.file);
+    console.log("\n\nReceived new request to upload document.");
     try {
         const file = req.file as Express.Multer.File | undefined;
 
@@ -19,12 +20,18 @@ export const uploadDocumentHandler = async (req: Request, res: Response) => {
 
         // Attempt upload
         const folder = "documents";
+        const fileType: "image_url" | "document_url" = file.mimetype.startsWith("image/") ? "image_url" : "document_url";
         const result = await uploadToCloudinary(file.buffer, file.originalname, folder);
+        console.log("\n\nCloudinary upload result:", result);
+        console.log("\n\nNow performing OCR...");
         // Upload to Cloudinary successful, NOw OCR happen.
+        const ocrResult = await performOCR(fileType, result.secureUrl);
+        console.log("\n\nOCR result:", ocrResult);
 
         return res.status(201).json({
             success: true,
             message: "Document uploaded successfully.",
+            ocr: ocrResult,
             data: {
                 url: result.secureUrl,
                 publicId: result.publicId,

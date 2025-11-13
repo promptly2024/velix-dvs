@@ -13,6 +13,7 @@
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
+    "@mistralai/mistralai": "^1.10.0",
     "@prisma/client": "^6.18.0",
     "axios": "^1.13.2",
     "bcryptjs": "^3.0.2",
