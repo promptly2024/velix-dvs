@@ -31,13 +31,13 @@ export const uploadDocumentHandler = async (req: Request, res: Response) => {
             console.error("OCR processing error:", ocrErr);
             ocrResult = null;
         }
-        const { aadhaar, pan } = extractPanAadhaar(ocrResult?.pages?.map((p: any) => p.markdown).join("\n") || "");
-        console.log("Extracted PAN:", pan, "Aadhaar:", aadhaar);
+        const { aadhaar, pan, creditCard } = extractPanAadhaar(ocrResult?.pages?.map((p: any) => p.markdown).join("\n") || "");
+        console.log("Extracted PAN:", pan, "Aadhaar:", aadhaar, "Credit Card:", creditCard);
         return res.status(201).json({
             success: true,
             message: ocrResult ? "Document uploaded and processed successfully." : "Document uploaded successfully. OCR processing failed or is unavailable.",
             ocr: ocrResult,
-            pan, aadhaar,
+            pan, aadhaar, creditCard,
             data: {
                 url: result.secureUrl,
                 publicId: result.publicId,
