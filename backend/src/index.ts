@@ -14,6 +14,7 @@ import helmet from "helmet";
 import { breachRouter } from "./routes/breach.route";
 import { webPresenceRouter } from "./routes/webpresence.routes";
 import { documentRouter } from "./routes/document.route";
+import { perplexitySearchRouter } from "./routes/perplexity.route";
 
 const app = express();
 // Helmetjs is used to add security headers to every request to protect the app from common vulnerabilties 
@@ -55,6 +56,7 @@ app.use('/api/v1/auth', authRouter);
 app.use("/api/v1/breach", breachRouter);
 app.use("/api/v1/web-presence", webPresenceRouter);
 app.use("/api/v1/document", documentRouter);
+app.use("/api/v1/perplexity-search", perplexitySearchRouter);
 
 
 app.use(errorHandler);
