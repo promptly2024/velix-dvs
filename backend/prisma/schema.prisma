@@ -41,100 +41,102 @@ enum GameStatus {
 }
 
 model User {
-  id            String      @id @default(uuid())
-  email         String      @unique
-  password      String
-  username      String      @unique
-  profileImage  String?
-  otp           String?
-  otpExpiry     DateTime?
-  emailVerified Boolean     @default(false)
-  createdAt     DateTime    @default(now())
-  updatedAt     DateTime    @default(now())
-  documents     Document[]
-  assessments   Assessment[]
-  incidents     Incident[]
-  gameProgress  GameProgress[]
-  achievements  Achievement[]
-  breachChecks    BreachCheck[]
-  passwordChecks  PasswordCheck[]
-  webPresences      WebPresence[]
-  digitalFootprints DigitalFootprint[]
+  id                     String                   @id @default(uuid())
+  email                  String                   @unique
+  password               String
+  username               String                   @unique
+  profileImage           String?
+  otp                    String?
+  otpExpiry              DateTime?
+  emailVerified          Boolean                  @default(false)
+  createdAt              DateTime                 @default(now())
+  updatedAt              DateTime                 @default(now())
+  documents              Document[]
+  assessments            Assessment[]
+  incidents              Incident[]
+  gameProgress           GameProgress[]
+  achievements           Achievement[]
+  breachChecks           BreachCheck[]
+  passwordChecks         PasswordCheck[]
+  webPresences           WebPresence[]
+  digitalFootprints      DigitalFootprint[]
+  UserIngredientExposure UserIngredientExposure[]
+  ThreatAssessment       ThreatAssessment[]
 }
 
 model Document {
-  id             String    @id @default(uuid())
-  userId         String
-  fileUrl        String
-  documentType   String
-  scanResults    Json?
-  riskScore      Int?      @default(0)
-  ocrText        String?   // extracted text
-  ocrStatus      String?   @default("pending") // 'pending' | 'success' | 'failed'
-  uploadedAt     DateTime  @default(now())
-  updatedAt      DateTime  @updatedAt
-  user           User      @relation(fields: [userId], references: [id])
+  id           String   @id @default(uuid())
+  userId       String
+  fileUrl      String
+  documentType String
+  scanResults  Json?
+  riskScore    Int?     @default(0)
+  ocrText      String? // extracted text
+  ocrStatus    String?  @default("pending") // 'pending' | 'success' | 'failed'
+  uploadedAt   DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 model Assessment {
-  id                String      @id @default(uuid())
-  userId            String
-  startedAt         DateTime    @default(now())
-  finishedAt        DateTime?
-  score             Int 
-  recommendations   Json? 
-  categories        AssessmentCategoryScore[]
-  createdAt         DateTime    @default(now())
-  user              User        @relation(fields: [userId], references: [id])
+  id              String                    @id @default(uuid())
+  userId          String
+  startedAt       DateTime                  @default(now())
+  finishedAt      DateTime?
+  score           Int
+  recommendations Json?
+  categories      AssessmentCategoryScore[]
+  createdAt       DateTime                  @default(now())
+  user            User                      @relation(fields: [userId], references: [id])
 }
 
 model AssessmentCategoryScore {
-  id            String        @id @default(uuid())
-  assessmentId  String        
-  category      AssessmentCategory
-  score         Int
-  assessment    Assessment     @relation(fields: [assessmentId], references: [id])
+  id           String             @id @default(uuid())
+  assessmentId String
+  category     AssessmentCategory
+  score        Int
+  assessment   Assessment         @relation(fields: [assessmentId], references: [id])
 }
 
 model Incident {
-  id            String           @id @default(uuid())
-  userId        String
-  severity      IncidentSeverity
-  description   String
-  createdAt     DateTime         @default(now())
-  updatedAt     DateTime         @updatedAt
-  user          User             @relation(fields: [userId], references: [id])
+  id          String           @id @default(uuid())
+  userId      String
+  severity    IncidentSeverity
+  description String
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  user        User             @relation(fields: [userId], references: [id])
 }
 
 model GameProgress {
-  id            String   @id @default(uuid())
+  id            String     @id @default(uuid())
   userId        String
   module        String
   level         Int
   xp            Int
   completedAt   DateTime?
   currentStatus GameStatus
-  user          User     @relation(fields: [userId], references: [id])
+  user          User       @relation(fields: [userId], references: [id])
 }
 
 model Achievement {
-  id           String   @id @default(uuid())
-  userId       String
-  title        String 
-  description  String?
-  badgeImage   String?
-  achievedAt   DateTime @default(now())
-  user         User     @relation(fields: [userId], references: [id])
+  id          String   @id @default(uuid())
+  userId      String
+  title       String
+  description String?
+  badgeImage  String?
+  achievedAt  DateTime @default(now())
+  user        User     @relation(fields: [userId], references: [id])
 }
 
 model BreachCheck {
-  id            String   @id @default(uuid())
+  id            String         @id @default(uuid())
   userId        String
   email         String
   checkType     CheckType
-  breachesFound Int      @default(0)
-  checkedAt     DateTime @default(now())
-  user          User     @relation(fields: [userId], references: [id])
+  breachesFound Int            @default(0)
+  checkedAt     DateTime       @default(now())
+  user          User           @relation(fields: [userId], references: [id])
   breachRecords BreachRecord[]
 }
 
@@ -145,80 +147,80 @@ enum CheckType {
 }
 
 model BreachRecord {
-  id              String       @id @default(uuid())
-  breachCheckId   String
-  breachName      String
-  breachTitle     String
-  domain          String?
-  breachDate      DateTime
-  addedDate       DateTime
-  pwnCount        Int
-  description     String       @db.Text
-  dataClasses     String[]
-  isVerified      Boolean
-  isSensitive     Boolean
-  isRetired       Boolean
-  isFabricated    Boolean
-  breachCheck     BreachCheck  @relation(fields: [breachCheckId], references: [id])
-  createdAt       DateTime     @default(now())
-  
+  id            String      @id @default(uuid())
+  breachCheckId String
+  breachName    String
+  breachTitle   String
+  domain        String?
+  breachDate    DateTime
+  addedDate     DateTime
+  pwnCount      Int
+  description   String      @db.Text
+  dataClasses   String[]
+  isVerified    Boolean
+  isSensitive   Boolean
+  isRetired     Boolean
+  isFabricated  Boolean
+  breachCheck   BreachCheck @relation(fields: [breachCheckId], references: [id])
+  createdAt     DateTime    @default(now())
+
   @@index([breachCheckId])
   @@index([breachName])
 }
 
 model PasswordCheck {
-  id              String   @id @default(uuid())
-  userId          String
-  passwordHash    String
-  isPwned         Boolean
-  pwnCount        Int      @default(0)
-  checkedAt       DateTime @default(now())
-  user            User     @relation(fields: [userId], references: [id])
+  id           String   @id @default(uuid())
+  userId       String
+  passwordHash String
+  isPwned      Boolean
+  pwnCount     Int      @default(0)
+  checkedAt    DateTime @default(now())
+  user         User     @relation(fields: [userId], references: [id])
 }
 
 model WebPresence {
-  id            String   @id @default(uuid())
+  id            String               @id @default(uuid())
   userId        String
   email         String
-  scanDate      DateTime @default(now())
-  totalFindings Int      @default(0)
-  riskScore     Int      @default(0)
-  user          User     @relation(fields: [userId], references: [id])
+  scanDate      DateTime             @default(now())
+  totalFindings Int                  @default(0)
+  riskScore     Int                  @default(0)
+  user          User                 @relation(fields: [userId], references: [id])
   findings      WebPresenceFinding[]
-  
+
   @@index([userId])
   @@index([email])
 }
 
 model WebPresenceFinding {
-  id              String        @id @default(uuid())
-  webPresenceId   String
-  platform        String
-  platformType    PlatformType
-  url             String
-  snippet         String?       @db.Text
-  profileName     String?
-  exposureLevel   ExposureLevel
-  detectedAt      DateTime      @default(now())
-  webPresence     WebPresence   @relation(fields: [webPresenceId], references: [id])
-  
+  id            String        @id @default(uuid())
+  webPresenceId String
+  platform      String
+  platformType  PlatformType
+  url           String
+  snippet       String?       @db.Text
+  profileName   String?
+  exposureLevel ExposureLevel
+  detectedAt    DateTime      @default(now())
+  webPresence   WebPresence   @relation(fields: [webPresenceId], references: [id])
+
   @@index([webPresenceId])
   @@index([platform])
 }
 
 model DigitalFootprint {
-  id                  String   @id @default(uuid())
-  userId              String
-  email               String
-  totalExposure       Int      @default(0)
-  socialMediaCount    Int      @default(0)
-  professionalCount   Int      @default(0)
-  dataBreachCount     Int      @default(0)
-  overallRiskScore    Int      @default(0)
-  lastScanned         DateTime @default(now())
-  user                User     @relation(fields: [userId], references: [id])
-  
-  @@unique([userId, email]) 
+  id                String   @id @default(uuid())
+  userId            String
+  email             String
+  totalExposure     Int      @default(0)
+  socialMediaCount  Int      @default(0)
+  professionalCount Int      @default(0)
+  dataBreachCount   Int      @default(0)
+  overallRiskScore  Int      @default(0)
+  lastScanned       DateTime @default(now())
+  user              User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId, email])
   @@index([userId])
   @@index([email])
 }
@@ -239,4 +241,84 @@ enum ExposureLevel {
   HIGH
   MEDIUM
   LOW
+}
+
+// THREAT SYSTEM MODELS
+// 13 Threats isme add honge
+model ThreatCategory {
+  id               String             @id @default(uuid())
+  key              String             @unique
+  name             String
+  description      String?
+  ingredients      ThreatIngredient[]
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+  ThreatAssessment ThreatAssessment[]
+}
+
+// har threat ke ingredient like email_leaked
+model ThreatIngredient {
+  id               String            @id @default(uuid())
+  threatCategoryId String
+  key              String            @unique
+  name             String
+  detectionSources DetectionSource[]
+  possibleScam     String?
+  createdAt        DateTime          @default(now())
+  updatedAt        DateTime          @updatedAt
+
+  threatCategory         ThreatCategory           @relation(fields: [threatCategoryId], references: [id])
+  UserIngredientExposure UserIngredientExposure[]
+}
+
+// user ke liye kaun se ingredient mile
+model UserIngredientExposure {
+  id              String         @id @default(uuid())
+  userId          String
+  ingredientId    String
+  valueMasked     String?
+  source          ExposureSource
+  confidence      Float          @default(0.0)
+  evidenceUrl     String?
+  evidenceSnippet String?        @db.Text
+  detectedAt      DateTime       @default(now())
+
+  user       User             @relation(fields: [userId], references: [id])
+  ingredient ThreatIngredient @relation(fields: [ingredientId], references: [id])
+
+  @@index([userId])
+  @@index([ingredientId])
+}
+
+// har user ke liye har threat ke liye score
+model ThreatAssessment {
+  id                 String   @id @default(uuid())
+  userId             String
+  threatId           String
+  score              Int
+  matchedIngredients String[] // list of ingredient keys
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  user   User           @relation(fields: [userId], references: [id])
+  threat ThreatCategory @relation(fields: [threatId], references: [id])
+
+  @@index([userId])
+  @@index([threatId])
+}
+
+// ENUMS
+enum DetectionSource {
+  BREACH
+  WEB_SEARCH
+  SOCIAL_SEARCH
+  AI_PROMPT
+  DARK_WEB
+}
+
+enum ExposureSource {
+  BREACH
+  WEB
+  SOCIAL
+  AI
 }
