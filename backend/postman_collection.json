@@ -630,70 +630,103 @@
     },
     {
       "name": "Documents",
+      "description": "Document upload with OCR processing and automated PAN/Aadhaar/Credit Card extraction.",
       "item": [
         {
           "name": "Upload Document",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.environment.set(\"documentUrl\", jsonData.data.url);",
-                  "    pm.environment.set(\"documentPublicId\", jsonData.data.publicId);",
-                  "    pm.test(\"Document uploaded successfully\", function () {",
-                  "        pm.expect(jsonData.success).to.be.true;",
-                  "        pm.expect(jsonData.data).to.have.property('url');",
-                  "    });",
-                  "    if (jsonData.pan) {",
-                  "        pm.environment.set(\"extractedPAN\", jsonData.pan);",
-                  "    }",
-                  "    if (jsonData.aadhaar) {",
-                  "        pm.environment.set(\"extractedAadhaar\", jsonData.aadhaar);",
-                  "    }",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
           "request": {
             "method": "POST",
             "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text"}
             ],
             "body": {
               "mode": "formdata",
               "formdata": [
-                {
-                  "key": "file",
-                  "type": "file",
-                  "src": "",
-                  "description": "Document file to upload (PDF or image)"
-                }
+                {"key": "document", "type": "file", "src": "", "description": "PDF or image file"}
               ]
             },
             "url": {
               "raw": "{{baseUrl}}/document/upload",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "document",
-                "upload"
+              "host": ["{{baseUrl}}"],
+              "path": ["document", "upload"]
+            },
+            "description": "Upload document (PDF/image) with automatic OCR processing and extraction of PAN, Aadhaar, and credit card numbers using Gemini API."
+          }
+        }
+      ]
+    },
+    {
+      "name": "Perplexity Search",
+      "description": "Advanced OSINT using Perplexity AI for comprehensive web presence discovery.",
+      "item": [
+        {
+          "name": "Scan Web Presence with Perplexity",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text"},
+              {"key": "Content-Type", "value": "application/json"}
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"test@example.com\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/perplexity-search/scan",
+              "host": ["{{baseUrl}}"],
+              "path": ["perplexity-search", "scan"]
+            },
+            "description": "Perform comprehensive OSINT research using Perplexity AI to discover social media accounts, professional info, and personal details associated with an email."
+          }
+        },
+        {
+          "name": "Get Perplexity Scan History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text"}
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/perplexity-search/history?email=test@example.com",
+              "host": ["{{baseUrl}}"],
+              "path": ["perplexity-search", "history"],
+              "query": [
+                {"key": "email", "value": "test@example.com", "description": "Optional: Filter by email"}
               ]
             },
-            "description": "Upload a document file (PDF or image) with automatic OCR processing and PAN/Aadhaar extraction.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body (multipart/form-data):**\n- `file` (file, required): Document file to upload\n\n**Supported File Types:**\n- Images: JPEG, PNG, and other common image formats\n- Documents: PDF files\n\n**Processing Pipeline:**\n1. File validation and buffer check\n2. Upload to Cloudinary (documents folder)\n3. Automatic OCR processing using Gemini API\n4. PAN and Aadhaar number extraction from OCR text\n\n**Features:**\n- Automatic file type detection (image vs document)\n- OCR text extraction from uploaded files\n- Intelligent PAN card number extraction (format: XXXXX1234X)\n- Aadhaar number extraction (12-digit format)\n- Cloudinary integration for secure file storage\n\n**Response (201 - Success):**\n``````\n\n**Response Codes:**\n- `201`: Document uploaded and processed successfully\n- `400`: Bad Request\n  - No file uploaded\n  - File buffer not available\n  - Unsupported file type\n  - Invalid file format\n- `401`: Unauthorized (missing or invalid token)\n- `413`: Payload Too Large (file size exceeds limit)\n- `502`: Bad Gateway (Cloudinary upload failed)\n- `504`: Gateway Timeout (upload timed out)\n- `500`: Internal Server Error\n\n**Error Messages:**\n- \"No file uploaded\" - File is missing from request\n- \"Uploaded file is not available in memory\" - Multer configuration issue\n- \"File too large\" - File exceeds size limit\n- \"Unsupported file type\" - File format not supported\n- \"Upload timed out\" - Upload process exceeded time limit\n- \"Failed to upload file\" - Cloudinary upload error\n\n**Notes:**\n- OCR processing is automatic but may fail silently; document will still upload\n- If OCR fails, you'll receive: \"Document uploaded successfully. OCR processing failed or is unavailable.\"\n- PAN and Aadhaar extraction returns `null` if not found in document\n- Document URL, public ID, PAN, and Aadhaar are automatically saved to environment variables\n- Multer is configured with `memoryStorage` for in-memory file processing\n- Files are stored in Cloudinary under the \"documents\" folder\n\n**Configuration Requirements:**\n- Multer with `memoryStorage` enabled\n- Cloudinary credentials configured\n- Google Gemini API key for OCR processing\n\n**Rate Limiting:**\n- Depends on Cloudinary and Gemini API quotas\n- Consider implementing application-level rate limiting for production use"
-          },
-          "response": []
+            "description": "Retrieve up to 10 most recent Perplexity-based web presence scans with complete findings and metadata."
+          }
         }
-      ],
-      "description": "Document upload endpoints with OCR processing and automated PAN/Aadhaar extraction capabilities."
+      ]
+    },
+    {
+      "name": "Orchestration",
+      "description": "Unified comprehensive scans combining multiple security modules in parallel execution.",
+      "item": [
+        {
+          "name": "Comprehensive Security Scan",
+          "request": {
+            "method": "POST",
+            "header": [
+              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text"}
+            ],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                {"key": "email", "value": "test@example.com", "type": "text", "description": "Email to scan (required)"},
+                {"key": "password", "value": "password123", "type": "text", "description": "Password to check (optional)"},
+                {"key": "document", "type": "file", "src": "", "description": "Document to analyze (optional)"}
+              ]
+            },
+            "url": {
+              "raw": "{{baseUrl}}/orchestration/comprehensive-scan",
+              "host": ["{{baseUrl}}"],
+              "path": ["orchestration", "comprehensive-scan"]
+            },
+            "description": "Execute parallel security scan combining email breach check, password validation, document OCR analysis, Perplexity OSINT, and Google web presence scanning."
+          }
+        }
+      ]
     }
   ],
   "auth": {
