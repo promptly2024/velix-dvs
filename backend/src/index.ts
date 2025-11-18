@@ -16,8 +16,11 @@ import { webPresenceRouter } from "./routes/webpresence.routes";
 import { documentRouter } from "./routes/document.route";
 import { perplexitySearchRouter } from "./routes/perplexity.route";
 import { orchestrationRouter } from "./routes/orchestration.route";
+import { shutdownWorkers, startWorkers } from "./workers";
 
 const app = express();
+startWorkers();
+
 // Helmetjs is used to add security headers to every request to protect the app from common vulnerabilties 
 app.use(helmet());
 app.use(cors());
@@ -67,3 +70,8 @@ app.use(errorHandler);
 app.listen(3001, () => {
     console.log("Listening to port 3001");
 })
+
+process.on('SIGTERM', async () => {
+    console.log('SIGTERM signal received: closing HTTP server');
+    await shutdownWorkers();
+});
