@@ -67,29 +67,29 @@ export const checkEmail = async (req: Request, res: Response) => {
         });
       }
       
-      // send email breach notification
-      const user = await prisma.user.findUnique({ 
-          where: { id: userId },
-          select: { email: true }
-        });
+      // send email breach notification through bullmq worker 
+      // const user = await prisma.user.findUnique({ 
+      //     where: { id: userId },
+      //     select: { email: true }
+      //   });
 
-        if (user?.email) {
-          try {
-            await sendBreachNotificationEmail(
-              user.email,
-              email,
-              breaches.length,
-              breaches.slice(0, 5).map((b) => ({
-                name: b.Title,
-                date: b.BreachDate,
-                dataClasses: b.DataClasses,
-              }))
-            );
-            console.log(`Breach notification email sent to ${user.email}`);
-          } catch (emailError) {
-            console.error("Failed to send breach notification email:", emailError);
-          }
-        }
+        // if (user?.email) {
+        //   try {
+        //     await sendBreachNotificationEmail(
+        //       user.email,
+        //       email,
+        //       breaches.length,
+        //       breaches.slice(0, 5).map((b) => ({
+        //         name: b.Title,
+        //         date: b.BreachDate,
+        //         dataClasses: b.DataClasses,
+        //       }))
+        //     );
+        //     console.log(`Breach notification email sent to ${user.email}`);
+        //   } catch (emailError) {
+        //     console.error("Failed to send breach notification email:", emailError);
+        //   }
+        // }
       
       return res.status(200).json({
         success: true,
@@ -164,23 +164,24 @@ export const checkPassword = async (req: Request, res: Response) => {
         });
       }
 
-       const user = await prisma.user.findUnique({ 
-          where: { id: userId },
-          select: { email: true }
-        });
+      // Send email through bullmq worker not await the process
+      //  const user = await prisma.user.findUnique({ 
+      //     where: { id: userId },
+      //     select: { email: true }
+      //   });
 
-        if (user?.email) {
-          try {
-            await sendPasswordBreachAlertEmail(
-              user.email,
-              result.count,
-              getPasswordSeverity(result.count)
-            );
-            console.log(`Password breach alert sent to ${user.email}`);
-          } catch (emailError) {
-            console.error("Failed to send password breach alert:", emailError);
-          }
-        }
+      //   if (user?.email) {
+      //     try {
+      //       await sendPasswordBreachAlertEmail(
+      //         user.email,
+      //         result.count,
+      //         getPasswordSeverity(result.count)
+      //       );
+      //       console.log(`Password breach alert sent to ${user.email}`);
+      //     } catch (emailError) {
+      //       console.error("Failed to send password breach alert:", emailError);
+      //     }
+      //   }
 
       return res.status(200).json({
         success: true,
