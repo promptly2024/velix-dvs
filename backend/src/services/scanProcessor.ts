@@ -255,11 +255,29 @@ export async function processScanData(scanJson: any, userId: string) {
             score: assess.score,
             matchedIngredientKeys: assess.matchedIngredients
         }));
+
+        // dvs score calculation 
+        // formula = (ingredients find / total ingredient ) * 100 + 30
+        const totalIngredient = allIngredients.length;
+        const ingredientFound = matchedKeysSet.size;
+
+        let dvsScore = ((ingredientFound / totalIngredient) * 100 ) + 30;
+        dvsScore = Math.min(dvsScore, 100);
+        dvsScore = Math.round(dvsScore * 100) / 100;
+
+        log(`DVS Score calculated: ${dvsScore}% (${ingredientFound}/${totalIngredient} ingredients found)`);
+
         log("Scan data processing complete for user:", userId);
         return {
             success: true,
             message: "Scan data processed successfully",
             exposures: created,
+            dvsScore: dvsScore,
+            dvsBreakdown: {
+                ingredientsFound: ingredientFound,
+                totalIngredients: totalIngredient,
+                percentage: Math.round((ingredientFound / totalIngredient) * 100 * 100) / 100
+            },
             threatAssessments: result
         };
     } catch (err) {
