@@ -1,12 +1,13 @@
 import { ExposureSource } from "@prisma/client";
 import { prisma } from "../lib/prisma";
 import { maskValue } from "../lib/maskValue";
+import { calculateSourceDistribution, formatSourceDistributionLog } from "../helper/sourceAnalyzer";
 
 const log = (...args: any[]) => console.log(new Date().toISOString(), ...args);
 const warn = (...args: any[]) => console.warn(new Date().toISOString(), ...args);
 const error = (...args: any[]) => console.error(new Date().toISOString(), ...args);
 
-// map platform strings from scan findings to ThreatIngredient keys (best-effort)
+// map platform strings from scan findings to ThreatIngredient keys 
 function mapPlatformToIngredientKey(platform: string, platformType: string | null) {
     const p = (platform || "").toLowerCase();
     const pt = (platformType || "").toUpperCase();
@@ -270,6 +271,9 @@ export async function processScanData(scanJson: any, userId: string) {
             matchedIngredientKeys: assess.matchedIngredients
         }));
 
+        // particular source distribution
+        const sourceDistribution = await calculateSourceDistribution(userId);
+        console.log(formatSourceDistributionLog(sourceDistribution));
         // dvs score calculation 
         // formula = (ingredients find / total ingredient ) * 100 + 30
         const totalIngredient = allIngredients.length;
@@ -286,6 +290,10 @@ export async function processScanData(scanJson: any, userId: string) {
             success: true,
             message: "Scan data processed successfully",
             exposures: created,
+            sourceDistribution: {
+                distributions: sourceDistribution.distributions,
+                summary: sourceDistribution.summary
+            },
             dvsScore: dvsScore,
             dvsBreakdown: {
                 ingredientsFound: ingredientFound,
