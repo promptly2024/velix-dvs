@@ -13,11 +13,25 @@ function mapPlatformToIngredientKey(platform: string, platformType: string | nul
 
     if (p.includes("facebook")) return "facebook_profile";
     if (p.includes("instagram")) return "instagram_profile";
-    if (p.includes("twitter") || p.includes("x ")) return "twitter_profile";
-    if (p.includes("linkedin")) return "linkedin_id";
-    if (p.includes("github")) return "web_mentions";
-    if (pt === "PROFESSIONAL") return "web_mentions";
-    if (pt === "SOCIAL_MEDIA") return "web_mentions";
+    if (p.includes("twitter") || p.includes("x/")) return "twitter_profile";
+    if (p.includes("youtube")) return "youtube_channel";
+    if (p.includes("reddit")) return "reddit_id";
+    if (p.includes("telegram")) return "telegram_username";
+
+    if (p.includes("whatsapp")) return "whatsapp_number";
+
+    if (p.includes("github")) return "github_profile";
+
+    if (pt === "PROFESSIONAL") {
+        if (p.includes("linkedin")) return "linkedin_id";
+        if (p.includes("github")) return "github_profile";
+        return "company_name";
+    }
+
+    if (pt === "SOCIAL_MEDIA") {
+        return "social_photos";
+    }
+
     return "web_mentions";
 }
 
