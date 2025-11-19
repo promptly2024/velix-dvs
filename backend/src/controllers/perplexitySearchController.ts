@@ -41,6 +41,11 @@ export const scanWebPresenceWithPerplexity = async (
   if (!userId) return res.status(401).json({ error: "Unauthorized." });
   if (!email) return res.status(400).json({ error: "Email is required." });
 
+  const apiKey = process.env.PERPLEXITY_API_KEY;
+  if (!apiKey) {
+    throw new Error("Perplexity API key is not configured.");
+  }
+
   try {
     const initialPrompt = `give me all the details about this email "${email}" there all social media accounts, everything do a google web presence search also
     
@@ -92,7 +97,7 @@ Be thorough and search multiple sources. Only provide verified, factual informat
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.PERPLEXITY_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         timeout: 60000,
       }
@@ -187,7 +192,7 @@ Only include verified information from the research. If information is not avail
       {
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${process.env.PERPLEXITY_API_KEY}`,
+          Authorization: `Bearer ${apiKey}`,
         },
         timeout: 30000,
       }

@@ -3,6 +3,7 @@ import { uploadDocumentHandler } from "./doccontroller";
 import { checkEmail, checkPassword } from "./breachController";
 import { scanWebPresenceWithPerplexity } from "./perplexitySearchController";
 import { scanWebPresence } from "./webPresenceController";
+import { processScanData } from "../services/scanProcessor";
 
 interface ScanResult {
   success: boolean;
@@ -56,9 +57,9 @@ const captureControllerResponse = async (
       },
       json: (data: any) => {
         resolve({ success: true, data });
-        return mockRes; 
+        return mockRes;
       },
-    
+
       send: (data: any) => {
         resolve({ success: true, data });
         return mockRes;
@@ -147,25 +148,25 @@ export const runParallelSecurityScan = async (
       email
         ? captureControllerResponse(checkEmail, emailReq)
         : Promise.resolve({
-            success: true,
-            data: { skipped: true, reason: "No email provided" },
-          }),
+          success: true,
+          data: { skipped: true, reason: "No email provided" },
+        }),
 
       // Password check (only if password provided)
       password
         ? captureControllerResponse(checkPassword, passwordReq)
         : Promise.resolve({
-            success: true,
-            data: { skipped: true, reason: "No password provided" },
-          }),
+          success: true,
+          data: { skipped: true, reason: "No password provided" },
+        }),
 
       // Document analysis (only if file provided)
       file
         ? captureControllerResponse(uploadDocumentHandler, documentReq)
         : Promise.resolve({
-            success: true,
-            data: { skipped: true, reason: "No document provided" },
-          }),
+          success: true,
+          data: { skipped: true, reason: "No document provided" },
+        }),
 
       // Web presence scan with Perplexity
       captureControllerResponse(
@@ -182,52 +183,52 @@ export const runParallelSecurityScan = async (
         emailResult.status === "fulfilled"
           ? emailResult.value
           : {
-              success: false,
-              error:
-                emailResult.status === "rejected"
-                  ? emailResult.reason
-                  : "Email breach check failed",
-            },
+            success: false,
+            error:
+              emailResult.status === "rejected"
+                ? emailResult.reason
+                : "Email breach check failed",
+          },
       passwordCheck:
         passwordResult.status === "fulfilled"
           ? passwordResult.value
           : {
-              success: false,
-              error:
-                passwordResult.status === "rejected"
-                  ? passwordResult.reason
-                  : "Password check failed",
-            },
+            success: false,
+            error:
+              passwordResult.status === "rejected"
+                ? passwordResult.reason
+                : "Password check failed",
+          },
       documentAnalysis:
         documentResult.status === "fulfilled"
           ? documentResult.value
           : {
-              success: false,
-              error:
-                documentResult.status === "rejected"
-                  ? documentResult.reason
-                  : "Document analysis failed",
-            },
+            success: false,
+            error:
+              documentResult.status === "rejected"
+                ? documentResult.reason
+                : "Document analysis failed",
+          },
       webPresencePerplexity:
         webPresencePerplexityResult.status === "fulfilled"
           ? webPresencePerplexityResult.value
           : {
-              success: false,
-              error:
-                webPresencePerplexityResult.status === "rejected"
-                  ? webPresencePerplexityResult.reason
-                  : "Perplexity web presence scan failed",
-            },
+            success: false,
+            error:
+              webPresencePerplexityResult.status === "rejected"
+                ? webPresencePerplexityResult.reason
+                : "Perplexity web presence scan failed",
+          },
       webPresenceGoogle:
         webPresenceGoogleResult.status === "fulfilled"
           ? webPresenceGoogleResult.value
           : {
-              success: false,
-              error:
-                webPresenceGoogleResult.status === "rejected"
-                  ? webPresenceGoogleResult.reason
-                  : "Google web presence scan failed",
-            },
+            success: false,
+            error:
+              webPresenceGoogleResult.status === "rejected"
+                ? webPresenceGoogleResult.reason
+                : "Google web presence scan failed",
+          },
     };
 
     const successfulChecks = Object.values(results).filter(
@@ -277,7 +278,7 @@ export const runParallelSecurityScan = async (
         results.webPresenceGoogle.data?.data || results.webPresenceGoogle.data;
       const totalFindings = googleData?.totalFindings || 0;
       const riskScore = googleData?.riskScore || 0;
-      
+
       if (riskScore > 70 || totalFindings > 10) {
         criticalIssuesFound += 1;
       }
@@ -287,8 +288,8 @@ export const runParallelSecurityScan = async (
       successfulChecks === totalChecks - skippedChecks
         ? "completed"
         : successfulChecks > 0
-        ? "partial"
-        : "failed";
+          ? "partial"
+          : "failed";
 
     const response: ComprehensiveScanResponse = {
       overallStatus,
@@ -302,7 +303,9 @@ export const runParallelSecurityScan = async (
       },
     };
 
+    const analyzeData = await processScanData(response, userId);
     return res.status(200).json({
+      analyzeData,
       success: true,
       message: "Comprehensive security scan completed",
       ...response,
