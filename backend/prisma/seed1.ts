@@ -24,15 +24,15 @@ async function main() {
                 ing("wallet_id", "Wallet ID", ["WEB_SEARCH", "BREACH"], "Wallet theft"),
                 ing("transaction_history", "Transaction History", ["WEB_SEARCH"], "Chargeback/fraud evidence"),
                 ing("bank_statements", "Bank Statements", ["WEB_SEARCH"], "Financial profiling"),
-                ing("salary_slip", "Salary Slip", ["WEB_SEARCH"], "Salary-based scams"),
-                ing("loan_account_number", "Loan Account Number", ["WEB_SEARCH"], "Loan fraud"),
-                ing("insurance_policy_number", "Insurance Policy Number", ["WEB_SEARCH"], "Insurance fraud"),
-                ing("mutual_fund_folio", "Mutual Fund Folio Number", ["WEB_SEARCH"], "Investment fraud"),
+                // ing("salary_slip", "Salary Slip", ["WEB_SEARCH"], "Salary-based scams"),
+                // ing("loan_account_number", "Loan Account Number", ["WEB_SEARCH"], "Loan fraud"),
+                // ing("insurance_policy_number", "Insurance Policy Number", ["WEB_SEARCH"], "Insurance fraud"),
+                // ing("mutual_fund_folio", "Mutual Fund Folio Number", ["WEB_SEARCH"], "Investment fraud"),
                 ing("demat_account_number", "Demat Account Number", ["WEB_SEARCH"], "Trading fraud"),
-                ing("trading_account_login", "Trading Account Login", ["WEB_SEARCH", "BREACH"], "Trading account takeover"),
+                // ing("trading_account_login", "Trading Account Login", ["WEB_SEARCH", "BREACH"], "Trading account takeover"),
                 ing("crypto_wallet_address", "Cryptocurrency Wallet Address", ["WEB_SEARCH", "DARK_WEB"], "Crypto theft"),
                 ing("crypto_private_key", "Crypto Private Key", ["DARK_WEB"], "Immediate wallet drain"),
-                ing("pan_financial_link", "PAN-linked Financial Data", ["WEB_SEARCH", "BREACH"], "Fraudulent loans")
+                // ing("pan_financial_link", "PAN-linked Financial Data", ["WEB_SEARCH", "BREACH"], "Fraudulent loans")
             ]
         },
 
@@ -47,7 +47,7 @@ async function main() {
                 ing("passport_number", "Passport Number", ["WEB_SEARCH"], "Travel/doc misuse"),
                 ing("driving_license_number", "Driving License Number", ["WEB_SEARCH"], "Document forgery"),
                 ing("voter_id_number", "Voter ID Number", ["WEB_SEARCH"], "Identity spoofing"),
-                ing("ration_card_number", "Ration Card Number", ["WEB_SEARCH"], "ID misuse"),
+                // ing("ration_card_number", "Ration Card Number", ["WEB_SEARCH"], "ID misuse"),
                 ing("signature_sample", "Signature Sample", ["WEB_SEARCH", "SOCIAL_SEARCH"], "Forgery"),
                 ing("photograph", "Photograph", ["WEB_SEARCH", "SOCIAL_SEARCH"], "Fake profiles / impersonation"),
                 ing("parent_names", "Parent Names", ["WEB_SEARCH"], "Family-based scams"),
@@ -88,7 +88,7 @@ async function main() {
                 ing("telegram_username", "Telegram Username", ["WEB_SEARCH"], "Telegram scams"),
                 ing("whatsapp_number", "WhatsApp Number", ["BREACH", "WEB_SEARCH"], "WhatsApp takeover"),
                 ing("social_photos", "Social Media Photos", ["WEB_SEARCH", "SOCIAL_SEARCH"], "Sextortion / impersonation"),
-                ing("friends_list", "Social Friends List", ["SOCIAL_SEARCH"], "Targeted scams")
+                // ing("friends_list", "Social Friends List", ["SOCIAL_SEARCH"], "Targeted scams")
             ]
         },
 
@@ -101,10 +101,10 @@ async function main() {
                 ing("prescription_data", "Prescription Data", ["WEB_SEARCH"], "Pharmacy fraud"),
                 ing("doctor_details", "Doctor Details", ["WEB_SEARCH"], "Impersonation scams"),
                 ing("insurance_health_id", "Insurance Health ID", ["WEB_SEARCH"], "Policy fraud"),
-                ing("abha_number", "ABHA Number", ["WEB_SEARCH"], "Health ID misuse"),
+                // ing("abha_number", "ABHA Number", ["WEB_SEARCH"], "Health ID misuse"),
                 ing("vaccination_certificate", "Vaccination Certificate", ["WEB_SEARCH"], "Certificate misuse"),
                 ing("medical_history", "Medical History", ["WEB_SEARCH"], "Health data extortion"),
-                ing("mental_health_data", "Mental Health Data", ["WEB_SEARCH"], "Sensitive leak")
+                // ing("mental_health_data", "Mental Health Data", ["WEB_SEARCH"], "Sensitive leak")
             ]
         },
 
@@ -118,8 +118,8 @@ async function main() {
                 ing("office_address", "Office Address", ["WEB_SEARCH"], "Office-targeted scam"),
                 ing("live_location", "Live Location", ["SOCIAL_SEARCH"], "Real-time targeted scam"),
                 ing("travel_history", "Travel History", ["WEB_SEARCH"], "Trip-based scams"),
-                ing("checkin_location", "Check-in Location Data", ["SOCIAL_SEARCH"], "Location exploit"),
-                ing("ride_history", "Ride History (Uber/Ola)", ["WEB_SEARCH"], "Delivery/recon scams"),
+                // ing("checkin_location", "Check-in Location Data", ["SOCIAL_SEARCH"], "Location exploit"),
+                // ing("ride_history", "Ride History (Uber/Ola)", ["WEB_SEARCH"], "Delivery/recon scams"),
                 ing("maps_activity", "Maps Activity", ["WEB_SEARCH"], "Location profiling")
             ]
         },
@@ -133,7 +133,7 @@ async function main() {
                 ing("sms_logs", "SMS Logs", ["WEB_SEARCH"], "OTP exposure"),
                 ing("call_logs", "Call Logs", ["WEB_SEARCH"], "Phone social engineering"),
                 ing("otp_exposure", "OTP Exposure", ["WEB_SEARCH", "BREACH"], "OTP-based fraud"),
-                ing("chat_dump", "WhatsApp/Telegram Chats (dump)", ["WEB_SEARCH", "SOCIAL_SEARCH"], "Conversation extortion")
+                // ing("chat_dump", "WhatsApp/Telegram Chats (dump)", ["WEB_SEARCH", "SOCIAL_SEARCH"], "Conversation extortion")
             ]
         },
 
@@ -141,7 +141,7 @@ async function main() {
             key: "DIGITAL_FOOTPRINT_RISK",
             name: "Digital Footprint Risk",
             ingredients: [
-                ing("old_accounts_list", "Old Accounts List", ["BREACH", "WEB_SEARCH"], "Account reuse exploitation"),
+                // ing("old_accounts_list", "Old Accounts List", ["BREACH", "WEB_SEARCH"], "Account reuse exploitation"),
                 ing("app_signup_data", "App Signup Data", ["WEB_SEARCH"], "Profiling"),
                 ing("search_history", "Search History (indexed)", ["WEB_SEARCH"], "Profiling"),
                 ing("ip_address", "IP Address", ["BREACH", "WEB_SEARCH"], "Device tracking"),
@@ -180,7 +180,7 @@ async function main() {
                 ing("court_case_records", "Court Case Records", ["WEB_SEARCH"], "Fake legal notice / extortion"),
                 ing("fir_copy", "FIR Copy", ["WEB_SEARCH"], "Legal intimidation scams"),
                 ing("tax_returns", "Tax Returns", ["WEB_SEARCH"], "Tax fraud exploitation"),
-                ing("gst_data", "GST Data", ["WEB_SEARCH"], "Business compliance scams"),
+                // ing("gst_data", "GST Data", ["WEB_SEARCH"], "Business compliance scams"),
                 ing("driving_penalty_records", "Driving Penalty Records", ["WEB_SEARCH"], "RTO-related fraud")
             ]
         },
