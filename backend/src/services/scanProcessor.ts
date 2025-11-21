@@ -121,12 +121,168 @@ export async function processScanData(scanJson: any, userId: string) {
             console.warn("webPresenceGoogle parse error", e);
         }
 
+        // fallback mapping for common social/professional platforms
+        const platformFallbackMap: Record<string, string> = {
+            linkedin: "linkedin_id",
+            github: "github_profile",
+            instagram: "instagram_profile",
+            facebook: "facebook_profile",
+            twitter: "twitter_profile",
+            x: "twitter_profile",
+            youtube: "youtube_channel",
+            telegram: "telegram_username",
+            whatsapp: "whatsapp_number"
+        };
+
+        function fallbackPlatformToIngredient(platform?: string | null) {
+            if (!platform) return undefined;
+            const key = platform.toLowerCase().replace(/\s+/g, "");
+            return platformFallbackMap[key];
+        }
+
+        // helper to scan arbitrary text for common identifiers and create exposures
+        async function extractIdentifiersFromText(text: string | null | undefined, src: ExposureSource) {
+            if (!text) return;
+            try {
+                const t = text as string;
+
+                // phone: + and digits or 7-15 digit sequences
+                const phoneRegex = /(?:\+?\d[\d\s\-()]{6,}\d)/g;
+                const phones = t.match(phoneRegex) || [];
+                for (const p of phones) {
+                    await createExposureRecord("phone_number", { value: p.trim(), source: src, evidenceSnippet: t, confidence: 0.85 });
+                }
+
+                // PAN (India-like) pattern: 5 letters 4 digits 1 letter
+                const panRegex = /\b[a-zA-Z]{5}\d{4}[a-zA-Z]\b/g;
+                const pans = t.match(panRegex) || [];
+                for (const p of pans) {
+                    await createExposureRecord("pan_number", { value: p.trim(), source: src, evidenceSnippet: t, confidence: 0.9 });
+                }
+
+                // Aadhaar (12 digits)
+                const aadhaarRegex = /\b\d{12}\b/g;
+                const ads = t.match(aadhaarRegex) || [];
+                for (const a of ads) {
+                    await createExposureRecord("aadhaar_number", { value: a.trim(), source: src, evidenceSnippet: t, confidence: 0.9 });
+                }
+
+                // UPI id simple heuristic: something like name@bank
+                const upiRegex = /[a-zA-Z0-9.\-_]{2,}@[a-zA-Z]{2,}/g;
+                const upis = t.match(upiRegex) || [];
+                for (const u of upis) {
+                    await createExposureRecord("upi_id", { value: u.trim(), source: src, evidenceSnippet: t, confidence: 0.8 });
+                }
+            } catch (e) {
+                warn("identifier extraction error", e);
+            }
+        }
+
+        // Enhanced parsing of Google findings (with fallbacks and identifier extraction)
+        try {
+            const wp = scanJson?.results?.webPresenceGoogle?.data?.data;
+            if (wp && Array.isArray(wp.findings)) {
+                for (const f of wp.findings) {
+                    const platform = f.platform || f.platformType || "OTHER";
+                    const platformType = f.platformType || null;
+                    let ingredientKey = mapPlatformToIngredientKey(f.platform, platformType);
+                    if (!ingredientKey) ingredientKey = fallbackPlatformToIngredient(platform) ?? "web_mentions";
+
+                    createdExposures.push(await createExposureRecord(ingredientKey, {
+                        value: f.profileName ?? f.url ?? null,
+                        source: "WEB",
+                        evidenceUrl: f.url ?? null,
+                        evidenceSnippet: f.snippet ?? null,
+                        confidence: f.exposureLevel === "HIGH" ? 0.85 : (f.exposureLevel === "MEDIUM" ? 0.7 : 0.55)
+                    }));
+
+                    // also scan snippet/title/url for identifiers
+                    await extractIdentifiersFromText(f.snippet ?? f.title ?? f.url ?? null, "WEB");
+                }
+            }
+        } catch (e) {
+            warn("webPresenceGoogle enhanced parse error", e);
+        }
+
         // Web presence from Perplexity
         try {
-            const wp2 = scanJson?.results?.webPresencePerplexity;
-            if (wp2 && wp2.data && Array.isArray(wp2.data.findings)) {
+            const wp2 = scanJson?.results?.webPresencePerplexity?.data?.data ?? scanJson?.results?.webPresencePerplexity?.data ?? scanJson?.results?.webPresencePerplexity;
+            if (wp2 && typeof wp2 === "object") {
+                const sm = wp2.socialMediaAccounts as any[] | undefined;
+                const prof = wp2.professionalInfo as any | undefined;
+                const pers = wp2.personalInfo as any | undefined;
+                const others = wp2.otherOnlinePresence as any[] | undefined;
+
+                if (Array.isArray(sm)) {
+                    for (const acc of sm) {
+                        if (!acc || acc.hasAccount !== true) continue;
+                        const platformName = acc.platform ?? acc.platformName ?? acc.platform_type ?? acc.name ?? "other";
+                        let ingredientKey = mapPlatformToIngredientKey(platformName as string, null);
+                        if (!ingredientKey) ingredientKey = fallbackPlatformToIngredient(platformName) ?? "web_mentions";
+
+                        createdExposures.push(await createExposureRecord(ingredientKey, {
+                            value: acc.username ?? acc.url ?? acc.handle ?? acc.profileName ?? null,
+                            source: "AI",
+                            evidenceUrl: acc.url ?? null,
+                            evidenceSnippet: acc.username ?? acc.bio ?? null,
+                            confidence: 0.7
+                        }));
+                    }
+                }
+
+                if (prof) {
+                    if (prof.linkedinUrl) {
+                        await createExposureRecord("linkedin_id", { value: prof.linkedinUrl, source: "AI", evidenceUrl: prof.linkedinUrl, confidence: 0.85 });
+                    }
+                    if (prof.currentCompany) {
+                        await createExposureRecord("company_name", { value: prof.currentCompany, source: "AI", evidenceSnippet: prof.position ?? null, confidence: 0.7 });
+                    }
+                    if (prof.position) {
+                        await createExposureRecord("job_role_department", { value: prof.position, source: "AI", confidence: 0.65 });
+                    }
+                    if (prof.location) {
+                        await createExposureRecord("work_location", { value: prof.location, source: "AI", confidence: 0.6 });
+                    }
+                }
+
+                if (pers) {
+                    if (pers.name) {
+                        await createExposureRecord("full_name", { value: pers.name, source: "AI", confidence: 0.9 });
+                    }
+                    if (pers.phone) {
+                        await createExposureRecord("phone_number", { value: pers.phone, source: "AI", confidence: 0.9 });
+                    }
+                    if (pers.address) {
+                        await createExposureRecord("home_address", { value: pers.address, source: "AI", confidence: 0.8 });
+                    }
+                    if (Array.isArray(pers.education)) {
+                        for (const edu of pers.education) {
+                            // map simple heuristics
+                            const eduStr = (edu || "").toString();
+                            if (/college|university|institute/i.test(eduStr)) {
+                                await createExposureRecord("college_name", { value: eduStr, source: "AI", confidence: 0.7 });
+                            } else if (/school/i.test(eduStr)) {
+                                await createExposureRecord("school_name", { value: eduStr, source: "AI", confidence: 0.7 });
+                            } else {
+                                await createExposureRecord("web_mentions", { value: eduStr, source: "AI", confidence: 0.5 });
+                            }
+                        }
+                    }
+                }
+
+                if (Array.isArray(others)) {
+                    for (const o of others) {
+                        await createExposureRecord("web_mentions", { value: o, source: "AI", evidenceSnippet: o, confidence: 0.5 });
+                    }
+                }
+
+                // scan raw research text if present for identifiers
+                if (typeof wp2.rawResearch === "string") {
+                    await extractIdentifiersFromText(wp2.rawResearch, "AI");
+                }
+            } else if (wp2 && wp2.data && Array.isArray(wp2.data.findings)) {
+                // old shape: wp2.data.findings
                 for (const f of wp2.data.findings) {
-                    // generic mapping
                     createdExposures.push(await createExposureRecord("web_mentions", {
                         value: f.title ?? f.url ?? null,
                         source: "AI",
@@ -134,6 +290,7 @@ export async function processScanData(scanJson: any, userId: string) {
                         evidenceSnippet: f.snippet ?? null,
                         confidence: 0.5
                     }));
+                    await extractIdentifiersFromText(f.snippet ?? f.title ?? f.url ?? null, "AI");
                 }
             }
         } catch (e) {
@@ -240,7 +397,7 @@ export async function processScanData(scanJson: any, userId: string) {
         const totalIngredient = allIngredients.length;
         const ingredientFound = matchedKeysSet.size;
 
-        let dvsScore = ((ingredientFound / totalIngredient) * 100 ) + 30;
+        let dvsScore = ((ingredientFound / totalIngredient) * 100) + 30;
         dvsScore = Math.min(dvsScore, 100);
         dvsScore = Math.round(dvsScore * 100) / 100;
 
