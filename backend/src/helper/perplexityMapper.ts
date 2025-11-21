@@ -185,6 +185,7 @@ export function mapPerplexityResponse(
   perplexityData: any,
   source: ExposureSource = "AI"
 ): MappedExposure[] {
+  console.log("\n\n[perplexityMapper] mapping Perplexity data:", JSON.stringify(perplexityData).substring(0, 50) + (JSON.stringify(perplexityData).length > 50 ? "..." : ""));
   const exposures: MappedExposure[] = [];
 
   try {
@@ -385,6 +386,19 @@ export function mapPerplexityResponse(
           const textExposures = extractIdentifiersFromText(findingText, source);
           exposures.push(...textExposures);
         }
+      });
+    }
+
+    // Log summary if any ingredients were found
+    if (exposures.length > 0) {
+      const ingredientCounts = exposures.reduce((acc: Record<string, number>, e) => {
+        acc[e.ingredientKey] = (acc[e.ingredientKey] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
+
+      console.log("\n\n[perplexityMapper] found exposures:", {
+        total: exposures.length,
+        byIngredient: ingredientCounts,
       });
     }
 

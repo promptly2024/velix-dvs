@@ -150,6 +150,7 @@ export async function processScanData(scanJson: any, userId: string) {
         scanJson?.results?.webPresencePerplexity?.data ??
         scanJson?.results?.webPresencePerplexity;
 
+        log("\n\nPerplexity Data:", JSON.stringify(perplexityData, null, 2).slice(0, 100) + (JSON.stringify(perplexityData, null, 2).length > 100 ? "..." : ""));
       if (perplexityData) {
         const mappedExposures = mapPerplexityResponse(perplexityData, "AI");
         const processed = await processMappedExposures(mappedExposures);
@@ -185,7 +186,8 @@ export async function processScanData(scanJson: any, userId: string) {
     const matchedKeysSet = new Set<string>();
     for (const ue of userExposures) {
       const ingRecord = allIngredients.find(ing => ing.id === ue.ingredientId);
-      if (ingRecord) {
+        if (ingRecord) {
+          console.log(`\n\nUser exposure matched ingredient key: ${ingRecord.key}`);
         matchedKeysSet.add(ingRecord.key);
       }
     }
@@ -210,7 +212,7 @@ export async function processScanData(scanJson: any, userId: string) {
         });
       }
     }
-    log(`Prepared ${assessmentToUpsert.length} threat assessments to upsert`);
+    log(`\nPrepared ${assessmentToUpsert.length} threat assessments to upsert`);
 
     // Upsert threat assessments
     for (const a of assessmentToUpsert) {
@@ -227,7 +229,7 @@ export async function processScanData(scanJson: any, userId: string) {
             updatedAt: new Date()
           }
         });
-        log(`Updated threatAssessment id=${existing.id} threatId=${a.threatId} score=${a.score}`);
+        log(`\nUpdated threatAssessment id=${existing.id} threatId=${a.threatId} score=${a.score}`);
       } else {
         await prisma.threatAssessment.create({
           data: {
@@ -237,7 +239,7 @@ export async function processScanData(scanJson: any, userId: string) {
             matchedIngredients: a.matchedIngredients
           }
         });
-        log(`Created threatAssessment for threatId=${a.threatId} score=${a.score}`);
+        log(`\nCreated threatAssessment for threatId=${a.threatId} score=${a.score}`);
       }
     }
 
