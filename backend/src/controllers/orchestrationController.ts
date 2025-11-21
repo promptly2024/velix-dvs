@@ -300,6 +300,7 @@ export const runParallelSecurityScan = async (
       message: "Comprehensive security scan completed",
       overallStatus,
       analyzeData,
+      results: results,
       summary: {
         totalChecks,
         successfulChecks,
