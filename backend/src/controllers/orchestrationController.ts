@@ -59,7 +59,6 @@ const captureControllerResponse = async (
         resolve({ success: true, data });
         return mockRes;
       },
-
       send: (data: any) => {
         resolve({ success: true, data });
         return mockRes;
@@ -144,37 +143,28 @@ export const runParallelSecurityScan = async (
       webPresencePerplexityResult,
       webPresenceGoogleResult,
     ] = await Promise.allSettled([
-      // Email breach check
       email
         ? captureControllerResponse(checkEmail, emailReq)
         : Promise.resolve({
-          success: true,
-          data: { skipped: true, reason: "No email provided" },
-        }),
-
-      // Password check (only if password provided)
+            success: true,
+            data: { skipped: true, reason: "No email provided" },
+          }),
       password
         ? captureControllerResponse(checkPassword, passwordReq)
         : Promise.resolve({
-          success: true,
-          data: { skipped: true, reason: "No password provided" },
-        }),
-
-      // Document analysis (only if file provided)
+            success: true,
+            data: { skipped: true, reason: "No password provided" },
+          }),
       file
         ? captureControllerResponse(uploadDocumentHandler, documentReq)
         : Promise.resolve({
-          success: true,
-          data: { skipped: true, reason: "No document provided" },
-        }),
-
-      // Web presence scan with Perplexity
+            success: true,
+            data: { skipped: true, reason: "No document provided" },
+          }),
       captureControllerResponse(
         scanWebPresenceWithPerplexity,
         webPresencePerplexityReq
       ),
-
-      // Web presence scan with Google 
       captureControllerResponse(scanWebPresence, webPresenceGoogleReq),
     ]);
 
@@ -183,52 +173,52 @@ export const runParallelSecurityScan = async (
         emailResult.status === "fulfilled"
           ? emailResult.value
           : {
-            success: false,
-            error:
-              emailResult.status === "rejected"
-                ? emailResult.reason
-                : "Email breach check failed",
-          },
+              success: false,
+              error:
+                emailResult.status === "rejected"
+                  ? emailResult.reason
+                  : "Email breach check failed",
+            },
       passwordCheck:
         passwordResult.status === "fulfilled"
           ? passwordResult.value
           : {
-            success: false,
-            error:
-              passwordResult.status === "rejected"
-                ? passwordResult.reason
-                : "Password check failed",
-          },
+              success: false,
+              error:
+                passwordResult.status === "rejected"
+                  ? passwordResult.reason
+                  : "Password check failed",
+            },
       documentAnalysis:
         documentResult.status === "fulfilled"
           ? documentResult.value
           : {
-            success: false,
-            error:
-              documentResult.status === "rejected"
-                ? documentResult.reason
-                : "Document analysis failed",
-          },
+              success: false,
+              error:
+                documentResult.status === "rejected"
+                  ? documentResult.reason
+                  : "Document analysis failed",
+            },
       webPresencePerplexity:
         webPresencePerplexityResult.status === "fulfilled"
           ? webPresencePerplexityResult.value
           : {
-            success: false,
-            error:
-              webPresencePerplexityResult.status === "rejected"
-                ? webPresencePerplexityResult.reason
-                : "Perplexity web presence scan failed",
-          },
+              success: false,
+              error:
+                webPresencePerplexityResult.status === "rejected"
+                  ? webPresencePerplexityResult.reason
+                  : "Perplexity web presence scan failed",
+            },
       webPresenceGoogle:
         webPresenceGoogleResult.status === "fulfilled"
           ? webPresenceGoogleResult.value
           : {
-            success: false,
-            error:
-              webPresenceGoogleResult.status === "rejected"
-                ? webPresenceGoogleResult.reason
-                : "Google web presence scan failed",
-          },
+              success: false,
+              error:
+                webPresenceGoogleResult.status === "rejected"
+                  ? webPresenceGoogleResult.reason
+                  : "Google web presence scan failed",
+            },
     };
 
     const successfulChecks = Object.values(results).filter(
@@ -288,10 +278,10 @@ export const runParallelSecurityScan = async (
       successfulChecks === totalChecks - skippedChecks
         ? "completed"
         : successfulChecks > 0
-          ? "partial"
-          : "failed";
+        ? "partial"
+        : "failed";
 
-    const response: ComprehensiveScanResponse = {
+    const scanResponse: ComprehensiveScanResponse = {
       overallStatus,
       timestamp,
       results,
@@ -303,12 +293,20 @@ export const runParallelSecurityScan = async (
       },
     };
 
-    const analyzeData = await processScanData(response, userId);
+    const analyzeData = await processScanData(scanResponse, userId);
+
     return res.status(200).json({
-      analyzeData,
       success: true,
       message: "Comprehensive security scan completed",
-      ...response,
+      overallStatus,
+      analyzeData,
+      summary: {
+        totalChecks,
+        successfulChecks,
+        failedChecks: totalChecks - successfulChecks - skippedChecks,
+        criticalIssuesFound,
+      },
+      timestamp,
     });
   } catch (error: any) {
     console.error("Comprehensive scan error:", error);
@@ -316,6 +314,7 @@ export const runParallelSecurityScan = async (
       success: false,
       error: "Comprehensive scan failed",
       message: error.message,
+      timestamp: new Date().toISOString(),
     });
   }
 };

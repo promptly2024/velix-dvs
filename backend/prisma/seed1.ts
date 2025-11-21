@@ -191,8 +191,8 @@ const prisma = new PrismaClient(); function ing(key: string, name: string, sourc
                 }
             });
         }
-        console.log(`Finished seeding Threat Category: ${t.name} ✔`);
-    } console.log("All threats seeded ✅");
+        console.log(`Finished seeding Threat Category: ${t.name}`);
+    } console.log("All threats seeded");
 } main()
     .catch((e) => {
         console.error(e);
