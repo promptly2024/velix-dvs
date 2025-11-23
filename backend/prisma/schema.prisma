@@ -360,7 +360,7 @@ model LevelScene {
   @@unique([levelId, sceneNumber])
 }
 
-// Question/Query asked after a scene's media is viewed (Admin Uploaded - Static Content)
+// Question asked after a scene's media is viewed
 model SceneQuery {
   id              String        @id @default(uuid())
   sceneId         String

@@ -637,18 +637,32 @@
           "request": {
             "method": "POST",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
             ],
             "body": {
               "mode": "formdata",
               "formdata": [
-                {"key": "document", "type": "file", "src": "", "description": "PDF or image file"}
+                {
+                  "key": "document",
+                  "type": "file",
+                  "src": "",
+                  "description": "PDF or image file"
+                }
               ]
             },
             "url": {
               "raw": "{{baseUrl}}/document/upload",
-              "host": ["{{baseUrl}}"],
-              "path": ["document", "upload"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "document",
+                "upload"
+              ]
             },
             "description": "Upload document (PDF/image) with automatic OCR processing and extraction of PAN, Aadhaar, and credit card numbers using Gemini API."
           }
@@ -664,8 +678,15 @@
           "request": {
             "method": "POST",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text"},
-              {"key": "Content-Type", "value": "application/json"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
             ],
             "body": {
               "mode": "raw",
@@ -673,8 +694,13 @@
             },
             "url": {
               "raw": "{{baseUrl}}/perplexity-search/scan",
-              "host": ["{{baseUrl}}"],
-              "path": ["perplexity-search", "scan"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "perplexity-search",
+                "scan"
+              ]
             },
             "description": "Perform comprehensive OSINT research using Perplexity AI to discover social media accounts, professional info, and personal details associated with an email."
           }
@@ -684,18 +710,221 @@
           "request": {
             "method": "GET",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
             ],
             "url": {
               "raw": "{{baseUrl}}/perplexity-search/history?email=test@example.com",
-              "host": ["{{baseUrl}}"],
-              "path": ["perplexity-search", "history"],
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "perplexity-search",
+                "history"
+              ],
               "query": [
-                {"key": "email", "value": "test@example.com", "description": "Optional: Filter by email"}
+                {
+                  "key": "email",
+                  "value": "test@example.com",
+                  "description": "Optional: Filter by email"
+                }
               ]
             },
             "description": "Retrieve up to 10 most recent Perplexity-based web presence scans with complete findings and metadata."
           }
+        }
+      ]
+    },
+    {
+      "name": "Admin - Scenes",
+      "description": "Admin endpoints to manage level scenes (create, retrieve by level)",
+      "item": [
+        {
+          "name": "Create Scene (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\\n  \\\"levelId\\\": \\\"<level-uuid>\\\",\\n  \\\"sceneNumber\\\": 1,\\n  \\\"sceneType\\\": \\\"VIDEO\\\",\\n  \\\"mediaUrls\\\": [\\\"https://example.com/media/video.mp4\\\"]\\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/scene",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "scene"
+              ]
+            },
+            "description": "Create a new scene for a given level. Requires admin privileges.\n\n**Request Body:**\n- `levelId` (uuid, required)\n- `sceneNumber` (int, required)\n- `sceneType` (VIDEO|IMAGES|TEXT, required)\n- `mediaUrls` (array[string], required, max 10)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Scene by Level ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/scene/level/{{levelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "scene",
+                "level",
+                "{{levelId}}"
+              ]
+            },
+            "description": "Retrieve the first scene for a given level (ordered by `sceneNumber`). Requires admin privileges.\n\n**Path Parameters:**\n- `levelId` (uuid, required)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin - Levels",
+      "description": "Admin endpoints to manage levels (create, update, list, get by number)",
+      "item": [
+        {
+          "name": "Create Level (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"levelNumber\": 1,\n  \"title\": \"Introduction\",\n  \"description\": \"Getting started level\",\n  \"requiredScore\": 50,\n  \"basePoints\": 10\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/level",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "level"
+              ]
+            },
+            "description": "Create a new level.\n\n**Request Body:**\n- `levelNumber` (int, required)\n- `title` (string, required)\n- `description` (string, optional)\n- `requiredScore` (int, required, >=1)\n- `basePoints` (int, required, >=0)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Level (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"title\": \"Updated Title\",\n  \"description\": \"New description\",\n  \"requiredScore\": 75,\n  \"basePoints\": 15\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/level/{{levelNumber}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "level",
+                "{{levelNumber}}"
+              ]
+            },
+            "description": "Update an existing level by level number. Provide any subset of fields.\n\n**Path Parameter:** `levelNumber` (int)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get All Levels (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/levels",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "levels"
+              ]
+            },
+            "description": "Retrieve list of all levels (default pagination inside controller)."
+          },
+          "response": []
+        },
+        {
+          "name": "Get Level By Number (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/level/{{levelNumber}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "level",
+                "{{levelNumber}}"
+              ]
+            },
+            "description": "Retrieve a level by its level number.\n\n**Path Parameter:** `levelNumber` (int)"
+          },
+          "response": []
         }
       ]
     },
@@ -708,20 +937,44 @@
           "request": {
             "method": "POST",
             "header": [
-              {"key": "Authorization", "value": "Bearer {{authToken}}", "type": "text"}
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
             ],
             "body": {
               "mode": "formdata",
               "formdata": [
-                {"key": "email", "value": "test@example.com", "type": "text", "description": "Email to scan (required)"},
-                {"key": "password", "value": "password123", "type": "text", "description": "Password to check (optional)"},
-                {"key": "document", "type": "file", "src": "", "description": "Document to analyze (optional)"}
+                {
+                  "key": "email",
+                  "value": "test@example.com",
+                  "type": "text",
+                  "description": "Email to scan (required)"
+                },
+                {
+                  "key": "password",
+                  "value": "password123",
+                  "type": "text",
+                  "description": "Password to check (optional)"
+                },
+                {
+                  "key": "document",
+                  "type": "file",
+                  "src": "",
+                  "description": "Document to analyze (optional)"
+                }
               ]
             },
             "url": {
               "raw": "{{baseUrl}}/orchestration/comprehensive-scan",
-              "host": ["{{baseUrl}}"],
-              "path": ["orchestration", "comprehensive-scan"]
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "orchestration",
+                "comprehensive-scan"
+              ]
             },
             "description": "Execute parallel security scan combining email breach check, password validation, document OCR analysis, Perplexity OSINT, and Google web presence scanning."
           }
