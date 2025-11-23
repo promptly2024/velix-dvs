@@ -37,6 +37,42 @@ const SOCIAL_MEDIA_PLATFORM_MAP: Record<string, string> = {
   wa: "whatsapp_number",
 };
 
+// Validation helpers
+function isValidEmail(text: string): boolean {
+  if (!text || text.length > 320) return false;
+  const parts = text.split('@');
+  if (parts.length !== 2) return false;
+  const [local, domain] = parts;
+  if (!local || !domain) return false;
+  if (domain.indexOf('.') === -1) return false;
+  return true;
+}
+
+function isValidPhone(text: string): boolean {
+  const cleaned = text.replace(/[\s\-()]/g, '');
+  if (cleaned.length < 7 || cleaned.length > 15) return false;
+  const hasEnoughDigits = (cleaned.match(/\d/g) || []).length >= 7;
+  return hasEnoughDigits;
+}
+
+function isValidPAN(text: string): boolean {
+  if (text.length !== 10) return false;
+  const letters = text.substring(0, 5) + text.substring(9);
+  const digits = text.substring(5, 9);
+  return /^[A-Z]+$/.test(letters) && /^\d+$/.test(digits);
+}
+
+function isValidAadhaar(text: string): boolean {
+  return text.length === 12 && /^\d{12}$/.test(text);
+}
+
+function isValidCard(text: string): boolean {
+  const cleaned = text.replace(/[\s\-]/g, '');
+  if (cleaned.length !== 16) return false;
+  return /^\d{16}$/.test(cleaned);
+}
+
+// Extract and deduplicate identifiers
 export function extractIdentifiersFromText(
   text: string | null | undefined,
   source: ExposureSource
@@ -44,115 +80,141 @@ export function extractIdentifiersFromText(
   if (!text) return [];
 
   const exposures: MappedExposure[] = [];
-  const t = text as string;
+  const seen = new Set<string>(); 
 
   try {
+    // Extract emails
     const emailRegex = /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b/g;
-    const emails: string[] = t.match(emailRegex) || [];
-    emails.forEach((email) => {
-      exposures.push({
-        ingredientKey: "email_id",
-        exposureData: {
-          value: email.trim(),
-          source,
-          evidenceSnippet: t.substring(0, 200),
-          confidence: 0.9,
-        },
-      });
-    });
-
-    // Phone: + and digits or 7-15 digit sequences
-    const phoneRegex = /(?:\+?\d[\d\s\-()]{6,}\d)/g;
-    const phones: string[] = t.match(phoneRegex) || [];
-    phones.forEach((p) => {
-      exposures.push({
-        ingredientKey: "phone_number",
-        exposureData: {
-          value: p.trim(),
-          source,
-          evidenceSnippet: t.substring(0, 200),
-          confidence: 0.85,
-        },
-      });
-    });
-
-    // PAN (India) pattern: 5 letters 4 digits 1 letter
-    const panRegex = /\b[a-zA-Z]{5}\d{4}[a-zA-Z]\b/g;
-    const pans: string[] = t.match(panRegex) || [];
-    pans.forEach((p) => {
-      exposures.push({
-        ingredientKey: "pan_number",
-        exposureData: {
-          value: p.trim(),
-          source,
-          evidenceSnippet: t.substring(0, 200),
-          confidence: 0.9,
-        },
-      });
-    });
-
-    // Aadhaar (12 digits)
-    const aadhaarRegex = /\b\d{12}\b/g;
-    const aadhaars: string[] = t.match(aadhaarRegex) || [];
-    aadhaars.forEach((a) => {
-      exposures.push({
-        ingredientKey: "aadhaar_number",
-        exposureData: {
-          value: a.trim(),
-          source,
-          evidenceSnippet: t.substring(0, 200),
-          confidence: 0.9,
-        },
-      });
-    });
-
-    // UPI id: something like name@bank
-    const upiRegex = /[a-zA-Z0-9.\-_]{2,}@[a-zA-Z]{2,}/g;
-    const upis: string[] = t.match(upiRegex) || [];
-    upis.forEach((u) => {
-      // Filter out emails - now TypeScript knows both are string[]
-      if (!emails.includes(u)) {
+    const emailMatches = text.match(emailRegex) || [];
+    
+    for (const email of emailMatches) {
+      const normalized = email.trim().toLowerCase();
+      const key = `email:${normalized}`;
+      
+      if (!seen.has(key) && isValidEmail(normalized)) {
+        seen.add(key);
         exposures.push({
-          ingredientKey: "upi_id",
+          ingredientKey: "email_id",
           exposureData: {
-            value: u.trim(),
+            value: normalized,
             source,
-            evidenceSnippet: t.substring(0, 200),
-            confidence: 0.8,
+            evidenceSnippet: text.substring(0, 200),
+            confidence: 0.9,
           },
         });
       }
-    });
+    }
 
-    // Credit/Debit card (16 digits with optional spaces/dashes)
+    // Extract phones
+    const phoneRegex = /(?:\+?\d[\d\s\-()]{6,}\d)/g;
+    const phoneMatches = text.match(phoneRegex) || [];
+    
+    for (const phone of phoneMatches) {
+      const normalized = phone.trim();
+      const key = `phone:${normalized}`;
+      
+      if (!seen.has(key) && isValidPhone(normalized)) {
+        seen.add(key);
+        exposures.push({
+          ingredientKey: "phone_number",
+          exposureData: {
+            value: normalized,
+            source,
+            evidenceSnippet: text.substring(0, 200),
+            confidence: 0.85,
+          },
+        });
+      }
+    }
+
+    // Extract PAN
+    const panRegex = /\b[a-zA-Z]{5}\d{4}[a-zA-Z]\b/g;
+    const panMatches = text.match(panRegex) || [];
+    
+    for (const pan of panMatches) {
+      const normalized = pan.trim().toUpperCase();
+      const key = `pan:${normalized}`;
+      
+      if (!seen.has(key) && isValidPAN(normalized)) {
+        seen.add(key);
+        exposures.push({
+          ingredientKey: "pan_number",
+          exposureData: {
+            value: normalized,
+            source,
+            evidenceSnippet: text.substring(0, 200),
+            confidence: 0.9,
+          },
+        });
+      }
+    }
+
+    // Extract Aadhaar
+    const aadhaarRegex = /\b\d{12}\b/g;
+    const aadhaarMatches = text.match(aadhaarRegex) || [];
+    
+    for (const aadhaar of aadhaarMatches) {
+      const normalized = aadhaar.trim();
+      const key = `aadhaar:${normalized}`;
+      
+      if (!seen.has(key) && isValidAadhaar(normalized)) {
+        seen.add(key);
+        exposures.push({
+          ingredientKey: "aadhaar_number",
+          exposureData: {
+            value: normalized,
+            source,
+            evidenceSnippet: text.substring(0, 200),
+            confidence: 0.9,
+          },
+        });
+      }
+    }
+
+    // Extract credit/debit cards
     const cardRegex = /\b\d{4}[\s-]?\d{4}[\s-]?\d{4}[\s-]?\d{4}\b/g;
-    const cards: string[] = t.match(cardRegex) || [];
-    cards.forEach((card) => {
-      exposures.push({
-        ingredientKey: "credit_card_number",
-        exposureData: {
-          value: card.trim(),
-          source,
-          evidenceSnippet: t.substring(0, 200),
-          confidence: 0.75,
-        },
-      });
-    });
+    const cardMatches = text.match(cardRegex) || [];
+    
+    for (const card of cardMatches) {
+      const normalized = card.trim();
+      const key = `card:${normalized}`;
+      
+      if (!seen.has(key) && isValidCard(normalized)) {
+        seen.add(key);
+        exposures.push({
+          ingredientKey: "credit_card_number",
+          exposureData: {
+            value: normalized,
+            source,
+            evidenceSnippet: text.substring(0, 200),
+            confidence: 0.75,
+          },
+        });
+      }
+    }
 
-    // Address patterns
+    // Extract addresses (only if unique and valid)
     const addressRegex = /\b\d+[\w\s,.-]+(street|st|road|rd|avenue|ave|lane|ln|drive|dr|apartment|apt|floor|flat)\b/gi;
-    const addresses: string[] = t.match(addressRegex) || [];
-    addresses.forEach((addr) => {
-      exposures.push({
-        ingredientKey: "home_address",
-        exposureData: {
-          value: addr.trim(),
-          source,
-          evidenceSnippet: t.substring(0, 200),
-          confidence: 0.65,
-        },
-      });
-    });
+    const addressMatches = text.match(addressRegex) || [];
+    
+    for (const addr of addressMatches) {
+      const normalized = addr.trim();
+      const key = `address:${normalized.toLowerCase()}`;
+      
+      if (!seen.has(key) && normalized.length > 10) {
+        seen.add(key);
+        exposures.push({
+          ingredientKey: "home_address",
+          exposureData: {
+            value: normalized,
+            source,
+            evidenceSnippet: text.substring(0, 200),
+            confidence: 0.65,
+          },
+        });
+      }
+    }
+
   } catch (e) {
     console.warn("Identifier extraction error:", e);
   }
@@ -166,7 +228,6 @@ export function fallbackPlatformToIngredient(platform?: string | null): string |
   return SOCIAL_MEDIA_PLATFORM_MAP[key];
 }
 
-// education information to ingredient key
 export function mapEducationToIngredient(educationText: string): string {
   const text = educationText.toLowerCase();
 
@@ -179,66 +240,63 @@ export function mapEducationToIngredient(educationText: string): string {
   return "web_mentions";
 }
 
-
-// function to map Perplexity web presence response to exposures
 export function mapPerplexityResponse(
   perplexityData: any,
   source: ExposureSource = "AI"
 ): MappedExposure[] {
-  console.log("\n\n[perplexityMapper] mapping Perplexity data:", JSON.stringify(perplexityData).substring(0, 50) + (JSON.stringify(perplexityData).length > 50 ? "..." : ""));
+  console.log("[perplexityMapper] Mapping Perplexity data");
   const exposures: MappedExposure[] = [];
+  const seen = new Set<string>();
 
   try {
-    const wp =
-      perplexityData?.data?.data ??
-      perplexityData?.data ??
-      perplexityData;
+    const wp = perplexityData?.data?.data ?? perplexityData?.data ?? perplexityData;
 
     if (!wp || typeof wp !== "object") {
       return exposures;
     }
 
-    // 1. Map Social Media Accounts
+    // Helper to add unique exposure
+    const addExposure = (key: string, exposure: MappedExposure) => {
+      const uniqueKey = `${exposure.ingredientKey}:${exposure.exposureData.value}`;
+      if (!seen.has(uniqueKey)) {
+        seen.add(uniqueKey);
+        exposures.push(exposure);
+      }
+    };
+
+    // 1. Map Social Media
     const socialMedia = wp.socialMedia ?? wp.socialMediaAccounts ?? [];
     if (Array.isArray(socialMedia)) {
       socialMedia.forEach((account: any) => {
         if (!account || account.hasAccount !== true) return;
 
-        const platform =
-          account.platform ??
-          account.platformName ??
-          account.platform_type ??
-          account.name ??
-          "other";
-
+        const platform = account.platform ?? account.platformName ?? "other";
         let ingredientKey = fallbackPlatformToIngredient(platform);
         if (!ingredientKey) {
           ingredientKey = "web_mentions";
         }
 
-        exposures.push({
-          ingredientKey,
-          exposureData: {
-            value:
-              account.username ??
-              account.url ??
-              account.handle ??
-              account.profileName ??
-              null,
-            source,
-            evidenceUrl: account.url ?? null,
-            evidenceSnippet: account.username ?? account.bio ?? null,
-            confidence: 0.7,
-          },
-        });
+        const value = account.username ?? account.url ?? account.profileName ?? null;
+        if (value) {
+          addExposure(`social:${platform}`, {
+            ingredientKey,
+            exposureData: {
+              value,
+              source,
+              evidenceUrl: account.url ?? null,
+              evidenceSnippet: account.username ?? account.bio ?? null,
+              confidence: 0.7,
+            },
+          });
+        }
       });
     }
 
-    // 2. Map Professional Information
+    // 2. Map Professional Info
     const professional = wp.professional ?? wp.professionalInfo ?? {};
     if (professional && typeof professional === "object") {
       if (professional.linkedinUrl) {
-        exposures.push({
+        addExposure("prof:linkedin", {
           ingredientKey: "linkedin_id",
           exposureData: {
             value: professional.linkedinUrl,
@@ -250,7 +308,7 @@ export function mapPerplexityResponse(
       }
 
       if (professional.currentCompany) {
-        exposures.push({
+        addExposure("prof:company", {
           ingredientKey: "company_name",
           exposureData: {
             value: professional.currentCompany,
@@ -262,7 +320,7 @@ export function mapPerplexityResponse(
       }
 
       if (professional.position) {
-        exposures.push({
+        addExposure("prof:position", {
           ingredientKey: "job_role_department",
           exposureData: {
             value: professional.position,
@@ -273,7 +331,7 @@ export function mapPerplexityResponse(
       }
 
       if (professional.location) {
-        exposures.push({
+        addExposure("prof:location", {
           ingredientKey: "work_location",
           exposureData: {
             value: professional.location,
@@ -284,11 +342,11 @@ export function mapPerplexityResponse(
       }
     }
 
-    // 3. Map Personal Information
+    // 3. Map Personal Info
     const personal = wp.personal ?? wp.personalInfo ?? {};
     if (personal && typeof personal === "object") {
       if (personal.name) {
-        exposures.push({
+        addExposure("personal:name", {
           ingredientKey: "full_name",
           exposureData: {
             value: personal.name,
@@ -299,7 +357,7 @@ export function mapPerplexityResponse(
       }
 
       if (personal.phone) {
-        exposures.push({
+        addExposure("personal:phone", {
           ingredientKey: "phone_number",
           exposureData: {
             value: personal.phone,
@@ -310,7 +368,7 @@ export function mapPerplexityResponse(
       }
 
       if (personal.address) {
-        exposures.push({
+        addExposure("personal:address", {
           ingredientKey: "home_address",
           exposureData: {
             value: personal.address,
@@ -320,15 +378,14 @@ export function mapPerplexityResponse(
         });
       }
 
-      // Map education
       const education = personal.education ?? [];
       if (Array.isArray(education)) {
-        education.forEach((edu: any) => {
+        education.forEach((edu: any, idx: number) => {
           const eduStr = (edu || "").toString();
           if (!eduStr) return;
 
           const ingredientKey = mapEducationToIngredient(eduStr);
-          exposures.push({
+          addExposure(`edu:${idx}`, {
             ingredientKey,
             exposureData: {
               value: eduStr,
@@ -340,13 +397,13 @@ export function mapPerplexityResponse(
       }
     }
 
-    // 4. Map Other Online Presence
+    // 4. Map Other Presence
     const otherPresence = wp.otherPresence ?? wp.otherOnlinePresence ?? [];
     if (Array.isArray(otherPresence)) {
-      otherPresence.forEach((item: any) => {
+      otherPresence.forEach((item: any, idx: number) => {
         const value = typeof item === "string" ? item : item?.url ?? item?.name;
         if (value) {
-          exposures.push({
+          addExposure(`other:${idx}`, {
             ingredientKey: "web_mentions",
             exposureData: {
               value,
@@ -359,49 +416,16 @@ export function mapPerplexityResponse(
       });
     }
 
-    // 5. Extract identifiers from raw research text
+    // 5. Extract from raw research (ONLY ONCE, deduplicated)
     if (typeof wp.rawResearch === "string") {
       const textExposures = extractIdentifiersFromText(wp.rawResearch, source);
-      exposures.push(...textExposures);
-    }
-
-    // 6. Handle old format with findings array
-    if (wp.data && Array.isArray(wp.data.findings)) {
-      wp.data.findings.forEach((finding: any) => {
-        exposures.push({
-          ingredientKey: "web_mentions",
-          exposureData: {
-            value: finding.title ?? finding.url ?? null,
-            source,
-            evidenceUrl: finding.url ?? null,
-            evidenceSnippet: finding.snippet ?? null,
-            confidence: 0.5,
-          },
-        });
-
-        // Extract identifiers from finding content
-        const findingText =
-          finding.snippet ?? finding.title ?? finding.url ?? null;
-        if (findingText) {
-          const textExposures = extractIdentifiersFromText(findingText, source);
-          exposures.push(...textExposures);
-        }
+      textExposures.forEach((exp) => {
+        addExposure(`raw:${exp.ingredientKey}:${exp.exposureData.value}`, exp);
       });
     }
 
-    // Log summary if any ingredients were found
-    if (exposures.length > 0) {
-      const ingredientCounts = exposures.reduce((acc: Record<string, number>, e) => {
-        acc[e.ingredientKey] = (acc[e.ingredientKey] || 0) + 1;
-        return acc;
-      }, {} as Record<string, number>);
-
-      console.log("\n\n[perplexityMapper] found exposures:", {
-        total: exposures.length,
-        byIngredient: ingredientCounts,
-      });
-    }
-
+    console.log(`[perplexityMapper] Total unique exposures: ${exposures.length}`);
+    
     return exposures;
   } catch (error) {
     console.error("Error mapping Perplexity response:", error);
