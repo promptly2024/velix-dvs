@@ -62,6 +62,7 @@ model User {
   digitalFootprints      DigitalFootprint[]
   UserIngredientExposure UserIngredientExposure[]
   ThreatAssessment       ThreatAssessment[]
+  levelAttempts          UserLevelAttempt[]
 }
 
 model Document {
@@ -321,4 +322,112 @@ enum ExposureSource {
   WEB
   SOCIAL
   AI
+}
+
+// GAMIFIED MODE
+// ENUMS for the Gamified Mode
+enum SceneMediaType {
+  VIDEO
+  IMAGES
+  TEXT
+}
+
+// Level structure (Admin Uploaded)
+model GameLevel {
+  id               String             @id @default(uuid())
+  levelNumber      Int                @unique // e.g., 1, 2, 3...
+  title            String // e.g "OTP Theft"
+  description      String?
+  requiredScore    Int // Score needed to pass the level
+  basePoints       Int // Base points awarded for passing
+  scenes           LevelScene[] // Scenes within this level
+  UserLevelAttempt UserLevelAttempt[]
+
+  @@index([levelNumber])
+}
+
+// Scene/Step within a Level (Admin Uploaded)
+// Represents the scenario (video/images) the user sees before questions
+model LevelScene {
+  id          String         @id @default(uuid())
+  levelId     String
+  sceneNumber Int // Sequence in which the scene appears
+  sceneType   SceneMediaType @default(VIDEO) // VIDEO, IMAGES, TEXT
+  mediaUrls   String[] // Array of media URLs (video or images)
+  queries     SceneQuery[] // One or more questions/queries after the visual
+  level       GameLevel      @relation(fields: [levelId], references: [id])
+
+  @@unique([levelId, sceneNumber])
+}
+
+// Question/Query asked after a scene's media is viewed (Admin Uploaded - Static Content)
+model SceneQuery {
+  id              String        @id @default(uuid())
+  sceneId         String
+  queryNumber     Int // Sequence of the question within the scene
+  questionText    String        @db.Text
+  learningOutcome String?       @db.Text // Key takeaway (e.g., "OTP kisi ko nahi dena chahiye")
+  hintText        String?       @db.Text // Hint available on request
+  options         QueryOption[]
+
+  scene        LevelScene     @relation(fields: [sceneId], references: [id])
+  UserResponse UserResponse[] // Linking user response to the specific query
+
+  @@unique([sceneId, queryNumber])
+}
+
+// Options for a specific SceneQuery (Admin Uploaded)
+model QueryOption {
+  id            String  @id @default(uuid())
+  queryId       String
+  optionText    String
+  isCorrect     Boolean @default(false)
+  pointsAwarded Int     @default(0) // Points for selecting this option
+
+  query SceneQuery @relation(fields: [queryId], references: [id])
+
+  @@index([queryId])
+}
+
+// User Progress/Attempts (User specific - Dynamic Data)
+model UserLevelAttempt {
+  id            String  @id @default(uuid())
+  userId        String
+  levelId       String
+  attemptNumber Int     @default(1)
+  isPassed      Boolean @default(false)
+  scoreAchieved Int     @default(0)
+
+  // Tracks current position for IN_PROGRESS status
+  currentSceneNumber Int @default(1)
+  currentQueryNumber Int @default(1)
+
+  startedAt  DateTime  @default(now())
+  finishedAt DateTime?
+
+  user      User           @relation(fields: [userId], references: [id])
+  level     GameLevel      @relation(fields: [levelId], references: [id])
+  responses UserResponse[]
+
+  @@unique([userId, levelId, attemptNumber])
+  @@index([userId, levelId])
+}
+
+// Model to track the specific response given by a user in an attempt
+model UserResponse {
+  id               String  @id @default(uuid())
+  attemptId        String
+  queryId          String
+  selectedOptionId String
+  isCorrect        Boolean
+  pointsEarned     Int
+
+  isFirstTry Boolean @default(true)
+
+  respondedAt DateTime @default(now())
+
+  attempt UserLevelAttempt @relation(fields: [attemptId], references: [id])
+  query   SceneQuery       @relation(fields: [queryId], references: [id])
+
+  @@unique([attemptId, queryId])
 }

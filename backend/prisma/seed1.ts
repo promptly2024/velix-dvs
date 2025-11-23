@@ -1,7 +1,11 @@
 import { PrismaClient, DetectionSource } from "@prisma/client";
-const prisma = new PrismaClient(); function ing(key: string, name: string, sources: DetectionSource[], scam: string) {
+const prisma = new PrismaClient();
+
+function ing(key: string, name: string, sources: DetectionSource[], scam: string) {
     return { key, name, detectionSources: sources, possibleScam: scam };
-} async function main() {
+}
+
+async function main() {
     console.log("Seeding FULL 13 Threat Categories + Ingredients...");
 
     const threats = [{
@@ -194,7 +198,9 @@ const prisma = new PrismaClient(); function ing(key: string, name: string, sourc
         }
         console.log(`Finished seeding Threat Category: ${t.name}`);
     } console.log("All threats seeded");
-} main()
+}
+
+main()
     .catch((e) => {
         console.error(e);
     })
