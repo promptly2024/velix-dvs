@@ -1392,6 +1392,347 @@
           }
         }
       ]
+    },
+    {
+      "name": "User - Game",
+      "description": "User endpoints to play levels, submit answers, track progress, and view leaderboards",
+      "item": [
+        {
+          "name": "Get All Levels",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/game/levels",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "game", "levels"]
+            },
+            "description": "Get all available levels with user's progress status for each.\n\n**Authentication:** Required (Bearer Token)\n\n**Response includes:**\n- Level details (number, title, description, scores)\n- User status: NOT_STARTED, IN_PROGRESS, FAILED, COMPLETED\n- Action flags: canStart, canRetry, canContinue\n- Best score and total attempts\n- Active attempt ID (if exists)\n\n**Responses:**\n- `200`: Levels retrieved successfully\n- `401`: Unauthorized"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Level Details",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/game/levels/:levelNumber",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "game", "levels", ":levelNumber"],
+              "variable": [
+                {
+                  "key": "levelNumber",
+                  "value": "1",
+                  "description": "Level number to get details for"
+                }
+              ]
+            },
+            "description": "Get detailed information about a specific level including scenes structure and user's previous attempts.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required): Level number (e.g., 1, 2, 3)\n\n**Responses:**\n- `200`: Level details retrieved\n- `401`: Unauthorized\n- `404`: Level not found"
+          },
+          "response": []
+        },
+        {
+          "name": "Start Level",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set(\"attemptId\", jsonData.data.id);",
+                  "    pm.test(\"Attempt ID saved\", function () {",
+                  "        pm.expect(jsonData.data.id).to.be.a('string');",
+                  "    });",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/game/levels/:levelNumber/start",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "game", "levels", ":levelNumber", "start"],
+              "variable": [
+                {
+                  "key": "levelNumber",
+                  "value": "1",
+                  "description": "Level number to start"
+                }
+              ]
+            },
+            "description": "Start a new attempt for a level that hasn't been attempted yet.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required)\n\n**Restrictions:**\n- Can only start levels never attempted before\n- Cannot start if level already completed\n- Cannot start if active attempt exists (returns existing attempt)\n\n**Responses:**\n- `201`: Level attempt started successfully\n- `200`: Active attempt already exists\n- `400`: Level already attempted or completed\n- `401`: Unauthorized\n- `404`: Level not found\n\n**Note:** The attemptId is automatically saved to environment."
+          },
+          "response": []
+        },
+        {
+          "name": "Retry Level",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const jsonData = pm.response.json();",
+                  "    pm.environment.set(\"attemptId\", jsonData.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/game/levels/:levelNumber/retry",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "game", "levels", ":levelNumber", "retry"],
+              "variable": [
+                {
+                  "key": "levelNumber",
+                  "value": "1",
+                  "description": "Level number to retry"
+                }
+              ]
+            },
+            "description": "Retry a failed level attempt.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required)\n\n**Restrictions:**\n- Can only retry failed levels\n- Cannot retry completed (passed) levels\n- Cannot retry if no previous attempts exist\n- Cannot retry if active attempt exists\n\n**Responses:**\n- `201`: Retry attempt created\n- `200`: Active attempt exists\n- `400`: Invalid retry conditions\n- `401`: Unauthorized\n- `404`: Level not found"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current Scene",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/game/attempt/:attemptId/scene",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "game", "attempt", ":attemptId", "scene"],
+              "variable": [
+                {
+                  "key": "attemptId",
+                  "value": "{{attemptId}}",
+                  "description": "UUID of the active attempt"
+                }
+              ]
+            },
+            "description": "Get the current scene and query for an ongoing attempt.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required): Active attempt ID\n\n**Returns:**\n- Attempt details (current position, score)\n- Scene data (type, media URLs)\n- Current query (question text, options)\n- Options for answering (without correct answer revealed)\n\n**Responses:**\n- `200`: Scene retrieved successfully\n- `400`: Attempt already completed\n- `401`: Unauthorized\n- `404`: Attempt or scene not found"
+          },
+          "response": []
+        },
+        {
+          "name": "Submit Answer",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"selectedOptionId\": \"<option-uuid>\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/user/game/attempt/:attemptId/answer",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "game", "attempt", ":attemptId", "answer"],
+              "variable": [
+                {
+                  "key": "attemptId",
+                  "value": "{{attemptId}}",
+                  "description": "UUID of the active attempt"
+                }
+              ]
+            },
+            "description": "Submit an answer for the current query.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required)\n\n**Request Body:**\n- `selectedOptionId` (uuid, required): ID of the chosen option\n\n**Response includes:**\n- Whether answer is correct\n- Points earned\n- Learning outcome explanation\n- Should advance to next query/scene\n- Is level complete flag\n- Updated total score\n\n**Behavior:**\n- Only first correct answer awards points\n- Can retry wrong answers (no points on retry)\n- Auto-advances on correct answer\n- Tracks attempt progress\n\n**Responses:**\n- `200`: Answer submitted successfully\n- `400`: Invalid option or attempt completed\n- `401`: Unauthorized\n- `404`: Attempt or option not found"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Hint",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/game/attempt/:attemptId/hint",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "game", "attempt", ":attemptId", "hint"],
+              "variable": [
+                {
+                  "key": "attemptId",
+                  "value": "{{attemptId}}",
+                  "description": "UUID of the active attempt"
+                }
+              ]
+            },
+            "description": "Request a hint for the current query.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required)\n\n**Returns:**\n- Hint text for current question (if available)\n\n**Responses:**\n- `200`: Hint retrieved\n- `401`: Unauthorized\n- `404`: Attempt or query not found"
+          },
+          "response": []
+        },
+        {
+          "name": "Complete Level",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/game/attempt/:attemptId/complete",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "game", "attempt", ":attemptId", "complete"],
+              "variable": [
+                {
+                  "key": "attemptId",
+                  "value": "{{attemptId}}",
+                  "description": "UUID of the active attempt"
+                }
+              ]
+            },
+            "description": "Complete the level attempt and calculate pass/fail status.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required)\n\n**Completion Criteria:**\n- All queries must be answered\n- Score >= requiredScore to pass\n\n**Response includes:**\n- isPassed flag\n- Final score\n- Required score\n- Complete attempt details\n\n**Responses:**\n- `200`: Level completed (pass or fail)\n- `400`: Not all questions answered or already completed\n- `401`: Unauthorized\n- `404`: Attempt not found"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Overall Progress",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/progress",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "progress"]
+            },
+            "description": "Get user's overall game progress across all levels.\n\n**Authentication:** Required (Bearer Token)\n\n**Returns:**\n- Total levels count\n- Completed levels count\n- Total score across all levels\n- Per-level breakdown:\n  - Level number and title\n  - Total attempts\n  - Pass status\n  - Best score\n  - Required score\n\n**Responses:**\n- `200`: Progress retrieved successfully\n- `401`: Unauthorized"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Level History",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/progress/level/:levelNumber/history",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "progress", "level", ":levelNumber", "history"],
+              "variable": [
+                {
+                  "key": "levelNumber",
+                  "value": "1",
+                  "description": "Level number to get history for"
+                }
+              ]
+            },
+            "description": "Get detailed attempt history for a specific level.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required)\n\n**Returns:**\n- Level details\n- All attempts with:\n  - Attempt number\n  - Pass/fail status\n  - Score achieved\n  - Start/finish timestamps\n  - All responses with query details\n\n**Responses:**\n- `200`: History retrieved successfully\n- `401`: Unauthorized\n- `404`: Level not found"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Game Statistics",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/progress/stats",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "progress", "stats"]
+            },
+            "description": "Get comprehensive game statistics.\n\n**Authentication:** Required (Bearer Token)\n\n**Returns:**\n- Total attempts (all levels)\n- Passed attempts count\n- Failed attempts count\n- Total responses (answers submitted)\n- Correct responses count\n- Accuracy percentage\n- Total points earned\n\n**Responses:**\n- `200`: Statistics retrieved\n- `401`: Unauthorized"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Current Active Attempt",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/user/progress/current",
+              "host": ["{{baseUrl}}"],
+              "path": ["user", "progress", "current"]
+            },
+            "description": "Get the current active (unfinished) attempt if one exists.\n\n**Authentication:** Required (Bearer Token)\n\n**Returns:**\n- Active attempt details including:\n  - Attempt ID\n  - Level information\n  - Current position (scene/query numbers)\n  - Current score\n  - Start timestamp\n\n**Responses:**\n- `200`: Returns active attempt or null\n- `401`: Unauthorized"
+          },
+          "response": []
+        }
+      ]
     }
   ],
   "auth": {
