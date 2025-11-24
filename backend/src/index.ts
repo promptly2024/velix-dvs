@@ -17,8 +17,7 @@ import { documentRouter } from "./routes/document.route";
 import { perplexitySearchRouter } from "./routes/perplexity.route";
 import { orchestrationRouter } from "./routes/orchestration.route";
 import { shutdownWorkers, startWorkers } from "./workers";
-import { adminLevelRouter } from "./routes/admin/level.routes";
-import { adminSceneRouter } from "./routes/admin/scene.routes";
+import { adminRouter } from "./routes/admin/admin.routes";
 
 const app = express();
 startWorkers();
@@ -64,8 +63,7 @@ app.use("/api/v1/web-presence", webPresenceRouter);
 app.use("/api/v1/document", documentRouter);
 app.use("/api/v1/perplexity-search", perplexitySearchRouter);
 app.use("/api/v1/orchestration", orchestrationRouter);
-app.use("/api/v1/admin/level", adminLevelRouter);
-app.use("/api/v1/admin/scene", adminSceneRouter);
+app.use("/api/v1/admin", adminRouter);
 
 
 

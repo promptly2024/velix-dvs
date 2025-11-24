@@ -740,7 +740,7 @@
     },
     {
       "name": "Admin - Scenes",
-      "description": "Admin endpoints to manage level scenes (create, retrieve by level)",
+      "description": "Admin endpoints to manage level scenes (create, retrieve, update, delete by level)",
       "item": [
         {
           "name": "Create Scene (Admin)",
@@ -759,7 +759,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\\n  \\\"levelId\\\": \\\"<level-uuid>\\\",\\n  \\\"sceneNumber\\\": 1,\\n  \\\"sceneType\\\": \\\"VIDEO\\\",\\n  \\\"mediaUrls\\\": [\\\"https://example.com/media/video.mp4\\\"]\\n}"
+              "raw": "{\n  \"levelId\": \"<level-uuid>\",\n  \"sceneNumber\": 1,\n  \"sceneType\": \"VIDEO\",\n  \"mediaUrls\": [\"https://example.com/media/video.mp4\"]\n}"
             },
             "url": {
               "raw": "{{baseUrl}}/admin/scene",
@@ -799,6 +799,67 @@
               ]
             },
             "description": "Retrieve the first scene for a given level (ordered by `sceneNumber`). Requires admin privileges.\n\n**Path Parameters:**\n- `levelId` (uuid, required)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Scene (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sceneType\": \"IMAGES\",\n  \"mediaUrls\": [\"https://example.com/media/img1.png\", \"https://example.com/media/img2.png\"]\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/scene/{{sceneId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "scene",
+                "{{sceneId}}"
+              ]
+            },
+            "description": "Update an existing scene by scene ID. Provide any subset of fields.\n\n**Path Parameter:**\n- `sceneId` (uuid, required)\n\n**Request Body (all optional):**\n- `levelId` (uuid)\n- `sceneNumber` (int)\n- `sceneType` (VIDEO|IMAGES|TEXT)\n- `mediaUrls` (array[string], max 10)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Scene by Level ID (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/scene/level/{{levelId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "scene",
+                "level",
+                "{{levelId}}"
+              ]
+            },
+            "description": "Delete the scene associated with a level.\n\n**Path Parameter:**\n- `levelId` (uuid, required)"
           },
           "response": []
         }
@@ -923,6 +984,132 @@
               ]
             },
             "description": "Retrieve a level by its level number.\n\n**Path Parameter:** `levelNumber` (int)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin - Options",
+      "description": "Admin endpoints to manage scene query options (create, get by query, update, delete)",
+      "item": [
+        {
+          "name": "Create Option (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"queryId\": \"<query-uuid>\",\n  \"optionText\": \"Option A\",\n  \"isCorrect\": true,\n  \"pointsAwarded\": 10\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/option",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "option"
+              ]
+            },
+            "description": "Create a new option for a scene query.\n\n**Request Body:**\n- `queryId` (uuid, required)\n- `optionText` (string, required, min 1 char)\n- `isCorrect` (boolean, required)\n- `pointsAwarded` (int, required)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Options by Query ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/option/query/{{queryId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "option",
+                "query",
+                "{{queryId}}"
+              ]
+            },
+            "description": "Retrieve all options for a specific query.\n\n**Path Parameter:**\n- `queryId` (uuid, required)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Option (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"optionText\": \"Updated Option A\",\n  \"isCorrect\": false,\n  \"pointsAwarded\": 5\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/option/{{optionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "option",
+                "{{optionId}}"
+              ]
+            },
+            "description": "Update an existing option by option ID. Provide any subset of fields.\n\n**Path Parameter:**\n- `optionId` (uuid, required)\n\n**Request Body (all optional):**\n- `queryId` (uuid)\n- `optionText` (string)\n- `isCorrect` (boolean)\n- `pointsAwarded` (int)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Option (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{authToken}}",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/option/{{optionId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "admin",
+                "option",
+                "{{optionId}}"
+              ]
+            },
+            "description": "Delete an option by option ID.\n\n**Path Parameter:**\n- `optionId` (uuid, required)"
           },
           "response": []
         }

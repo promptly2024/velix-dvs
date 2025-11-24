@@ -4,14 +4,14 @@ import { createLevelController, getAllLevelsController, getLevelByNumberControll
 
 export const adminLevelRouter = Router();
 
-// base url: http://localhost:3001/api/v1/admin
+// base url: http://localhost:3001/api/v1/admin/level
 
 // POST level
-adminLevelRouter.post("/level", asyncHandler(createLevelController));
+adminLevelRouter.post("/", asyncHandler(createLevelController));
 
 // PUT level
-adminLevelRouter.put("/level/:levelNumber", asyncHandler(updateLevelController));
-
+adminLevelRouter.put("/:levelNumber", asyncHandler(updateLevelController));
+    
 // GET levels
-adminLevelRouter.get("/levels", asyncHandler(getAllLevelsController));
-adminLevelRouter.get("/level/:levelNumber", asyncHandler(getLevelByNumberController));
+adminLevelRouter.get("/", asyncHandler(getAllLevelsController));
+adminLevelRouter.get("/:levelNumber", asyncHandler(getLevelByNumberController));
