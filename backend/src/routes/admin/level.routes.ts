@@ -5,7 +5,7 @@ import { requireAdminAuth } from "../../middlewares/requireAuth";
 
 export const adminLevelRouter = Router();
 
-// base url: http://localhost:3001/api/v1/admin/level
+// base url: http://localhost:3001/api/v1/admin/levels
 
 // POST level
 adminLevelRouter.post("/",requireAdminAuth, asyncHandler(createLevelController));

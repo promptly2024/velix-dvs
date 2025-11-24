@@ -13,6 +13,7 @@ const createSceneSchema = z.object({
 export const createSceneController = async (req: Request, res: Response) => {
     try {
         const sceneData = createSceneSchema.parse(req.body);
+        
         const existingLevel = await levelService.getLevelById(sceneData.levelId);
         if (!existingLevel) {
             return res.status(404).json({ success: false, message: 'Level not found' });

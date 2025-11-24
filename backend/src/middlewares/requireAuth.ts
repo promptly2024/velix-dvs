@@ -32,8 +32,6 @@ const getTokenFromRequest = (req: Request): string | null => {
   return null;
 };
 
-
-
 export const requireAuth = (req: Request, res: Response, next: NextFunction) => {
   const token = getTokenFromRequest(req);
   if (!token) return res.status(401).json({ error: "Unauthorized access. No token provided." });
@@ -64,6 +62,7 @@ export const requireAdminAuth = (req: Request, res: Response, next: NextFunction
     const role = decoded.role as "ADMIN" | "USER" | undefined;
 
     if (role !== "ADMIN") {
+      console.error(`requireAdminAuth error: User role is ${role}, admin access required.`);
       return res.status(403).json({ error: "Forbidden. Admin privileges required." });
     }
 

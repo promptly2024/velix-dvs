@@ -889,12 +889,13 @@
               "raw": "{\n  \"levelNumber\": 1,\n  \"title\": \"Introduction\",\n  \"description\": \"Getting started level\",\n  \"requiredScore\": 50,\n  \"basePoints\": 10\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/admin/level",
+              "raw": "{{baseUrl}}/admin/levels/level",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admin",
+                "levels",
                 "level"
               ]
             },
@@ -922,12 +923,13 @@
               "raw": "{\n  \"title\": \"Updated Title\",\n  \"description\": \"New description\",\n  \"requiredScore\": 75,\n  \"basePoints\": 15\n}"
             },
             "url": {
-              "raw": "{{baseUrl}}/admin/level/{{levelNumber}}",
+              "raw": "{{baseUrl}}/admin/levels/level/{{levelNumber}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admin",
+                "levels",
                 "level",
                 "{{levelNumber}}"
               ]
@@ -948,12 +950,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/admin/levels",
+              "raw": "{{baseUrl}}/admin/levels/levels",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admin",
+                "levels",
                 "levels"
               ]
             },
@@ -973,12 +976,13 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/admin/level/{{levelNumber}}",
+              "raw": "{{baseUrl}}/admin/levels/level/{{levelNumber}}",
               "host": [
                 "{{baseUrl}}"
               ],
               "path": [
                 "admin",
+                "levels",
                 "level",
                 "{{levelNumber}}"
               ]
@@ -1110,6 +1114,198 @@
               ]
             },
             "description": "Delete an option by option ID.\n\n**Path Parameter:**\n- `optionId` (uuid, required)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin - Questions",
+      "description": "Admin endpoints to manage scene questions (create, get by ID, get by scene, update, delete)",
+      "item": [
+        {
+          "name": "Create Question (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sceneId\": \"<scene-uuid>\",\n  \"queryNumber\": 1,\n  \"questionText\": \"What is the main concept?\",\n  \"learningOutcome\": \"Understand the basics\",\n  \"hintText\": \"Think about the introduction\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/question",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "question"]
+            },
+            "description": "Create a new question for a scene.\n\n**Request Body:**\n- `sceneId` (uuid, required)\n- `queryNumber` (int, optional, >=1)\n- `questionText` (string, required)\n- `learningOutcome` (string, optional)\n- `hintText` (string, optional)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Question by ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "question", "{{questionId}}"]
+            },
+            "description": "Retrieve a question by its ID.\n\n**Path Parameter:**\n- `questionId` (uuid, required)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Questions by Scene ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/question/scene/{{sceneId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "question", "scene", "{{sceneId}}"]
+            },
+            "description": "Retrieve all questions for a specific scene.\n\n**Path Parameter:**\n- `sceneId` (uuid, required)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Question (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionText\": \"Updated question text\",\n  \"learningOutcome\": \"Updated learning outcome\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "question", "{{questionId}}"]
+            },
+            "description": "Update an existing question by question ID. Provide any subset of fields.\n\n**Path Parameter:**\n- `questionId` (uuid, required)\n\n**Request Body (all optional):**\n- `sceneId` (uuid)\n- `queryNumber` (int, >=1)\n- `questionText` (string)\n- `learningOutcome` (string)\n- `hintText` (string)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Question (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "question", "{{questionId}}"]
+            },
+            "description": "Delete a question by question ID.\n\n**Path Parameter:**\n- `questionId` (uuid, required)"
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Admin - Questions",
+      "description": "Admin endpoints to manage scene questions (create, get by ID, get by scene, update, delete)",
+      "item": [
+        {
+          "name": "Create Question (Admin)",
+          "request": {
+            "method": "POST",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"sceneId\": \"<scene-uuid>\",\n  \"queryNumber\": 1,\n  \"questionText\": \"What is the main concept?\",\n  \"learningOutcome\": \"Understand the basics\",\n  \"hintText\": \"Think about the introduction\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/question",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "question"]
+            },
+            "description": "Create a new question for a scene.\n\n**Request Body:**\n- `sceneId` (uuid, required)\n- `queryNumber` (int, optional, >=1)\n- `questionText` (string, required)\n- `learningOutcome` (string, optional)\n- `hintText` (string, optional)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Question by ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "question", "{{questionId}}"]
+            },
+            "description": "Retrieve a question by its ID.\n\n**Path Parameter:**\n- `questionId` (uuid, required)"
+          },
+          "response": []
+        },
+        {
+          "name": "Get Questions by Scene ID (Admin)",
+          "request": {
+            "method": "GET",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/question/scene/{{sceneId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "question", "scene", "{{sceneId}}"]
+            },
+            "description": "Retrieve all questions for a specific scene.\n\n**Path Parameter:**\n- `sceneId` (uuid, required)"
+          },
+          "response": []
+        },
+        {
+          "name": "Update Question (Admin)",
+          "request": {
+            "method": "PUT",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" },
+              { "key": "Content-Type", "value": "application/json" }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"questionText\": \"Updated question text\",\n  \"learningOutcome\": \"Updated learning outcome\"\n}"
+            },
+            "url": {
+              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "question", "{{questionId}}"]
+            },
+            "description": "Update an existing question by question ID. Provide any subset of fields.\n\n**Path Parameter:**\n- `questionId` (uuid, required)\n\n**Request Body (all optional):**\n- `sceneId` (uuid)\n- `queryNumber` (int, >=1)\n- `questionText` (string)\n- `learningOutcome` (string)\n- `hintText` (string)"
+          },
+          "response": []
+        },
+        {
+          "name": "Delete Question (Admin)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "question", "{{questionId}}"]
+            },
+            "description": "Delete a question by question ID.\n\n**Path Parameter:**\n- `questionId` (uuid, required)"
           },
           "response": []
         }

@@ -5,8 +5,7 @@ import { JWT_SECRET } from '../config/env';
 export const hashPassword = async (password: string) => await bcrypt.hash(password, 10);
 export const comparePassword = async (password: string, hash: string) => await bcrypt.compare(password, hash);
 export const generateToken = (userId: string, name: string, email: string, role: 'ADMIN' | 'USER') => {
-
-    jwt.sign({
+    return jwt.sign({
         userId,
         name,
         email,

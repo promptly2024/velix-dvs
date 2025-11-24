@@ -13,6 +13,11 @@ const createLevelSchema = z.object({
 export const createLevelController = async (req: Request, res: Response) => {
     try {
         const levelData = createLevelSchema.parse(req.body);
+        // check if level with same levelNumber exists
+        const existingLevel = await levelService.getLevelByNumber(levelData.levelNumber);
+        if (existingLevel) {
+            return res.status(409).json({ success: false, message: 'Level with this level number already exists' });
+        }
         const newLevel = await levelService.createLevel(levelData);
         res.status(201).json({ success: true, data: newLevel });
     } catch (error) {
