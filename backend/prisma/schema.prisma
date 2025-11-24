@@ -40,12 +40,18 @@ enum GameStatus {
   COMPLETED
 }
 
+enum UserRole {
+  ADMIN
+  USER
+}
+
 model User {
   id                     String                   @id @default(uuid())
   email                  String                   @unique
   password               String
   username               String                   @unique
   profileImage           String?
+  role                   UserRole                 @default(USER)
   otp                    String?
   otpExpiry              DateTime?
   emailVerified          Boolean                  @default(false)
