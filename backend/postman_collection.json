@@ -740,10 +740,10 @@
     },
     {
       "name": "Admin - Scenes",
-      "description": "Admin endpoints to manage level scenes (create, retrieve, update, delete by level)",
+      "description": "Admin endpoints to manage level scenes with file upload support (images, videos, or text content)",
       "item": [
         {
-          "name": "Create Scene (Admin)",
+          "name": "Create Scene with Files (Admin)",
           "request": {
             "method": "POST",
             "header": [
@@ -751,27 +751,55 @@
                 "key": "Authorization",
                 "value": "Bearer {{authToken}}",
                 "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"levelId\": \"<level-uuid>\",\n  \"sceneNumber\": 1,\n  \"sceneType\": \"VIDEO\",\n  \"mediaUrls\": [\"https://example.com/media/video.mp4\"]\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "levelId",
+                  "value": "<level-uuid>",
+                  "type": "text",
+                  "description": "UUID of the level (required)"
+                },
+                {
+                  "key": "sceneNumber",
+                  "value": "1",
+                  "type": "text",
+                  "description": "Scene sequence number (required)"
+                },
+                {
+                  "key": "sceneType",
+                  "value": "IMAGES",
+                  "type": "text",
+                  "description": "Type: VIDEO, IMAGES, or TEXT (required)"
+                },
+                {
+                  "key": "media",
+                  "type": "file",
+                  "src": "",
+                  "description": "Image/video files (max 10 for IMAGES, 1 for VIDEO)"
+                },
+                {
+                  "key": "media",
+                  "type": "file",
+                  "src": "",
+                  "description": "Additional image file (for IMAGES type only)"
+                },
+                {
+                  "key": "textContent",
+                  "value": "Your text content here",
+                  "type": "text",
+                  "description": "Text content (only for TEXT scene type)"
+                }
+              ]
             },
             "url": {
               "raw": "{{baseUrl}}/admin/scene",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "scene"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "scene"]
             },
-            "description": "Create a new scene for a given level. Requires admin privileges.\n\n**Request Body:**\n- `levelId` (uuid, required)\n- `sceneNumber` (int, required)\n- `sceneType` (VIDEO|IMAGES|TEXT, required)\n- `mediaUrls` (array[string], required, max 10)"
+            "description": "Create a new scene with file uploads. Uploads files to Cloudinary and stores URLs in database.\n\n**Authentication:** Required (Admin Bearer Token)\n\n**Form Data Fields:**\n- `levelId` (string, required): UUID of the level\n- `sceneNumber` (string, required): Scene sequence number\n- `sceneType` (string, required): VIDEO | IMAGES | TEXT\n- `media` (file, conditional): \n  - For VIDEO: Exactly 1 video file required\n  - For IMAGES: 1-10 image files required\n  - For TEXT: No files needed\n- `textContent` (string, optional): Required only for TEXT scene type\n\n**Supported File Types:**\n- Images: .jpg, .jpeg, .png, .gif, .webp, .bmp\n- Videos: .mp4, .avi, .mov, .wmv, .flv, .mkv, .webm\n\n**File Size Limits:**\n- Max file size: 100MB per file\n\n**Responses:**\n- `201`: Scene created successfully with Cloudinary URLs\n- `400`: Validation error or invalid files\n- `401`: Unauthorized\n- `404`: Level not found"
           },
           "response": []
         },
@@ -788,22 +816,15 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/admin/scene/level/{{levelId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "scene",
-                "level",
-                "{{levelId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "scene", "level", "{{levelId}}"]
             },
-            "description": "Retrieve the first scene for a given level (ordered by `sceneNumber`). Requires admin privileges.\n\n**Path Parameters:**\n- `levelId` (uuid, required)"
+            "description": "Retrieve the first scene for a given level (ordered by `sceneNumber`).\n\n**Authentication:** Required (Admin Bearer Token)\n\n**Path Parameters:**\n- `levelId` (uuid, required)\n\n**Responses:**\n- `200`: Scene retrieved successfully\n- `401`: Unauthorized\n- `404`: Scene not found"
           },
           "response": []
         },
         {
-          "name": "Update Scene (Admin)",
+          "name": "Update Scene with Files (Admin)",
           "request": {
             "method": "PUT",
             "header": [
@@ -811,28 +832,43 @@
                 "key": "Authorization",
                 "value": "Bearer {{authToken}}",
                 "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
               }
             ],
             "body": {
-              "mode": "raw",
-              "raw": "{\n  \"sceneType\": \"IMAGES\",\n  \"mediaUrls\": [\"https://example.com/media/img1.png\", \"https://example.com/media/img2.png\"]\n}"
+              "mode": "formdata",
+              "formdata": [
+                {
+                  "key": "sceneNumber",
+                  "value": "2",
+                  "type": "text",
+                  "description": "Updated scene number (optional)"
+                },
+                {
+                  "key": "sceneType",
+                  "value": "VIDEO",
+                  "type": "text",
+                  "description": "Updated scene type (optional)"
+                },
+                {
+                  "key": "media",
+                  "type": "file",
+                  "src": "",
+                  "description": "New media files to replace existing (optional)"
+                },
+                {
+                  "key": "textContent",
+                  "value": "Updated text content",
+                  "type": "text",
+                  "description": "Updated text (only for TEXT type)"
+                }
+              ]
             },
             "url": {
               "raw": "{{baseUrl}}/admin/scene/{{sceneId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "scene",
-                "{{sceneId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "scene", "{{sceneId}}"]
             },
-            "description": "Update an existing scene by scene ID. Provide any subset of fields.\n\n**Path Parameter:**\n- `sceneId` (uuid, required)\n\n**Request Body (all optional):**\n- `levelId` (uuid)\n- `sceneNumber` (int)\n- `sceneType` (VIDEO|IMAGES|TEXT)\n- `mediaUrls` (array[string], max 10)"
+            "description": "Update an existing scene. Can update metadata and/or upload new files.\n\n**Authentication:** Required (Admin Bearer Token)\n\n**Path Parameter:**\n- `sceneId` (uuid, required)\n\n**Form Data (all optional):**\n- `sceneNumber` (string): New scene number\n- `sceneType` (string): VIDEO | IMAGES | TEXT\n- `media` (file): New files to upload (replaces existing)\n- `textContent` (string): New text content (TEXT type only)\n\n**Responses:**\n- `200`: Scene updated successfully\n- `400`: Validation error\n- `401`: Unauthorized\n- `404`: Scene not found"
           },
           "response": []
         },
@@ -849,17 +885,10 @@
             ],
             "url": {
               "raw": "{{baseUrl}}/admin/scene/level/{{levelId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "scene",
-                "level",
-                "{{levelId}}"
-              ]
+              "host": ["{{baseUrl}}"],
+              "path": ["admin", "scene", "level", "{{levelId}}"]
             },
-            "description": "Delete the scene associated with a level.\n\n**Path Parameter:**\n- `levelId` (uuid, required)"
+            "description": "Delete the scene associated with a level.\n\n**Authentication:** Required (Admin Bearer Token)\n\n**Path Parameter:**\n- `levelId` (uuid, required)\n\n**Responses:**\n- `200`: Scene deleted successfully\n- `401`: Unauthorized\n- `404`: Scene not found"
           },
           "response": []
         }

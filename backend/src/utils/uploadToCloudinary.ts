@@ -106,3 +106,59 @@ export const uploadToCloudinary = (
         uploadStream.end(fileBuffer);
     });
 };
+
+export const uploadMediaToCloudinary = (
+    fileBuffer: Buffer,
+    fileName: string,
+    folder: string = "scenes",
+    maxSizeInBytes: number = 100 * 1024 * 1024
+): Promise<{
+    secureUrl: string;
+    publicId: string;
+    resourceType: string;
+}> => {
+    return new Promise((resolve, reject) => {
+        if (!fileBuffer || !Buffer.isBuffer(fileBuffer)) {
+            return reject(new Error("Invalid file buffer"));
+        }
+
+        const ext = path.extname(fileName).toLowerCase();
+        const videoExts = [".mp4", ".avi", ".mov", ".wmv", ".flv", ".mkv", ".webm"];
+        const imageExts = [".jpg", ".jpeg", ".png", ".gif", ".webp", ".bmp"];
+
+        let resourceType: "image" | "video" = "image";
+        if (videoExts.includes(ext)) {
+            resourceType = "video";
+        } else if (!imageExts.includes(ext)) {
+            return reject(new Error(`Unsupported file type: ${ext}`));
+        }
+
+        const safeName = fileName.replace(/\s+/g, "_").replace(/[^a-zA-Z0-9_\-\.]/g, "").replace(ext, "");
+        const publicId = `${Date.now()}_${safeName}`;
+
+        const uploadStream = cloudinary.uploader.upload_stream(
+            {
+                folder,
+                public_id: publicId,
+                resource_type: resourceType,
+            },
+            (error, result) => {
+                if (error) {
+                    console.error("Cloudinary upload error:", error);
+                    return reject(error);
+                }
+                if (!result) {
+                    return reject(new Error("Cloudinary upload failed"));
+                }
+
+                resolve({
+                    secureUrl: result.secure_url,
+                    publicId: result.public_id,
+                    resourceType: result.resource_type,
+                });
+            }
+        );
+
+        uploadStream.end(fileBuffer);
+    });
+};
