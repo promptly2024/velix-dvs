@@ -1,17 +1,18 @@
 import { Router } from "express";
 import asyncHandler from "../../utils/asyncHandler";
 import { createLevelController, getAllLevelsController, getLevelByNumberController, updateLevelController } from "../../controllers/admin/level.controller";
+import { requireAdminAuth } from "../../middlewares/requireAuth";
 
 export const adminLevelRouter = Router();
 
 // base url: http://localhost:3001/api/v1/admin/level
 
 // POST level
-adminLevelRouter.post("/", asyncHandler(createLevelController));
+adminLevelRouter.post("/",requireAdminAuth, asyncHandler(createLevelController));
 
 // PUT level
-adminLevelRouter.put("/:levelNumber", asyncHandler(updateLevelController));
+adminLevelRouter.put("/:levelNumber", requireAdminAuth, asyncHandler(updateLevelController));
     
 // GET levels
-adminLevelRouter.get("/", asyncHandler(getAllLevelsController));
-adminLevelRouter.get("/:levelNumber", asyncHandler(getLevelByNumberController));
+adminLevelRouter.get("/", requireAdminAuth, asyncHandler(getAllLevelsController));
+adminLevelRouter.get("/:levelNumber", requireAdminAuth, asyncHandler(getLevelByNumberController));

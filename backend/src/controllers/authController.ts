@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { hashPassword, comparePassword, generateToken, verifyToken } from "../utils/authUtils";
+import { hashPassword, comparePassword, generateToken } from "../utils/authUtils";
 import { prisma } from "../lib/prisma";
 import crypto from "crypto"
 import { sendOTPEmail } from "../utils/emailService";
@@ -59,7 +59,7 @@ export const loginUser = async (req: Request, res: Response) => {
   const valid = await comparePassword(password, user.password);
   if (!valid) return res.status(401).json({ error: "Invalid credentials." });
 
-  const token = generateToken(user.id);
+  const token = generateToken(user.id, user.username, user.email, user.role);
   return res.status(200).json({ user: { id: user.id, email: user.email, username: user.username }, token });
 };
 
