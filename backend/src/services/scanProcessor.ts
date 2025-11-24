@@ -12,6 +12,11 @@ export async function processScanData(scanJson: any, userId: string) {
   log("Processing scan data for user:", userId);
   
   try {
+    const deletedCount = await prisma.userIngredientExposure.deleteMany({
+      where: { userId }
+    });
+    log(`Deleted ${deletedCount.count} old exposures for fresh scan`);
+
     const allIngredients = await prisma.threatIngredient.findMany({
       include: { threatCategory: true }
     });
@@ -24,13 +29,23 @@ export async function processScanData(scanJson: any, userId: string) {
     }
     log(`Built ingredient key map with ${ingredientKeyMap.size} entries`);
 
-    // Helper to create an exposure record
+    const seenExposures = new Set<string>();
+
     async function createExposureRecord(ingredientKey: string, opts: ExposureData) {
       const map = ingredientKeyMap.get(ingredientKey);
       if (!map) {
         warn(`No ThreatIngredient found (NOT SEEDED) for key: ${ingredientKey}`);
         return null;
       }
+
+      const uniqueKey = `${ingredientKey}:${opts.value || 'null'}:${opts.source}`;
+      
+      if (seenExposures.has(uniqueKey)) {
+        log(`Skipping duplicate exposure: ${uniqueKey}`);
+        return null;
+      }
+      
+      seenExposures.add(uniqueKey);
       
       const result = await prisma.userIngredientExposure.create({
         data: {
@@ -45,11 +60,10 @@ export async function processScanData(scanJson: any, userId: string) {
         }
       });
       
-      log(`Created exposure record id=${result.id} ingredient=${ingredientKey} (mapped:${map.id}) source=${opts.source}`);
+      log(`Created exposure id=${result.id} ingredient=${ingredientKey} source=${opts.source}`);
       return result;
     }
 
-    // Helper to process mapped exposures
     async function processMappedExposures(mappedExposures: MappedExposure[]) {
       const results = [];
       for (const mapped of mappedExposures) {
@@ -61,7 +75,6 @@ export async function processScanData(scanJson: any, userId: string) {
       return results;
     }
 
-    // Extract ingredient exposures from scanJson
     const createdExposures: Array<any> = [];
 
     // 1. Process Email Breach Data
@@ -101,7 +114,7 @@ export async function processScanData(scanJson: any, userId: string) {
         createdExposures.push(await createExposureRecord("password_leak", {
           value: null,
           source: "BREACH",
-          evidenceSnippet: `pwnCount=${pw.pwnCount}; severity=${pw.severity || pw.severity}`,
+          evidenceSnippet: `pwnCount=${pw.pwnCount}; severity=${pw.severity}`,
           confidence: pw.pwnCount > 1000 ? 0.95 : 0.85
         }));
       }
@@ -129,14 +142,6 @@ export async function processScanData(scanJson: any, userId: string) {
             evidenceSnippet: f.snippet ?? null,
             confidence: f.exposureLevel === "HIGH" ? 0.85 : (f.exposureLevel === "MEDIUM" ? 0.7 : 0.55)
           }));
-
-          // Extract identifiers from snippet/title/url
-          const textExposures = extractIdentifiersFromText(
-            f.snippet ?? f.title ?? f.url ?? null, 
-            "WEB"
-          );
-          const processed = await processMappedExposures(textExposures);
-          createdExposures.push(...processed);
         }
       }
     } catch (e) {
@@ -150,12 +155,13 @@ export async function processScanData(scanJson: any, userId: string) {
         scanJson?.results?.webPresencePerplexity?.data ??
         scanJson?.results?.webPresencePerplexity;
 
-        log("\n\nPerplexity Data:", JSON.stringify(perplexityData, null, 2).slice(0, 100) + (JSON.stringify(perplexityData, null, 2).length > 100 ? "..." : ""));
+      log("Perplexity Data:", JSON.stringify(perplexityData).substring(0, 100) + "...");
+      
       if (perplexityData) {
         const mappedExposures = mapPerplexityResponse(perplexityData, "AI");
         const processed = await processMappedExposures(mappedExposures);
         createdExposures.push(...processed);
-        log(`Processed ${processed.length} exposures from Perplexity`);
+        log(`Processed ${processed.length} unique exposures from Perplexity`);
       }
     } catch (e) {
       warn("webPresencePerplexity parse error", e);
@@ -163,7 +169,8 @@ export async function processScanData(scanJson: any, userId: string) {
 
     // Filter out null values
     const created = createdExposures.filter(Boolean);
-    log(`Total exposures created: ${created.length}`);
+    log(`Total unique exposures created: ${created.length}`);
+    log(`Deduplication prevented ${seenExposures.size - created.length} duplicates`);
 
     // Load threat categories
     const threat = await prisma.threatCategory.findMany({
@@ -176,21 +183,23 @@ export async function processScanData(scanJson: any, userId: string) {
       matchedIngredients: string[];
     }> = [];
 
-    // Get all user exposures
+    // Get all user exposures (should be fresh now)
     const userExposures = await prisma.userIngredientExposure.findMany({
       where: { userId },
       include: { ingredient: true }
     });
 
-    // Build matched keys set
+    // Build matched keys set (now with unique keys only)
     const matchedKeysSet = new Set<string>();
     for (const ue of userExposures) {
       const ingRecord = allIngredients.find(ing => ing.id === ue.ingredientId);
-        if (ingRecord) {
-          console.log(`\n\nUser exposure matched ingredient key: ${ingRecord.key}`);
+      if (ingRecord) {
         matchedKeysSet.add(ingRecord.key);
       }
     }
+
+    log(`Unique ingredient keys found: ${matchedKeysSet.size}`);
+    log(`Ingredient keys: ${Array.from(matchedKeysSet).join(', ')}`);
 
     // Calculate threat scores
     for (const t of threat) {
@@ -212,35 +221,24 @@ export async function processScanData(scanJson: any, userId: string) {
         });
       }
     }
-    log(`\nPrepared ${assessmentToUpsert.length} threat assessments to upsert`);
+    log(`Prepared ${assessmentToUpsert.length} threat assessments to upsert`);
+
+    await prisma.threatAssessment.deleteMany({
+      where: { userId }
+    });
+    log(`Deleted old threat assessments for fresh calculation`);
 
     // Upsert threat assessments
     for (const a of assessmentToUpsert) {
-      const existing = await prisma.threatAssessment.findFirst({
-        where: { userId, threatId: a.threatId }
+      await prisma.threatAssessment.create({
+        data: {
+          userId,
+          threatId: a.threatId,
+          score: a.score,
+          matchedIngredients: a.matchedIngredients
+        }
       });
-      
-      if (existing) {
-        await prisma.threatAssessment.update({
-          where: { id: existing.id },
-          data: {
-            score: a.score,
-            matchedIngredients: a.matchedIngredients,
-            updatedAt: new Date()
-          }
-        });
-        log(`\nUpdated threatAssessment id=${existing.id} threatId=${a.threatId} score=${a.score}`);
-      } else {
-        await prisma.threatAssessment.create({
-          data: {
-            userId,
-            threatId: a.threatId,
-            score: a.score,
-            matchedIngredients: a.matchedIngredients
-          }
-        });
-        log(`\nCreated threatAssessment for threatId=${a.threatId} score=${a.score}`);
-      }
+      log(`Created threatAssessment threatId=${a.threatId} score=${a.score}`);
     }
 
     // Get final assessments
@@ -276,8 +274,8 @@ export async function processScanData(scanJson: any, userId: string) {
     dvsScore = Math.min(dvsScore, 100);
     dvsScore = Math.round(dvsScore * 100) / 100;
 
-    log(`DVS Score calculated: ${dvsScore}% (${ingredientFound}/${totalIngredient} ingredients found)`);
-    log("Scan data processing complete for user:", userId);
+    log(`DVS Score: ${dvsScore}% (${ingredientFound}/${totalIngredient} ingredients)`);
+    log("Scan data processing complete");
 
     return {
       success: true,
@@ -297,7 +295,7 @@ export async function processScanData(scanJson: any, userId: string) {
     };
   } catch (err) {
     const errMsg = (err as any)?.message ?? String(err);
-    error("Error processing scan data for user:", userId, errMsg);
+    error("Error processing scan data:", userId, errMsg);
     throw err;
   }
 }
