@@ -1,0 +1,1304 @@
+{
+    "info": {
+        "name": "Veilix (DVS) Documentation",
+        "description": "Complete API documentation for the Veilix DVS Backend. Base URL: http://localhost:3001/api/v1",
+        "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+    },
+    "item": [
+        {
+            "name": "Authentication",
+            "item": [
+                {
+                    "name": "Register User",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"SecurePassword123!\",\n  \"username\": \"testuser\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/register",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "register"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Verify Email",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test@example.com\",\n  \"otp\": \"123456\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/verify-email",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "verify-email"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Login",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/login",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "login"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Profile",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/profile",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "profile"
+                            ]
+                        }
+                    },
+                    "response": []
+                },
+                {
+                    "name": "Update Profile",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"newemail@example.com\",\n  \"username\": \"newusername\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/update",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "update"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Reset Password",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test@example.com\",\n  \"newPassword\": \"NewSecurePassword456!\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/reset-password",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "reset-password"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Logout",
+                    "request": {
+                        "method": "POST",
+                        "url": {
+                            "raw": "{{baseUrl}}/auth/logout",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "auth",
+                                "logout"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Authentication endpoints"
+        },
+        {
+            "name": "Breach Checking",
+            "item": [
+                {
+                    "name": "Check Email for Breaches",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/breach/check-email",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "breach",
+                                "check-email"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Check Password for Breaches",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"password\": \"password123\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/breach/check-password",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "breach",
+                                "check-password"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Batch Check Emails",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"emails\": [\n    \"a@example.com\",\n    \"b@example.com\"\n  ]\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/breach/check-batch",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "breach",
+                                "check-batch"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Email/password breach checks"
+        },
+        {
+            "name": "Web Presence Scanning",
+            "item": [
+                {
+                    "name": "Scan Web Presence",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/web-presence/scan",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "web-presence",
+                                "scan"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Analyze Digital Footprint",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/web-presence/analyze",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "web-presence",
+                                "analyze"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Web presence & footprint analysis"
+        },
+        {
+            "name": "Reports & History",
+            "item": [
+                {
+                    "name": "Get Breach History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/breach/history?limit=20&offset=0",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "breach",
+                                "history"
+                            ],
+                            "query": [
+                                {
+                                    "key": "limit",
+                                    "value": "20"
+                                },
+                                {
+                                    "key": "offset",
+                                    "value": "0"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Generate Breach Report",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/breach/report/{{lastCheckId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "breach",
+                                "report",
+                                "{{lastCheckId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Statistics",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/breach/stats",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "breach",
+                                "stats"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Historical breach data & statistics"
+        },
+        {
+            "name": "Documents",
+            "item": [
+                {
+                    "name": "Upload Document",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "document",
+                                    "type": "file",
+                                    "src": ""
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/document/upload",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "document",
+                                "upload"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Document OCR & extraction"
+        },
+        {
+            "name": "Perplexity Search",
+            "item": [
+                {
+                    "name": "Scan Web Presence with Perplexity",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"email\": \"test@example.com\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/perplexity-search/scan",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "perplexity-search",
+                                "scan"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Perplexity Scan History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/perplexity-search/history?email=test@example.com",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "perplexity-search",
+                                "history"
+                            ],
+                            "query": [
+                                {
+                                    "key": "email",
+                                    "value": "test@example.com"
+                                }
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "OSINT via Perplexity AI"
+        },
+        {
+            "name": "Admin - Levels",
+            "item": [
+                {
+                    "name": "Create Level (Admin)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"levelNumber\": 1,\n  \"title\": \"Intro\",\n  \"requiredScore\": 50,\n  \"basePoints\": 10\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/levels",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "levels"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Level (Admin)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"title\": \"Updated\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/levels/{{levelNumber}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "levels",
+                                "{{levelNumber}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get All Levels (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/levels",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "levels"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Level By Number (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/levels/{{levelNumber}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "levels",
+                                "{{levelNumber}}"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Level management"
+        },
+        {
+            "name": "Admin - Scenes",
+            "item": [
+                {
+                    "name": "Create Scene (Admin)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "levelId",
+                                    "value": "<level-uuid>",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "sceneNumber",
+                                    "value": "1",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "sceneType",
+                                    "value": "IMAGES",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "media",
+                                    "type": "file",
+                                    "src": ""
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/scene",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "scene"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Scene by Level (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/scene/level/{{levelId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "scene",
+                                "level",
+                                "{{levelId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Scene (Admin)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "sceneType",
+                                    "value": "VIDEO",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "media",
+                                    "type": "file",
+                                    "src": ""
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/scene/{{sceneId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "scene",
+                                "{{sceneId}}"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Scene management"
+        },
+        {
+            "name": "Admin - Options",
+            "item": [
+                {
+                    "name": "Create Option (Admin)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"queryId\": \"<query-uuid>\",\n  \"optionText\": \"Option A\",\n  \"isCorrect\": true,\n  \"pointsAwarded\": 10\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/option",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "option"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Options by Query (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/option/query/{{queryId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "option",
+                                "query",
+                                "{{queryId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Option (Admin)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"optionText\": \"Updated Option\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/option/{{optionId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "option",
+                                "{{optionId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Option (Admin)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/option/{{optionId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "option",
+                                "{{optionId}}"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Option management"
+        },
+        {
+            "name": "Admin - Questions",
+            "item": [
+                {
+                    "name": "Create Question (Admin)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"sceneId\": \"<scene-uuid>\",\n  \"queryNumber\": 1,\n  \"questionText\": \"What is...?\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/question",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "question"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Question (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "question",
+                                "{{questionId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Questions by Scene (Admin)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/question/scene/{{sceneId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "question",
+                                "scene",
+                                "{{sceneId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Update Question (Admin)",
+                    "request": {
+                        "method": "PUT",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"questionText\": \"Updated?\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "question",
+                                "{{questionId}}"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Delete Question (Admin)",
+                    "request": {
+                        "method": "DELETE",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "admin",
+                                "question",
+                                "{{questionId}}"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Question management"
+        },
+        {
+            "name": "Orchestration",
+            "item": [
+                {
+                    "name": "Comprehensive Security Scan",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "body": {
+                            "mode": "formdata",
+                            "formdata": [
+                                {
+                                    "key": "email",
+                                    "value": "test@example.com",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "password",
+                                    "value": "password123",
+                                    "type": "text"
+                                },
+                                {
+                                    "key": "document",
+                                    "type": "file",
+                                    "src": ""
+                                }
+                            ]
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/orchestration/comprehensive-scan",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "orchestration",
+                                "comprehensive-scan"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Parallel multi-module security scan"
+        },
+        {
+            "name": "User - Game",
+            "item": [
+                {
+                    "name": "List Levels (User)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/user/game/levels",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "user",
+                                "game",
+                                "levels"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Full Level Details (User)",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/user/game/levels/:levelNumber/full",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "user",
+                                "game",
+                                "levels",
+                                ":levelNumber",
+                                "full"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "levelNumber",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Submit Answer (User)",
+                    "request": {
+                        "method": "POST",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            },
+                            {
+                                "key": "Content-Type",
+                                "value": "application/json"
+                            }
+                        ],
+                        "body": {
+                            "mode": "raw",
+                            "raw": "{\n  \"attemptId\": \"<attempt-uuid>\",\n  \"queryId\": \"<question-uuid>\",\n  \"selectedOptionId\": \"<option-uuid>\"\n}"
+                        },
+                        "url": {
+                            "raw": "{{baseUrl}}/user/game/answer",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "user",
+                                "game",
+                                "answer"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Overall Progress",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/user/progress",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "user",
+                                "progress"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Level History",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/user/progress/level/:levelNumber/history",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "user",
+                                "progress",
+                                "level",
+                                ":levelNumber",
+                                "history"
+                            ],
+                            "variable": [
+                                {
+                                    "key": "levelNumber",
+                                    "value": "1"
+                                }
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Game Statistics",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/user/progress/stats",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "user",
+                                "progress",
+                                "stats"
+                            ]
+                        }
+                    }
+                },
+                {
+                    "name": "Get Current Active Attempt",
+                    "request": {
+                        "method": "GET",
+                        "header": [
+                            {
+                                "key": "Authorization",
+                                "value": "Bearer {{authToken}}",
+                                "type": "text"
+                            }
+                        ],
+                        "url": {
+                            "raw": "{{baseUrl}}/user/progress/current",
+                            "host": [
+                                "{{baseUrl}}"
+                            ],
+                            "path": [
+                                "user",
+                                "progress",
+                                "current"
+                            ]
+                        }
+                    }
+                }
+            ],
+            "description": "Simplified gameplay & progress endpoints"
+        }
+    ],
+    "auth": {
+        "type": "bearer",
+        "bearer": [
+            {
+                "key": "token",
+                "value": "{{authToken}}"
+            }
+        ]
+    },
+    "variable": [
+        {
+            "key": "baseUrl",
+            "value": "http://localhost:3001/api/v1"
+        }
+    ]
+}

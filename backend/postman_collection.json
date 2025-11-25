@@ -10,1766 +10,1673 @@
       "name": "Authentication",
       "item": [
         {
-          "name": "Register User",
-          "event": [
+          "name": "User - Game",
+          "description": "Simplified user gameplay and progress endpoints (attempt auto-created on full level fetch).",
+          "item": [
             {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    pm.test(\"User registered successfully\", function () {",
-                  "        pm.response.to.have.status(201);",
-                  "    });",
-                  "}"
+              "name": "List Levels (User)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
                 ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"SecurePassword123!\",\n  \"username\": \"testuser\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/register",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "register"
-              ]
-            },
-            "description": "Register a new user account. An OTP will be sent to the provided email for verification.\n\n**Request Body:**\n- `email` (string, required): User's email address\n- `password` (string, required): User's password\n- `username` (string, required): Unique username\n\n**Responses:**\n- `201`: User registered successfully\n- `400`: Invalid input data\n- `409`: Email already exists"
-          },
-          "response": []
-        },
-        {
-          "name": "Verify Email",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\",\n  \"otp\": \"123456\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/verify-email",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "verify-email"
-              ]
-            },
-            "description": "Verify email address using OTP sent during registration.\n\n**Request Body:**\n- `email` (string, required): User's email address\n- `otp` (string, required): 6-digit OTP code\n\n**Responses:**\n- `200`: Email verified successfully\n- `400`: Invalid or expired OTP\n- `404`: User not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Login",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.environment.set(\"authToken\", jsonData.token);",
-                  "    pm.test(\"Token saved to environment\", function () {",
-                  "        pm.expect(jsonData.token).to.be.a('string');",
-                  "    });",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\",\n  \"password\": \"SecurePassword123!\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/auth/login",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "login"
-              ]
-            },
-            "description": "Login with email and password. Returns JWT token for authenticated requests.\n\n**Request Body:**\n- `email` (string, required): User's email\n- `password` (string, required): User's password\n\n**Responses:**\n- `200`: Login successful, returns user data and JWT token\n- `401`: Invalid credentials\n- `400`: Missing email or password\n\n**Note:** The JWT token is automatically saved to environment variable `authToken`."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Profile",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/auth/profile",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "profile"
-              ]
-            },
-            "description": "Get current user's profile information.\n\n**Authentication:** Required (Bearer Token)\n\n**Responses:**\n- `200`: Profile retrieved successfully\n- `401`: Unauthorized or invalid token\n- `404`: Profile not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Profile",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
+                "url": {
+                  "raw": "{{baseUrl}}/user/game/levels",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "game",
+                    "levels"
+                  ]
+                },
+                "description": "Retrieve all levels with user's basic progress markers."
               },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"newemail@example.com\",\n  \"username\": \"newusername\"\n}"
+              "response": []
             },
-            "url": {
-              "raw": "{{baseUrl}}/auth/update",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "update"
-              ]
+            {
+              "name": "Get Full Level Details (User)",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/game/levels/:levelNumber/full",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "game",
+                    "levels",
+                    ":levelNumber",
+                    "full"
+                  ],
+                  "variable": [
+                    {
+                      "key": "levelNumber",
+                      "value": "1"
+                    }
+                  ]
+                },
+                "description": "Fetch complete level (scenes, questions, options). Implicitly creates attempt if none exists and returns attemptId."
+              },
+              "response": []
             },
-            "description": "Update user profile information.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, optional): New email address\n- `username` (string, optional): New username\n\n**Responses:**\n- `200`: Profile updated successfully\n- `401`: Unauthorized\n- `500`: Update failed"
-          },
-          "response": []
-        },
-        {
-          "name": "Reset Password",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\",\n  \"newPassword\": \"NewSecurePassword456!\"\n}"
+            {
+              "name": "Submit Answer (User)",
+              "request": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  },
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"attemptId\": \"<attempt-uuid>\",\n  \"queryId\": \"<question-uuid>\",\n  \"selectedOptionId\": \"<option-uuid>\"\n}"
+                },
+                "url": {
+                  "raw": "{{baseUrl}}/user/game/answer",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "game",
+                    "answer"
+                  ]
+                },
+                "description": "Submit answer for a question. Body: attemptId, queryId, selectedOptionId. Returns correctness and updated progression."
+              },
+              "response": []
             },
-            "url": {
-              "raw": "{{baseUrl}}/auth/reset-password",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "reset-password"
-              ]
+            {
+              "name": "Get Overall Progress",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/progress",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "progress"
+                  ]
+                },
+                "description": "Overall progress across levels."
+              },
+              "response": []
             },
-            "description": "Reset user password.\n\n**Request Body:**\n- `email` (string, required): User's email\n- `newPassword` (string, required): New password\n\n**Responses:**\n- `200`: Password reset successfully\n- `400`: Missing required fields\n- `404`: User not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Logout",
-          "request": {
-            "method": "POST",
-            "header": [],
-            "url": {
-              "raw": "{{baseUrl}}/auth/logout",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "auth",
-                "logout"
-              ]
+            {
+              "name": "Get Level History",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/progress/level/:levelNumber/history",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "progress",
+                    "level",
+                    ":levelNumber",
+                    "history"
+                  ],
+                  "variable": [
+                    {
+                      "key": "levelNumber",
+                      "value": "1"
+                    }
+                  ]
+                },
+                "description": "Attempt history for a level."
+              },
+              "response": []
             },
-            "description": "Logout current user.\n\n**Responses:**\n- `200`: Logged out successfully"
-          },
-          "response": []
+            {
+              "name": "Get Game Statistics",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/progress/stats",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "progress",
+                    "stats"
+                  ]
+                },
+                "description": "Aggregate gameplay statistics."
+              },
+              "response": []
+            },
+            {
+              "name": "Get Current Active Attempt",
+              "request": {
+                "method": "GET",
+                "header": [
+                  {
+                    "key": "Authorization",
+                    "value": "Bearer {{authToken}}",
+                    "type": "text"
+                  }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/user/progress/current",
+                  "host": [
+                    "{{baseUrl}}"
+                  ],
+                  "path": [
+                    "user",
+                    "progress",
+                    "current"
+                  ]
+                },
+                "description": "Return unfinished attempt if exists; otherwise null."
+              },
+              "response": []
+            }
+          ]
         }
       ],
-      "description": "Authentication endpoints for user registration, login, profile management, and password reset."
+      "description": "User authentication and registration endpoints."
     },
     {
-      "name": "Breach Checking",
-      "item": [
-        {
-          "name": "Check Email for Breaches",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.environment.set(\"lastCheckId\", jsonData.data.checkId);",
-                  "    pm.test(\"Email check successful\", function () {",
-                  "        pm.expect(jsonData.success).to.be.true;",
-                  "    });",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/breach/check-email",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "breach",
-                "check-email"
-              ]
-            },
-            "description": "Check if an email address has been compromised in any known data breaches.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, required): Email address to check\n\n**Responses:**\n- `200`: Check completed successfully\n- `400`: Invalid email format\n- `401`: Unauthorized\n- `500`: Check failed\n\n**Rate Limiting:** This endpoint is rate-limited to prevent HIBP API abuse. Wait 6-7 seconds between requests.\n\n**Note:** The `checkId` is automatically saved for use with the Report endpoint."
-          },
-          "response": []
-        },
-        {
-          "name": "Check Password for Breaches",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"password\": \"password123\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/breach/check-password",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "breach",
-                "check-password"
-              ]
-            },
-            "description": "Check if a password has been exposed in data breaches using k-anonymity model.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `password` (string, required): Password to check\n\n**Security:** The password is hashed locally and only the first 5 characters of the hash are sent to the API. The full password never leaves your server.\n\n**Responses:**\n- `200`: Check completed\n- `400`: Password is required\n- `401`: Unauthorized\n- `500`: Check failed\n\n**No Rate Limiting:** Password checks don't count toward HIBP rate limits."
-          },
-          "response": []
-        },
-        {
-          "name": "Batch Check Emails",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"emails\": [\n    \"test1@example.com\",\n    \"test2@example.com\",\n    \"test3@example.com\"\n  ]\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/breach/check-batch",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "breach",
-                "check-batch"
-              ]
-            },
-            "description": "Check multiple email addresses for breaches in a single request.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `emails` (array, required): Array of email addresses (max 10)\n\n**Responses:**\n- `200`: Batch check completed\n- `400`: Invalid input or too many emails\n- `401`: Unauthorized\n- `500`: Check failed\n\n**Rate Limiting:** This endpoint will take time to complete as it respects HIBP rate limits (6-7s delay between each email check).\n\n**Max emails per request:** 10"
-          },
-          "response": []
-        }
-      ],
+      "name": "Breach Detection",
+      "item": [],
       "description": "Endpoints for checking emails and passwords against the Have I Been Pwned database."
     },
-    {
-      "name": "Web Presence Scanning",
-      "item": [
-        {
-          "name": "Scan Web Presence",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 200) {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.environment.set(\"webPresenceId\", jsonData.data.webPresenceId);",
-                  "    pm.test(\"Web presence scan successful\", function () {",
-                  "        pm.expect(jsonData.data).to.have.property('totalFindings');",
-                  "    });",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/web-presence/scan",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "web-presence",
-                "scan"
-              ]
-            },
-            "description": "Scan multiple social media and professional platforms to discover where an email address appears online.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, required): Email address to scan across platforms\n\n**Platforms Scanned:**\n- Instagram\n- Facebook\n- X (Twitter)\n- LinkedIn\n- GitHub\n- YouTube\n- General web search\n\n**Responses:**\n- `200`: Scan completed successfully\n  - Returns: webPresenceId, email, totalFindings, riskScore, and detailed findings array\n- `400`: Email is required\n- `401`: Unauthorized\n- `500`: Scan failed\n\n**Rate Limiting:** Uses Google Custom Search API with delays between platform checks (1 second between each platform).\n\n**Note:** The `webPresenceId` is automatically saved to environment for use with other endpoints."
-          },
-          "response": []
-        },
-        {
-          "name": "Analyze Digital Footprint",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/web-presence/analyze",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "web-presence",
-                "analyze"
-              ]
-            },
-            "description": "Analyze the complete digital footprint by combining web presence findings with breach data to generate an overall risk assessment.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, required): Email address to analyze\n\n**Prerequisites:** Must run a web presence scan first.\n\n**Analysis Includes:**\n- Total online exposure count\n- Social media platform count\n- Professional platform count\n- Data breach count\n- Overall risk score (0-100)\n- Last scan timestamp\n\n**Responses:**\n- `200`: Analysis completed successfully\n  - Returns: footprint summary, web presence details, and breach information\n- `400`: Email is required\n- `401`: Unauthorized\n- `404`: No web presence data found (scan required)\n- `500`: Analysis failed\n\n**Risk Score Calculation:** Combines web presence exposure, breach count, and platform distribution."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Risk Assessment",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/web-presence/risk-assessment?email=test@example.com",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "web-presence",
-                "risk-assessment"
-              ],
-              "query": [
-                {
-                  "key": "email",
-                  "value": "test@example.com",
-                  "description": "Email address to get risk assessment for"
-                }
-              ]
-            },
-            "description": "Get detailed risk assessment breakdown for a specific email's digital footprint.\n\n**Authentication:** Required (Bearer Token)\n\n**Query Parameters:**\n- `email` (string, required): Email address to assess\n\n**Prerequisites:** Must have completed footprint analysis.\n\n**Risk Assessment Details:**\n- Overall risk score (0-100)\n- Risk level classification (LOW/MEDIUM/HIGH)\n  - HIGH: Score >= 70\n  - MEDIUM: Score >= 40\n  - LOW: Score < 40\n- Category breakdowns:\n  - Web presence exposure\n  - Social media exposure\n  - Professional network exposure\n  - Data breach exposure\n- Individual scores per category\n- Last scanned timestamp\n\n**Responses:**\n- `200`: Risk assessment retrieved successfully\n- `400`: Email is required\n- `401`: Unauthorized\n- `404`: No footprint data found\n- `500`: Failed to retrieve risk assessment"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Web Presence History",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/web-presence/history?email=test@example.com",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "web-presence",
-                "history"
-              ],
-              "query": [
-                {
-                  "key": "email",
-                  "value": "test@example.com",
-                  "description": "Optional: Filter history by specific email"
-                }
-              ]
-            },
-            "description": "Get historical web presence scan records for the authenticated user.\n\n**Authentication:** Required (Bearer Token)\n\n**Query Parameters:**\n- `email` (string, optional): Filter results by specific email address\n\n**Returns:** Up to 10 most recent scans including:\n- Scan ID\n- Email scanned\n- Scan date\n- Total findings count\n- Risk score\n- Detailed findings per scan:\n  - Platform name\n  - Platform type (SOCIAL_MEDIA, PROFESSIONAL, FORUM, etc.)\n  - URL where email was found\n  - Exposure level (HIGH/MEDIUM/LOW)\n  - Profile name extracted\n  - Detection timestamp\n\n**Responses:**\n- `200`: History retrieved successfully\n- `401`: Unauthorized\n- `500`: Failed to retrieve history\n\n**Note:** Results are ordered by scan date (most recent first) and limited to 10 records."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Detailed Report",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/web-presence/report/{{webPresenceId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "web-presence",
-                "report",
-                "{{webPresenceId}}"
-              ]
-            },
-            "description": "Generate a comprehensive detailed report for a specific web presence scan.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `scanId` (string, required): UUID of the web presence scan\n\n**Report Contents:**\n- Scan metadata (ID, email, date)\n- Total findings count\n- Risk score\n- Exposure summary:\n  - High exposure count\n  - Medium exposure count\n  - Low exposure count\n- Findings grouped by platform type\n- Complete list of all findings with details\n\n**Finding Details Include:**\n- Platform name\n- Platform type\n- Profile URL\n- Text snippet\n- Extracted profile name\n- Exposure level\n- Detection timestamp\n\n**Responses:**\n- `200`: Report generated successfully\n- `401`: Unauthorized\n- `404`: Scan not found or access denied\n- `500`: Failed to generate report\n\n**Note:** Use the `webPresenceId` saved from the scan endpoint."
-          },
-          "response": []
-        }
-      ],
-      "description": "Endpoints for scanning online presence across social media and professional platforms, analyzing digital footprint, and assessing privacy risks."
-    },
-    {
-      "name": "Reports & History",
-      "item": [
-        {
-          "name": "Get Breach History",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/breach/history?limit=20&offset=0",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "breach",
-                "history"
-              ],
-              "query": [
-                {
-                  "key": "limit",
-                  "value": "20",
-                  "description": "Number of records to return (default: 20)"
-                },
-                {
-                  "key": "offset",
-                  "value": "0",
-                  "description": "Number of records to skip (default: 0)"
-                }
-              ]
-            },
-            "description": "Get paginated history of all breach checks performed by the user.\n\n**Authentication:** Required (Bearer Token)\n\n**Query Parameters:**\n- `limit` (number, optional): Records per page (default: 20)\n- `offset` (number, optional): Records to skip (default: 0)\n\n**Responses:**\n- `200`: History retrieved successfully\n- `401`: Unauthorized\n- `500`: Failed to fetch history"
-          },
-          "response": []
-        },
-        {
-          "name": "Generate Breach Report",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/breach/report/{{lastCheckId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "breach",
-                "report",
-                "{{lastCheckId}}"
-              ]
-            },
-            "description": "Generate a detailed breach report for a specific check.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `checkId` (string, required): UUID of the breach check\n\n**Responses:**\n- `200`: Report generated successfully\n- `401`: Unauthorized\n- `404`: Check not found\n- `500`: Report generation failed\n\n**Note:** Use the `checkId` returned from the \"Check Email\" endpoint. It's automatically saved to `lastCheckId` environment variable."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Statistics",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/breach/stats",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "breach",
-                "stats"
-              ]
-            },
-            "description": "Get comprehensive statistics about user's breach checks.\n\n**Authentication:** Required (Bearer Token)\n\n**Responses:**\n- `200`: Statistics retrieved successfully\n- `401`: Unauthorized\n- `500`: Failed to fetch statistics\n\n**Returns:**\n- Total breach checks performed\n- Total breaches found\n- Checks in last 30 days\n- Number of compromised passwords\n- Recent activity"
-          },
-          "response": []
-        }
-      ],
-      "description": "Endpoints for viewing breach history, generating reports, and accessing statistics."
-    },
-    {
-      "name": "Documents",
-      "description": "Document upload with OCR processing and automated PAN/Aadhaar/Credit Card extraction.",
-      "item": [
-        {
-          "name": "Upload Document",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "document",
-                  "type": "file",
-                  "src": "",
-                  "description": "PDF or image file"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/document/upload",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "document",
-                "upload"
-              ]
-            },
-            "description": "Upload document (PDF/image) with automatic OCR processing and extraction of PAN, Aadhaar, and credit card numbers using Gemini API."
-          }
-        }
-      ]
-    },
-    {
-      "name": "Perplexity Search",
-      "description": "Advanced OSINT using Perplexity AI for comprehensive web presence discovery.",
-      "item": [
-        {
-          "name": "Scan Web Presence with Perplexity",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"email\": \"test@example.com\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/perplexity-search/scan",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "perplexity-search",
-                "scan"
-              ]
-            },
-            "description": "Perform comprehensive OSINT research using Perplexity AI to discover social media accounts, professional info, and personal details associated with an email."
-          }
-        },
-        {
-          "name": "Get Perplexity Scan History",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/perplexity-search/history?email=test@example.com",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "perplexity-search",
-                "history"
-              ],
-              "query": [
-                {
-                  "key": "email",
-                  "value": "test@example.com",
-                  "description": "Optional: Filter by email"
-                }
-              ]
-            },
-            "description": "Retrieve up to 10 most recent Perplexity-based web presence scans with complete findings and metadata."
-          }
-        }
-      ]
-    },
-    {
-      "name": "Admin - Scenes",
-      "description": "Admin endpoints to manage level scenes with file upload support (images, videos, or text content)",
-      "item": [
-        {
-          "name": "Create Scene with Files (Admin)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "levelId",
-                  "value": "<level-uuid>",
-                  "type": "text",
-                  "description": "UUID of the level (required)"
-                },
-                {
-                  "key": "sceneNumber",
-                  "value": "1",
-                  "type": "text",
-                  "description": "Scene sequence number (required)"
-                },
-                {
-                  "key": "sceneType",
-                  "value": "IMAGES",
-                  "type": "text",
-                  "description": "Type: VIDEO, IMAGES, or TEXT (required)"
-                },
-                {
-                  "key": "media",
-                  "type": "file",
-                  "src": "",
-                  "description": "Image/video files (max 10 for IMAGES, 1 for VIDEO)"
-                },
-                {
-                  "key": "media",
-                  "type": "file",
-                  "src": "",
-                  "description": "Additional image file (for IMAGES type only)"
-                },
-                {
-                  "key": "textContent",
-                  "value": "Your text content here",
-                  "type": "text",
-                  "description": "Text content (only for TEXT scene type)"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/scene",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "scene"]
-            },
-            "description": "Create a new scene with file uploads. Uploads files to Cloudinary and stores URLs in database.\n\n**Authentication:** Required (Admin Bearer Token)\n\n**Form Data Fields:**\n- `levelId` (string, required): UUID of the level\n- `sceneNumber` (string, required): Scene sequence number\n- `sceneType` (string, required): VIDEO | IMAGES | TEXT\n- `media` (file, conditional): \n  - For VIDEO: Exactly 1 video file required\n  - For IMAGES: 1-10 image files required\n  - For TEXT: No files needed\n- `textContent` (string, optional): Required only for TEXT scene type\n\n**Supported File Types:**\n- Images: .jpg, .jpeg, .png, .gif, .webp, .bmp\n- Videos: .mp4, .avi, .mov, .wmv, .flv, .mkv, .webm\n\n**File Size Limits:**\n- Max file size: 100MB per file\n\n**Responses:**\n- `201`: Scene created successfully with Cloudinary URLs\n- `400`: Validation error or invalid files\n- `401`: Unauthorized\n- `404`: Level not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Scene by Level ID (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/scene/level/{{levelId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "scene", "level", "{{levelId}}"]
-            },
-            "description": "Retrieve the first scene for a given level (ordered by `sceneNumber`).\n\n**Authentication:** Required (Admin Bearer Token)\n\n**Path Parameters:**\n- `levelId` (uuid, required)\n\n**Responses:**\n- `200`: Scene retrieved successfully\n- `401`: Unauthorized\n- `404`: Scene not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Scene with Files (Admin)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "sceneNumber",
-                  "value": "2",
-                  "type": "text",
-                  "description": "Updated scene number (optional)"
-                },
-                {
-                  "key": "sceneType",
-                  "value": "VIDEO",
-                  "type": "text",
-                  "description": "Updated scene type (optional)"
-                },
-                {
-                  "key": "media",
-                  "type": "file",
-                  "src": "",
-                  "description": "New media files to replace existing (optional)"
-                },
-                {
-                  "key": "textContent",
-                  "value": "Updated text content",
-                  "type": "text",
-                  "description": "Updated text (only for TEXT type)"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/scene/{{sceneId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "scene", "{{sceneId}}"]
-            },
-            "description": "Update an existing scene. Can update metadata and/or upload new files.\n\n**Authentication:** Required (Admin Bearer Token)\n\n**Path Parameter:**\n- `sceneId` (uuid, required)\n\n**Form Data (all optional):**\n- `sceneNumber` (string): New scene number\n- `sceneType` (string): VIDEO | IMAGES | TEXT\n- `media` (file): New files to upload (replaces existing)\n- `textContent` (string): New text content (TEXT type only)\n\n**Responses:**\n- `200`: Scene updated successfully\n- `400`: Validation error\n- `401`: Unauthorized\n- `404`: Scene not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Scene by Level ID (Admin)",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/scene/level/{{levelId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "scene", "level", "{{levelId}}"]
-            },
-            "description": "Delete the scene associated with a level.\n\n**Authentication:** Required (Admin Bearer Token)\n\n**Path Parameter:**\n- `levelId` (uuid, required)\n\n**Responses:**\n- `200`: Scene deleted successfully\n- `401`: Unauthorized\n- `404`: Scene not found"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Admin - Levels",
-      "description": "Admin endpoints to manage levels (create, update, list, get by number)",
-      "item": [
-        {
-          "name": "Create Level (Admin)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"levelNumber\": 1,\n  \"title\": \"Introduction\",\n  \"description\": \"Getting started level\",\n  \"requiredScore\": 50,\n  \"basePoints\": 10\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/levels/level",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "levels",
-                "level"
-              ]
-            },
-            "description": "Create a new level.\n\n**Request Body:**\n- `levelNumber` (int, required)\n- `title` (string, required)\n- `description` (string, optional)\n- `requiredScore` (int, required, >=1)\n- `basePoints` (int, required, >=0)"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Level (Admin)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"title\": \"Updated Title\",\n  \"description\": \"New description\",\n  \"requiredScore\": 75,\n  \"basePoints\": 15\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/levels/level/{{levelNumber}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "levels",
-                "level",
-                "{{levelNumber}}"
-              ]
-            },
-            "description": "Update an existing level by level number. Provide any subset of fields.\n\n**Path Parameter:** `levelNumber` (int)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get All Levels (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/levels",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "levels",
-                "levels"
-              ]
-            },
-            "description": "Retrieve list of all levels (default pagination inside controller)."
-          },
-          "response": []
-        },
-        {
-          "name": "Get Level By Number (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/levels/level/{{levelNumber}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "levels",
-                "level",
-                "{{levelNumber}}"
-              ]
-            },
-            "description": "Retrieve a level by its level number.\n\n**Path Parameter:** `levelNumber` (int)"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Admin - Options",
-      "description": "Admin endpoints to manage scene query options (create, get by query, update, delete)",
-      "item": [
-        {
-          "name": "Create Option (Admin)",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"queryId\": \"<query-uuid>\",\n  \"optionText\": \"Option A\",\n  \"isCorrect\": true,\n  \"pointsAwarded\": 10\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/option",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "option"
-              ]
-            },
-            "description": "Create a new option for a scene query.\n\n**Request Body:**\n- `queryId` (uuid, required)\n- `optionText` (string, required, min 1 char)\n- `isCorrect` (boolean, required)\n- `pointsAwarded` (int, required)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Options by Query ID (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/option/query/{{queryId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "option",
-                "query",
-                "{{queryId}}"
-              ]
-            },
-            "description": "Retrieve all options for a specific query.\n\n**Path Parameter:**\n- `queryId` (uuid, required)"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Option (Admin)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"optionText\": \"Updated Option A\",\n  \"isCorrect\": false,\n  \"pointsAwarded\": 5\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/option/{{optionId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "option",
-                "{{optionId}}"
-              ]
-            },
-            "description": "Update an existing option by option ID. Provide any subset of fields.\n\n**Path Parameter:**\n- `optionId` (uuid, required)\n\n**Request Body (all optional):**\n- `queryId` (uuid)\n- `optionText` (string)\n- `isCorrect` (boolean)\n- `pointsAwarded` (int)"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Option (Admin)",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/option/{{optionId}}",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "admin",
-                "option",
-                "{{optionId}}"
-              ]
-            },
-            "description": "Delete an option by option ID.\n\n**Path Parameter:**\n- `optionId` (uuid, required)"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Admin - Questions",
-      "description": "Admin endpoints to manage scene questions (create, get by ID, get by scene, update, delete)",
-      "item": [
-        {
-          "name": "Create Question (Admin)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"sceneId\": \"<scene-uuid>\",\n  \"queryNumber\": 1,\n  \"questionText\": \"What is the main concept?\",\n  \"learningOutcome\": \"Understand the basics\",\n  \"hintText\": \"Think about the introduction\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/question",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "question"]
-            },
-            "description": "Create a new question for a scene.\n\n**Request Body:**\n- `sceneId` (uuid, required)\n- `queryNumber` (int, optional, >=1)\n- `questionText` (string, required)\n- `learningOutcome` (string, optional)\n- `hintText` (string, optional)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Question by ID (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "question", "{{questionId}}"]
-            },
-            "description": "Retrieve a question by its ID.\n\n**Path Parameter:**\n- `questionId` (uuid, required)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Questions by Scene ID (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/question/scene/{{sceneId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "question", "scene", "{{sceneId}}"]
-            },
-            "description": "Retrieve all questions for a specific scene.\n\n**Path Parameter:**\n- `sceneId` (uuid, required)"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Question (Admin)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"questionText\": \"Updated question text\",\n  \"learningOutcome\": \"Updated learning outcome\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "question", "{{questionId}}"]
-            },
-            "description": "Update an existing question by question ID. Provide any subset of fields.\n\n**Path Parameter:**\n- `questionId` (uuid, required)\n\n**Request Body (all optional):**\n- `sceneId` (uuid)\n- `queryNumber` (int, >=1)\n- `questionText` (string)\n- `learningOutcome` (string)\n- `hintText` (string)"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Question (Admin)",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "question", "{{questionId}}"]
-            },
-            "description": "Delete a question by question ID.\n\n**Path Parameter:**\n- `questionId` (uuid, required)"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Admin - Questions",
-      "description": "Admin endpoints to manage scene questions (create, get by ID, get by scene, update, delete)",
-      "item": [
-        {
-          "name": "Create Question (Admin)",
-          "request": {
-            "method": "POST",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"sceneId\": \"<scene-uuid>\",\n  \"queryNumber\": 1,\n  \"questionText\": \"What is the main concept?\",\n  \"learningOutcome\": \"Understand the basics\",\n  \"hintText\": \"Think about the introduction\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/question",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "question"]
-            },
-            "description": "Create a new question for a scene.\n\n**Request Body:**\n- `sceneId` (uuid, required)\n- `queryNumber` (int, optional, >=1)\n- `questionText` (string, required)\n- `learningOutcome` (string, optional)\n- `hintText` (string, optional)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Question by ID (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "question", "{{questionId}}"]
-            },
-            "description": "Retrieve a question by its ID.\n\n**Path Parameter:**\n- `questionId` (uuid, required)"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Questions by Scene ID (Admin)",
-          "request": {
-            "method": "GET",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/question/scene/{{sceneId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "question", "scene", "{{sceneId}}"]
-            },
-            "description": "Retrieve all questions for a specific scene.\n\n**Path Parameter:**\n- `sceneId` (uuid, required)"
-          },
-          "response": []
-        },
-        {
-          "name": "Update Question (Admin)",
-          "request": {
-            "method": "PUT",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" },
-              { "key": "Content-Type", "value": "application/json" }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"questionText\": \"Updated question text\",\n  \"learningOutcome\": \"Updated learning outcome\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "question", "{{questionId}}"]
-            },
-            "description": "Update an existing question by question ID. Provide any subset of fields.\n\n**Path Parameter:**\n- `questionId` (uuid, required)\n\n**Request Body (all optional):**\n- `sceneId` (uuid)\n- `queryNumber` (int, >=1)\n- `questionText` (string)\n- `learningOutcome` (string)\n- `hintText` (string)"
-          },
-          "response": []
-        },
-        {
-          "name": "Delete Question (Admin)",
-          "request": {
-            "method": "DELETE",
-            "header": [
-              { "key": "Authorization", "value": "Bearer {{authToken}}", "type": "text" }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/admin/question/{{questionId}}",
-              "host": ["{{baseUrl}}"],
-              "path": ["admin", "question", "{{questionId}}"]
-            },
-            "description": "Delete a question by question ID.\n\n**Path Parameter:**\n- `questionId` (uuid, required)"
-          },
-          "response": []
-        }
-      ]
-    },
-    {
-      "name": "Orchestration",
-      "description": "Unified comprehensive scans combining multiple security modules in parallel execution.",
-      "item": [
-        {
-          "name": "Comprehensive Security Scan",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "body": {
-              "mode": "formdata",
-              "formdata": [
-                {
-                  "key": "email",
-                  "value": "test@example.com",
-                  "type": "text",
-                  "description": "Email to scan (required)"
-                },
-                {
-                  "key": "password",
-                  "value": "password123",
-                  "type": "text",
-                  "description": "Password to check (optional)"
-                },
-                {
-                  "key": "document",
-                  "type": "file",
-                  "src": "",
-                  "description": "Document to analyze (optional)"
-                }
-              ]
-            },
-            "url": {
-              "raw": "{{baseUrl}}/orchestration/comprehensive-scan",
-              "host": [
-                "{{baseUrl}}"
-              ],
-              "path": [
-                "orchestration",
-                "comprehensive-scan"
-              ]
-            },
-            "description": "Execute parallel security scan combining email breach check, password validation, document OCR analysis, Perplexity OSINT, and Google web presence scanning."
-          }
-        }
-      ]
-    },
-    {
-      "name": "User - Game",
-      "description": "User endpoints to play levels, submit answers, track progress, and view leaderboards",
-      "item": [
-        {
-          "name": "Get All Levels",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/game/levels",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "game", "levels"]
-            },
-            "description": "Get all available levels with user's progress status for each.\n\n**Authentication:** Required (Bearer Token)\n\n**Response includes:**\n- Level details (number, title, description, scores)\n- User status: NOT_STARTED, IN_PROGRESS, FAILED, COMPLETED\n- Action flags: canStart, canRetry, canContinue\n- Best score and total attempts\n- Active attempt ID (if exists)\n\n**Responses:**\n- `200`: Levels retrieved successfully\n- `401`: Unauthorized"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Level Details",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/game/levels/:levelNumber",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "game", "levels", ":levelNumber"],
-              "variable": [
-                {
-                  "key": "levelNumber",
-                  "value": "1",
-                  "description": "Level number to get details for"
-                }
-              ]
-            },
-            "description": "Get detailed information about a specific level including scenes structure and user's previous attempts.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required): Level number (e.g., 1, 2, 3)\n\n**Responses:**\n- `200`: Level details retrieved\n- `401`: Unauthorized\n- `404`: Level not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Start Level",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.environment.set(\"attemptId\", jsonData.data.id);",
-                  "    pm.test(\"Attempt ID saved\", function () {",
-                  "        pm.expect(jsonData.data.id).to.be.a('string');",
-                  "    });",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/game/levels/:levelNumber/start",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "game", "levels", ":levelNumber", "start"],
-              "variable": [
-                {
-                  "key": "levelNumber",
-                  "value": "1",
-                  "description": "Level number to start"
-                }
-              ]
-            },
-            "description": "Start a new attempt for a level that hasn't been attempted yet.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required)\n\n**Restrictions:**\n- Can only start levels never attempted before\n- Cannot start if level already completed\n- Cannot start if active attempt exists (returns existing attempt)\n\n**Responses:**\n- `201`: Level attempt started successfully\n- `200`: Active attempt already exists\n- `400`: Level already attempted or completed\n- `401`: Unauthorized\n- `404`: Level not found\n\n**Note:** The attemptId is automatically saved to environment."
-          },
-          "response": []
-        },
-        {
-          "name": "Retry Level",
-          "event": [
-            {
-              "listen": "test",
-              "script": {
-                "exec": [
-                  "if (pm.response.code === 201) {",
-                  "    const jsonData = pm.response.json();",
-                  "    pm.environment.set(\"attemptId\", jsonData.data.id);",
-                  "}"
-                ],
-                "type": "text/javascript"
-              }
-            }
-          ],
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/game/levels/:levelNumber/retry",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "game", "levels", ":levelNumber", "retry"],
-              "variable": [
-                {
-                  "key": "levelNumber",
-                  "value": "1",
-                  "description": "Level number to retry"
-                }
-              ]
-            },
-            "description": "Retry a failed level attempt.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required)\n\n**Restrictions:**\n- Can only retry failed levels\n- Cannot retry completed (passed) levels\n- Cannot retry if no previous attempts exist\n- Cannot retry if active attempt exists\n\n**Responses:**\n- `201`: Retry attempt created\n- `200`: Active attempt exists\n- `400`: Invalid retry conditions\n- `401`: Unauthorized\n- `404`: Level not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Current Scene",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/game/attempt/:attemptId/scene",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "game", "attempt", ":attemptId", "scene"],
-              "variable": [
-                {
-                  "key": "attemptId",
-                  "value": "{{attemptId}}",
-                  "description": "UUID of the active attempt"
-                }
-              ]
-            },
-            "description": "Get the current scene and query for an ongoing attempt.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required): Active attempt ID\n\n**Returns:**\n- Attempt details (current position, score)\n- Scene data (type, media URLs)\n- Current query (question text, options)\n- Options for answering (without correct answer revealed)\n\n**Responses:**\n- `200`: Scene retrieved successfully\n- `400`: Attempt already completed\n- `401`: Unauthorized\n- `404`: Attempt or scene not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Submit Answer",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              },
-              {
-                "key": "Content-Type",
-                "value": "application/json"
-              }
-            ],
-            "body": {
-              "mode": "raw",
-              "raw": "{\n  \"selectedOptionId\": \"<option-uuid>\"\n}"
-            },
-            "url": {
-              "raw": "{{baseUrl}}/user/game/attempt/:attemptId/answer",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "game", "attempt", ":attemptId", "answer"],
-              "variable": [
-                {
-                  "key": "attemptId",
-                  "value": "{{attemptId}}",
-                  "description": "UUID of the active attempt"
-                }
-              ]
-            },
-            "description": "Submit an answer for the current query.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required)\n\n**Request Body:**\n- `selectedOptionId` (uuid, required): ID of the chosen option\n\n**Response includes:**\n- Whether answer is correct\n- Points earned\n- Learning outcome explanation\n- Should advance to next query/scene\n- Is level complete flag\n- Updated total score\n\n**Behavior:**\n- Only first correct answer awards points\n- Can retry wrong answers (no points on retry)\n- Auto-advances on correct answer\n- Tracks attempt progress\n\n**Responses:**\n- `200`: Answer submitted successfully\n- `400`: Invalid option or attempt completed\n- `401`: Unauthorized\n- `404`: Attempt or option not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Hint",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/game/attempt/:attemptId/hint",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "game", "attempt", ":attemptId", "hint"],
-              "variable": [
-                {
-                  "key": "attemptId",
-                  "value": "{{attemptId}}",
-                  "description": "UUID of the active attempt"
-                }
-              ]
-            },
-            "description": "Request a hint for the current query.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required)\n\n**Returns:**\n- Hint text for current question (if available)\n\n**Responses:**\n- `200`: Hint retrieved\n- `401`: Unauthorized\n- `404`: Attempt or query not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Complete Level",
-          "request": {
-            "method": "POST",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/game/attempt/:attemptId/complete",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "game", "attempt", ":attemptId", "complete"],
-              "variable": [
-                {
-                  "key": "attemptId",
-                  "value": "{{attemptId}}",
-                  "description": "UUID of the active attempt"
-                }
-              ]
-            },
-            "description": "Complete the level attempt and calculate pass/fail status.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required)\n\n**Completion Criteria:**\n- All queries must be answered\n- Score >= requiredScore to pass\n\n**Response includes:**\n- isPassed flag\n- Final score\n- Required score\n- Complete attempt details\n\n**Responses:**\n- `200`: Level completed (pass or fail)\n- `400`: Not all questions answered or already completed\n- `401`: Unauthorized\n- `404`: Attempt not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Overall Progress",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/progress",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "progress"]
-            },
-            "description": "Get user's overall game progress across all levels.\n\n**Authentication:** Required (Bearer Token)\n\n**Returns:**\n- Total levels count\n- Completed levels count\n- Total score across all levels\n- Per-level breakdown:\n  - Level number and title\n  - Total attempts\n  - Pass status\n  - Best score\n  - Required score\n\n**Responses:**\n- `200`: Progress retrieved successfully\n- `401`: Unauthorized"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Level History",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/progress/level/:levelNumber/history",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "progress", "level", ":levelNumber", "history"],
-              "variable": [
-                {
-                  "key": "levelNumber",
-                  "value": "1",
-                  "description": "Level number to get history for"
-                }
-              ]
-            },
-            "description": "Get detailed attempt history for a specific level.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required)\n\n**Returns:**\n- Level details\n- All attempts with:\n  - Attempt number\n  - Pass/fail status\n  - Score achieved\n  - Start/finish timestamps\n  - All responses with query details\n\n**Responses:**\n- `200`: History retrieved successfully\n- `401`: Unauthorized\n- `404`: Level not found"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Game Statistics",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/progress/stats",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "progress", "stats"]
-            },
-            "description": "Get comprehensive game statistics.\n\n**Authentication:** Required (Bearer Token)\n\n**Returns:**\n- Total attempts (all levels)\n- Passed attempts count\n- Failed attempts count\n- Total responses (answers submitted)\n- Correct responses count\n- Accuracy percentage\n- Total points earned\n\n**Responses:**\n- `200`: Statistics retrieved\n- `401`: Unauthorized"
-          },
-          "response": []
-        },
-        {
-          "name": "Get Current Active Attempt",
-          "request": {
-            "method": "GET",
-            "header": [
-              {
-                "key": "Authorization",
-                "value": "Bearer {{authToken}}",
-                "type": "text"
-              }
-            ],
-            "url": {
-              "raw": "{{baseUrl}}/user/progress/current",
-              "host": ["{{baseUrl}}"],
-              "path": ["user", "progress", "current"]
-            },
-            "description": "Get the current active (unfinished) attempt if one exists.\n\n**Authentication:** Required (Bearer Token)\n\n**Returns:**\n- Active attempt details including:\n  - Attempt ID\n  - Level information\n  - Current position (scene/query numbers)\n  - Current score\n  - Start timestamp\n\n**Responses:**\n- `200`: Returns active attempt or null\n- `401`: Unauthorized"
-          },
-          "response": []
-        }
-      ]
-    }
-  ],
-  "auth": {
-    "type": "bearer",
-    "bearer": [
+  {
+    "name": "Web Presence Scanning",
+    "item": [
       {
-        "key": "token",
-        "value": "{{authToken}}",
-        "type": "string"
+        "name": "Scan Web Presence",
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 200) {",
+                "    const jsonData = pm.response.json();",
+                "    pm.environment.set(\"webPresenceId\", jsonData.data.webPresenceId);",
+                "    pm.test(\"Web presence scan successful\", function () {",
+                "        pm.expect(jsonData.data).to.have.property('totalFindings');",
+                "    });",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ],
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"test@example.com\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/web-presence/scan",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "web-presence",
+              "scan"
+            ]
+          },
+          "description": "Scan multiple social media and professional platforms to discover where an email address appears online.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, required): Email address to scan across platforms\n\n**Platforms Scanned:**\n- Instagram\n- Facebook\n- X (Twitter)\n- LinkedIn\n- GitHub\n- YouTube\n- General web search\n\n**Responses:**\n- `200`: Scan completed successfully\n  - Returns: webPresenceId, email, totalFindings, riskScore, and detailed findings array\n- `400`: Email is required\n- `401`: Unauthorized\n- `500`: Scan failed\n\n**Rate Limiting:** Uses Google Custom Search API with delays between platform checks (1 second between each platform).\n\n**Note:** The `webPresenceId` is automatically saved to environment for use with other endpoints."
+        },
+        "response": []
+      },
+      {
+        "name": "Analyze Digital Footprint",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"test@example.com\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/web-presence/analyze",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "web-presence",
+              "analyze"
+            ]
+          },
+          "description": "Analyze the complete digital footprint by combining web presence findings with breach data to generate an overall risk assessment.\n\n**Authentication:** Required (Bearer Token)\n\n**Request Body:**\n- `email` (string, required): Email address to analyze\n\n**Prerequisites:** Must run a web presence scan first.\n\n**Analysis Includes:**\n- Total online exposure count\n- Social media platform count\n- Professional platform count\n- Data breach count\n- Overall risk score (0-100)\n- Last scan timestamp\n\n**Responses:**\n- `200`: Analysis completed successfully\n  - Returns: footprint summary, web presence details, and breach information\n- `400`: Email is required\n- `401`: Unauthorized\n- `404`: No web presence data found (scan required)\n- `500`: Analysis failed\n\n**Risk Score Calculation:** Combines web presence exposure, breach count, and platform distribution."
+        },
+        "response": []
+      },
+      {
+        "name": "Get Risk Assessment",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/web-presence/risk-assessment?email=test@example.com",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "web-presence",
+              "risk-assessment"
+            ],
+            "query": [
+              {
+                "key": "email",
+                "value": "test@example.com",
+                "description": "Email address to get risk assessment for"
+              }
+            ]
+          },
+          "description": "Get detailed risk assessment breakdown for a specific email's digital footprint.\n\n**Authentication:** Required (Bearer Token)\n\n**Query Parameters:**\n- `email` (string, required): Email address to assess\n\n**Prerequisites:** Must have completed footprint analysis.\n\n**Risk Assessment Details:**\n- Overall risk score (0-100)\n- Risk level classification (LOW/MEDIUM/HIGH)\n  - HIGH: Score >= 70\n  - MEDIUM: Score >= 40\n  - LOW: Score < 40\n- Category breakdowns:\n  - Web presence exposure\n  - Social media exposure\n  - Professional network exposure\n  - Data breach exposure\n- Individual scores per category\n- Last scanned timestamp\n\n**Responses:**\n- `200`: Risk assessment retrieved successfully\n- `400`: Email is required\n- `401`: Unauthorized\n- `404`: No footprint data found\n- `500`: Failed to retrieve risk assessment"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Web Presence History",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/web-presence/history?email=test@example.com",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "web-presence",
+              "history"
+            ],
+            "query": [
+              {
+                "key": "email",
+                "value": "test@example.com",
+                "description": "Optional: Filter history by specific email"
+              }
+            ]
+          },
+          "description": "Get historical web presence scan records for the authenticated user.\n\n**Authentication:** Required (Bearer Token)\n\n**Query Parameters:**\n- `email` (string, optional): Filter results by specific email address\n\n**Returns:** Up to 10 most recent scans including:\n- Scan ID\n- Email scanned\n- Scan date\n- Total findings count\n- Risk score\n- Detailed findings per scan:\n  - Platform name\n  - Platform type (SOCIAL_MEDIA, PROFESSIONAL, FORUM, etc.)\n  - URL where email was found\n  - Exposure level (HIGH/MEDIUM/LOW)\n  - Profile name extracted\n  - Detection timestamp\n\n**Responses:**\n- `200`: History retrieved successfully\n- `401`: Unauthorized\n- `500`: Failed to retrieve history\n\n**Note:** Results are ordered by scan date (most recent first) and limited to 10 records."
+        },
+        "response": []
+      },
+      {
+        "name": "Get Detailed Report",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/web-presence/report/{{webPresenceId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "web-presence",
+              "report",
+              "{{webPresenceId}}"
+            ]
+          },
+          "description": "Generate a comprehensive detailed report for a specific web presence scan.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `scanId` (string, required): UUID of the web presence scan\n\n**Report Contents:**\n- Scan metadata (ID, email, date)\n- Total findings count\n- Risk score\n- Exposure summary:\n  - High exposure count\n  - Medium exposure count\n  - Low exposure count\n- Findings grouped by platform type\n- Complete list of all findings with details\n\n**Finding Details Include:**\n- Platform name\n- Platform type\n- Profile URL\n- Text snippet\n- Extracted profile name\n- Exposure level\n- Detection timestamp\n\n**Responses:**\n- `200`: Report generated successfully\n- `401`: Unauthorized\n- `404`: Scan not found or access denied\n- `500`: Failed to generate report\n\n**Note:** Use the `webPresenceId` saved from the scan endpoint."
+        },
+        "response": []
+      }
+    ],
+    "description": "Endpoints for scanning online presence across social media and professional platforms, analyzing digital footprint, and assessing privacy risks."
+  },
+  {
+    "name": "Reports & History",
+    "item": [
+      {
+        "name": "Get Breach History",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/breach/history?limit=20&offset=0",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "breach",
+              "history"
+            ],
+            "query": [
+              {
+                "key": "limit",
+                "value": "20",
+                "description": "Number of records to return (default: 20)"
+              },
+              {
+                "key": "offset",
+                "value": "0",
+                "description": "Number of records to skip (default: 0)"
+              }
+            ]
+          },
+          "description": "Get paginated history of all breach checks performed by the user.\n\n**Authentication:** Required (Bearer Token)\n\n**Query Parameters:**\n- `limit` (number, optional): Records per page (default: 20)\n- `offset` (number, optional): Records to skip (default: 0)\n\n**Responses:**\n- `200`: History retrieved successfully\n- `401`: Unauthorized\n- `500`: Failed to fetch history"
+        },
+        "response": []
+      },
+      {
+        "name": "Generate Breach Report",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/breach/report/{{lastCheckId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "breach",
+              "report",
+              "{{lastCheckId}}"
+            ]
+          },
+          "description": "Generate a detailed breach report for a specific check.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `checkId` (string, required): UUID of the breach check\n\n**Responses:**\n- `200`: Report generated successfully\n- `401`: Unauthorized\n- `404`: Check not found\n- `500`: Report generation failed\n\n**Note:** Use the `checkId` returned from the \"Check Email\" endpoint. It's automatically saved to `lastCheckId` environment variable."
+        },
+        "response": []
+      },
+      {
+        "name": "Get Statistics",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/breach/stats",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "breach",
+              "stats"
+            ]
+          },
+          "description": "Get comprehensive statistics about user's breach checks.\n\n**Authentication:** Required (Bearer Token)\n\n**Responses:**\n- `200`: Statistics retrieved successfully\n- `401`: Unauthorized\n- `500`: Failed to fetch statistics\n\n**Returns:**\n- Total breach checks performed\n- Total breaches found\n- Checks in last 30 days\n- Number of compromised passwords\n- Recent activity"
+        },
+        "response": []
+      }
+    ],
+    "description": "Endpoints for viewing breach history, generating reports, and accessing statistics."
+  },
+  {
+    "name": "Documents",
+    "description": "Document upload with OCR processing and automated PAN/Aadhaar/Credit Card extraction.",
+    "item": [
+      {
+        "name": "Upload Document",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "formdata",
+            "formdata": [
+              {
+                "key": "document",
+                "type": "file",
+                "src": "",
+                "description": "PDF or image file"
+              }
+            ]
+          },
+          "url": {
+            "raw": "{{baseUrl}}/document/upload",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "document",
+              "upload"
+            ]
+          },
+          "description": "Upload document (PDF/image) with automatic OCR processing and extraction of PAN, Aadhaar, and credit card numbers using Gemini API."
+        }
       }
     ]
   },
-  "event": [
-    {
-      "listen": "prerequest",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          ""
-        ]
+  {
+    "name": "Perplexity Search",
+    "description": "Advanced OSINT using Perplexity AI for comprehensive web presence discovery.",
+    "item": [
+      {
+        "name": "Scan Web Presence with Perplexity",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"email\": \"test@example.com\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/perplexity-search/scan",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "perplexity-search",
+              "scan"
+            ]
+          },
+          "description": "Perform comprehensive OSINT research using Perplexity AI to discover social media accounts, professional info, and personal details associated with an email."
+        }
+      },
+      {
+        "name": "Get Perplexity Scan History",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/perplexity-search/history?email=test@example.com",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "perplexity-search",
+              "history"
+            ],
+            "query": [
+              {
+                "key": "email",
+                "value": "test@example.com",
+                "description": "Optional: Filter by email"
+              }
+            ]
+          },
+          "description": "Retrieve up to 10 most recent Perplexity-based web presence scans with complete findings and metadata."
+        }
       }
-    },
-    {
-      "listen": "test",
-      "script": {
-        "type": "text/javascript",
-        "exec": [
-          ""
-        ]
+    ]
+  },
+  {
+    "name": "Admin - Levels",
+    "description": "Admin endpoints to manage levels (create, update, list, get by number)",
+    "item": [
+      {
+        "name": "Create Level (Admin)",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"levelNumber\": 1,\n  \"title\": \"Introduction\",\n  \"description\": \"Getting started level\",\n  \"requiredScore\": 50,\n  \"basePoints\": 10\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/admin/levels",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "levels"
+            ]
+          },
+          "description": "Create a new level.\n\nRequest Body:\n- levelNumber (int, required)\n- title (string, required)\n- description (string, optional)\n- requiredScore (int, required, >=1)\n- basePoints (int, required, >=0)"
+        },
+        "response": []
+      },
+      {
+        "name": "Update Level (Admin)",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"title\": \"Updated Title\",\n  \"description\": \"New description\",\n  \"requiredScore\": 75,\n  \"basePoints\": 15\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/admin/levels/{{levelNumber}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "levels",
+              "{{levelNumber}}"
+            ]
+          },
+          "description": "Update an existing level by level number. Provide any subset of fields.\n\nPath Parameter: levelNumber (int)"
+        },
+        "response": []
+      },
+      {
+        "name": "Get All Levels (Admin)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/admin/levels",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "levels"
+            ]
+          },
+          "description": "Retrieve list of all levels."
+        },
+        "response": []
+      },
+      {
+        "name": "Get Level By Number (Admin)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/admin/levels/{{levelNumber}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "levels",
+              "{{levelNumber}}"
+            ]
+          },
+          "description": "Retrieve a level by its level number.\n\nPath Parameter: levelNumber (int)"
+        },
+        "response": []
       }
-    }
-  ],
-  "variable": [
+    ]
+  },
+  {
+    "name": "Admin - Scenes",
+    "description": "Admin endpoints to manage level scenes with file upload support (images, videos, or text content)",
+    "item": [
+      {
+        "name": "Create Scene with Files (Admin)",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "formdata",
+            "formdata": [
+              {
+                "key": "levelId",
+                "value": "<level-uuid>",
+                "type": "text",
+                "description": "UUID of the level (required)"
+              },
+              {
+                "key": "sceneNumber",
+                "value": "1",
+                "type": "text",
+                "description": "Scene sequence number (required)"
+              },
+              {
+                "key": "sceneType",
+                "value": "IMAGES",
+                "type": "text",
+                "description": "Type: VIDEO, IMAGES, or TEXT (required)"
+              },
+              {
+                "key": "media",
+                "type": "file",
+                "src": "",
+                "description": "Image/video files (max 10 for IMAGES, 1 for VIDEO)"
+              },
+              {
+                "key": "textContent",
+                "value": "Your text content here",
+                "type": "text",
+                "description": "Text content (only for TEXT scene type)"
+              }
+            ]
+          },
+          "url": {
+            "raw": "{{baseUrl}}/admin/scene",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "scene"
+            ]
+          },
+          "description": "Create a new scene with file uploads. Uploads files to Cloudinary and stores URLs."
+        },
+        "response": []
+      },
+      {
+        "name": "Get Scene by Level ID (Admin)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/admin/scene/level/{{levelId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "scene",
+              "level",
+              "{{levelId}}"
+            ]
+          },
+          "description": "Retrieve first scene for a level (ordered by sceneNumber). Path: levelId (uuid)."
+        },
+        "response": []
+      },
+      {
+        "name": "Update Scene with Files (Admin)",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "formdata",
+            "formdata": [
+              {
+                "key": "sceneNumber",
+                "value": "2",
+                "type": "text",
+                "description": "Updated scene number (optional)"
+              },
+              {
+                "key": "sceneType",
+                "value": "VIDEO",
+                "type": "text",
+                "description": "Updated scene type (optional)"
+              },
+              {
+                "key": "media",
+                "type": "file",
+                "src": "",
+                "description": "New media files (optional)"
+              },
+              {
+                "key": "textContent",
+                "value": "Updated text content",
+                "type": "text",
+                "description": "Required if type TEXT"
+              }
+            ]
+          },
+          "url": {
+            "raw": "{{baseUrl}}/admin/scene/{{sceneId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "scene",
+              "{{sceneId}}"
+            ]
+          },
+          "description": "Update an existing scene. Path: sceneId (uuid)."
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Admin - Options",
+    "description": "Admin endpoints to manage scene query options (create, get by query, update, delete)",
+    "item": [
+      {
+        "name": "Create Option (Admin)",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"queryId\": \"<query-uuid>\",\n  \"optionText\": \"Option A\",\n  \"isCorrect\": true,\n  \"pointsAwarded\": 10\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/admin/option",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "option"
+            ]
+          },
+          "description": "Create a new option for a scene query.\n\n**Request Body:**\n- `queryId` (uuid, required)\n- `optionText` (string, required, min 1 char)\n- `isCorrect` (boolean, required)\n- `pointsAwarded` (int, required)"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Options by Query ID (Admin)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/admin/option/query/{{queryId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "option",
+              "query",
+              "{{queryId}}"
+            ]
+          },
+          "description": "Retrieve all options for a specific query.\n\n**Path Parameter:**\n- `queryId` (uuid, required)"
+        },
+        "response": []
+      },
+      {
+        "name": "Update Option (Admin)",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"optionText\": \"Updated Option A\",\n  \"isCorrect\": false,\n  \"pointsAwarded\": 5\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/admin/option/{{optionId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "option",
+              "{{optionId}}"
+            ]
+          },
+          "description": "Update an existing option by option ID. Provide any subset of fields.\n\n**Path Parameter:**\n- `optionId` (uuid, required)\n\n**Request Body (all optional):**\n- `queryId` (uuid)\n- `optionText` (string)\n- `isCorrect` (boolean)\n- `pointsAwarded` (int)"
+        },
+        "response": []
+      },
+      {
+        "name": "Delete Option (Admin)",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/admin/option/{{optionId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "option",
+              "{{optionId}}"
+            ]
+          },
+          "description": "Delete an option by option ID.\n\n**Path Parameter:**\n- `optionId` (uuid, required)"
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Admin - Questions",
+    "description": "Admin endpoints to manage scene questions (create, get by ID, get by scene, update, delete)",
+    "item": [
+      {
+        "name": "Create Question (Admin)",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"sceneId\": \"<scene-uuid>\",\n  \"queryNumber\": 1,\n  \"questionText\": \"What is the main concept?\",\n  \"learningOutcome\": \"Understand the basics\",\n  \"hintText\": \"Think about the introduction\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/admin/question",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "question"
+            ]
+          },
+          "description": "Create a new question for a scene.\n\n**Request Body:**\n- `sceneId` (uuid, required)\n- `queryNumber` (int, optional, >=1)\n- `questionText` (string, required)\n- `learningOutcome` (string, optional)\n- `hintText` (string, optional)"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Question by ID (Admin)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "question",
+              "{{questionId}}"
+            ]
+          },
+          "description": "Retrieve a question by its ID.\n\n**Path Parameter:**\n- `questionId` (uuid, required)"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Questions by Scene ID (Admin)",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/admin/question/scene/{{sceneId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "question",
+              "scene",
+              "{{sceneId}}"
+            ]
+          },
+          "description": "Retrieve all questions for a specific scene.\n\n**Path Parameter:**\n- `sceneId` (uuid, required)"
+        },
+        "response": []
+      },
+      {
+        "name": "Update Question (Admin)",
+        "request": {
+          "method": "PUT",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"questionText\": \"Updated question text\",\n  \"learningOutcome\": \"Updated learning outcome\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "question",
+              "{{questionId}}"
+            ]
+          },
+          "description": "Update an existing question by question ID. Provide any subset of fields.\n\n**Path Parameter:**\n- `questionId` (uuid, required)\n\n**Request Body (all optional):**\n- `sceneId` (uuid)\n- `queryNumber` (int, >=1)\n- `questionText` (string)\n- `learningOutcome` (string)\n- `hintText` (string)"
+        },
+        "response": []
+      },
+      {
+        "name": "Delete Question (Admin)",
+        "request": {
+          "method": "DELETE",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/admin/question/{{questionId}}",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "admin",
+              "question",
+              "{{questionId}}"
+            ]
+          },
+          "description": "Delete a question by question ID.\n\n**Path Parameter:**\n- `questionId` (uuid, required)"
+        },
+        "response": []
+      }
+    ]
+  },
+  {
+    "name": "Orchestration",
+    "description": "Unified comprehensive scans combining multiple security modules in parallel execution.",
+    "item": [
+      {
+        "name": "Comprehensive Security Scan",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "body": {
+            "mode": "formdata",
+            "formdata": [
+              {
+                "key": "email",
+                "value": "test@example.com",
+                "type": "text",
+                "description": "Email to scan (required)"
+              },
+              {
+                "key": "password",
+                "value": "password123",
+                "type": "text",
+                "description": "Password to check (optional)"
+              },
+              {
+                "key": "document",
+                "type": "file",
+                "src": "",
+                "description": "Document to analyze (optional)"
+              }
+            ]
+          },
+          "url": {
+            "raw": "{{baseUrl}}/orchestration/comprehensive-scan",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "orchestration",
+              "comprehensive-scan"
+            ]
+          },
+          "description": "Execute parallel security scan combining email breach check, password validation, document OCR analysis, Perplexity OSINT, and Google web presence scanning."
+        }
+      }
+    ]
+  },
+  {
+    "name": "User - Game",
+    "description": "User endpoints to play levels, submit answers, track progress, and view leaderboards",
+    "item": [
+      {
+        "name": "Get All Levels",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/game/levels",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "game",
+              "levels"
+            ]
+          },
+          "description": "Get all available levels with user's progress status for each.\n\n**Authentication:** Required (Bearer Token)\n\n**Response includes:**\n- Level details (number, title, description, scores)\n- User status: NOT_STARTED, IN_PROGRESS, FAILED, COMPLETED\n- Action flags: canStart, canRetry, canContinue\n- Best score and total attempts\n- Active attempt ID (if exists)\n\n**Responses:**\n- `200`: Levels retrieved successfully\n- `401`: Unauthorized"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Level Details",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/game/levels/:levelNumber",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "game",
+              "levels",
+              ":levelNumber"
+            ],
+            "variable": [
+              {
+                "key": "levelNumber",
+                "value": "1",
+                "description": "Level number to get details for"
+              }
+            ]
+          },
+          "description": "Get detailed information about a specific level including scenes structure and user's previous attempts.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required): Level number (e.g., 1, 2, 3)\n\n**Responses:**\n- `200`: Level details retrieved\n- `401`: Unauthorized\n- `404`: Level not found"
+        },
+        "response": []
+      },
+      {
+        "name": "Start Level",
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "    const jsonData = pm.response.json();",
+                "    pm.environment.set(\"attemptId\", jsonData.data.id);",
+                "    pm.test(\"Attempt ID saved\", function () {",
+                "        pm.expect(jsonData.data.id).to.be.a('string');",
+                "    });",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ],
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/game/levels/:levelNumber/start",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "game",
+              "levels",
+              ":levelNumber",
+              "start"
+            ],
+            "variable": [
+              {
+                "key": "levelNumber",
+                "value": "1",
+                "description": "Level number to start"
+              }
+            ]
+          },
+          "description": "Start a new attempt for a level that hasn't been attempted yet.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required)\n\n**Restrictions:**\n- Can only start levels never attempted before\n- Cannot start if level already completed\n- Cannot start if active attempt exists (returns existing attempt)\n\n**Responses:**\n- `201`: Level attempt started successfully\n- `200`: Active attempt already exists\n- `400`: Level already attempted or completed\n- `401`: Unauthorized\n- `404`: Level not found\n\n**Note:** The attemptId is automatically saved to environment."
+        },
+        "response": []
+      },
+      {
+        "name": "Retry Level",
+        "event": [
+          {
+            "listen": "test",
+            "script": {
+              "exec": [
+                "if (pm.response.code === 201) {",
+                "    const jsonData = pm.response.json();",
+                "    pm.environment.set(\"attemptId\", jsonData.data.id);",
+                "}"
+              ],
+              "type": "text/javascript"
+            }
+          }
+        ],
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/game/levels/:levelNumber/retry",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "game",
+              "levels",
+              ":levelNumber",
+              "retry"
+            ],
+            "variable": [
+              {
+                "key": "levelNumber",
+                "value": "1",
+                "description": "Level number to retry"
+              }
+            ]
+          },
+          "description": "Retry a failed level attempt.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required)\n\n**Restrictions:**\n- Can only retry failed levels\n- Cannot retry completed (passed) levels\n- Cannot retry if no previous attempts exist\n- Cannot retry if active attempt exists\n\n**Responses:**\n- `201`: Retry attempt created\n- `200`: Active attempt exists\n- `400`: Invalid retry conditions\n- `401`: Unauthorized\n- `404`: Level not found"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Current Scene",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/game/attempt/:attemptId/scene",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "game",
+              "attempt",
+              ":attemptId",
+              "scene"
+            ],
+            "variable": [
+              {
+                "key": "attemptId",
+                "value": "{{attemptId}}",
+                "description": "UUID of the active attempt"
+              }
+            ]
+          },
+          "description": "Get the current scene and query for an ongoing attempt.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required): Active attempt ID\n\n**Returns:**\n- Attempt details (current position, score)\n- Scene data (type, media URLs)\n- Current query (question text, options)\n- Options for answering (without correct answer revealed)\n\n**Responses:**\n- `200`: Scene retrieved successfully\n- `400`: Attempt already completed\n- `401`: Unauthorized\n- `404`: Attempt or scene not found"
+        },
+        "response": []
+      },
+      {
+        "name": "Submit Answer",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            },
+            {
+              "key": "Content-Type",
+              "value": "application/json"
+            }
+          ],
+          "body": {
+            "mode": "raw",
+            "raw": "{\n  \"selectedOptionId\": \"<option-uuid>\"\n}"
+          },
+          "url": {
+            "raw": "{{baseUrl}}/user/game/attempt/:attemptId/answer",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "game",
+              "attempt",
+              ":attemptId",
+              "answer"
+            ],
+            "variable": [
+              {
+                "key": "attemptId",
+                "value": "{{attemptId}}",
+                "description": "UUID of the active attempt"
+              }
+            ]
+          },
+          "description": "Submit an answer for the current query.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required)\n\n**Request Body:**\n- `selectedOptionId` (uuid, required): ID of the chosen option\n\n**Response includes:**\n- Whether answer is correct\n- Points earned\n- Learning outcome explanation\n- Should advance to next query/scene\n- Is level complete flag\n- Updated total score\n\n**Behavior:**\n- Only first correct answer awards points\n- Can retry wrong answers (no points on retry)\n- Auto-advances on correct answer\n- Tracks attempt progress\n\n**Responses:**\n- `200`: Answer submitted successfully\n- `400`: Invalid option or attempt completed\n- `401`: Unauthorized\n- `404`: Attempt or option not found"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Hint",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/game/attempt/:attemptId/hint",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "game",
+              "attempt",
+              ":attemptId",
+              "hint"
+            ],
+            "variable": [
+              {
+                "key": "attemptId",
+                "value": "{{attemptId}}",
+                "description": "UUID of the active attempt"
+              }
+            ]
+          },
+          "description": "Request a hint for the current query.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required)\n\n**Returns:**\n- Hint text for current question (if available)\n\n**Responses:**\n- `200`: Hint retrieved\n- `401`: Unauthorized\n- `404`: Attempt or query not found"
+        },
+        "response": []
+      },
+      {
+        "name": "Complete Level",
+        "request": {
+          "method": "POST",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/game/attempt/:attemptId/complete",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "game",
+              "attempt",
+              ":attemptId",
+              "complete"
+            ],
+            "variable": [
+              {
+                "key": "attemptId",
+                "value": "{{attemptId}}",
+                "description": "UUID of the active attempt"
+              }
+            ]
+          },
+          "description": "Complete the level attempt and calculate pass/fail status.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `attemptId` (uuid, required)\n\n**Completion Criteria:**\n- All queries must be answered\n- Score >= requiredScore to pass\n\n**Response includes:**\n- isPassed flag\n- Final score\n- Required score\n- Complete attempt details\n\n**Responses:**\n- `200`: Level completed (pass or fail)\n- `400`: Not all questions answered or already completed\n- `401`: Unauthorized\n- `404`: Attempt not found"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Overall Progress",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/progress",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "progress"
+            ]
+          },
+          "description": "Get user's overall game progress across all levels.\n\n**Authentication:** Required (Bearer Token)\n\n**Returns:**\n- Total levels count\n- Completed levels count\n- Total score across all levels\n- Per-level breakdown:\n  - Level number and title\n  - Total attempts\n  - Pass status\n  - Best score\n  - Required score\n\n**Responses:**\n- `200`: Progress retrieved successfully\n- `401`: Unauthorized"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Level History",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/progress/level/:levelNumber/history",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "progress",
+              "level",
+              ":levelNumber",
+              "history"
+            ],
+            "variable": [
+              {
+                "key": "levelNumber",
+                "value": "1",
+                "description": "Level number to get history for"
+              }
+            ]
+          },
+          "description": "Get detailed attempt history for a specific level.\n\n**Authentication:** Required (Bearer Token)\n\n**Path Parameters:**\n- `levelNumber` (int, required)\n\n**Returns:**\n- Level details\n- All attempts with:\n  - Attempt number\n  - Pass/fail status\n  - Score achieved\n  - Start/finish timestamps\n  - All responses with query details\n\n**Responses:**\n- `200`: History retrieved successfully\n- `401`: Unauthorized\n- `404`: Level not found"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Game Statistics",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/progress/stats",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "progress",
+              "stats"
+            ]
+          },
+          "description": "Get comprehensive game statistics.\n\n**Authentication:** Required (Bearer Token)\n\n**Returns:**\n- Total attempts (all levels)\n- Passed attempts count\n- Failed attempts count\n- Total responses (answers submitted)\n- Correct responses count\n- Accuracy percentage\n- Total points earned\n\n**Responses:**\n- `200`: Statistics retrieved\n- `401`: Unauthorized"
+        },
+        "response": []
+      },
+      {
+        "name": "Get Current Active Attempt",
+        "request": {
+          "method": "GET",
+          "header": [
+            {
+              "key": "Authorization",
+              "value": "Bearer {{authToken}}",
+              "type": "text"
+            }
+          ],
+          "url": {
+            "raw": "{{baseUrl}}/user/progress/current",
+            "host": [
+              "{{baseUrl}}"
+            ],
+            "path": [
+              "user",
+              "progress",
+              "current"
+            ]
+          },
+          "description": "Get the current active (unfinished) attempt if one exists.\n\n**Authentication:** Required (Bearer Token)\n\n**Returns:**\n- Active attempt details including:\n  - Attempt ID\n  - Level information\n  - Current position (scene/query numbers)\n  - Current score\n  - Start timestamp\n\n**Responses:**\n- `200`: Returns active attempt or null\n- `401`: Unauthorized"
+        },
+        "response": []
+      }
+    ]
+  }
+],
+"auth": {
+  "type": "bearer",
+  "bearer": [
     {
-      "key": "baseUrl",
-      "value": "http://localhost:3001/api/v1",
+      "key": "token",
+      "value": "{{authToken}}",
       "type": "string"
     }
   ]
+},
+"event": [
+  {
+    "listen": "prerequest",
+    "script": {
+      "type": "text/javascript",
+      "exec": [
+        ""
+      ]
+    }
+  },
+  {
+    "listen": "test",
+    "script": {
+      "type": "text/javascript",
+      "exec": [
+        ""
+      ]
+    }
+  }
+],
+"variable": [
+  {
+    "key": "baseUrl",
+    "value": "http://localhost:3001/api/v1",
+    "type": "string"
+  }
+]
 }
