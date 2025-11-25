@@ -5,7 +5,7 @@ import { sceneService } from '../../services/sceneServices';
 import { uploadMediaToCloudinary } from '../../utils/uploadToCloudinary';
 
 const createSceneBodySchema = z.object({
-    levelId: z.string().uuid(),
+    levelId: z.string(),
     sceneNumber: z.string().transform((val) => parseInt(val, 10)),
     sceneType: z.enum(["VIDEO", "IMAGES", "TEXT"]),
     textContent: z.string().optional(),

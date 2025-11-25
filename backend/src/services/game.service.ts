@@ -38,14 +38,16 @@ export class GameService {
             include: {
                 scenes: {
                     orderBy: { sceneNumber: 'asc' },
-                    select: {
-                        id: true,
-                        sceneNumber: true,
-                        sceneType: true,
+                    include: {
                         queries: {
-                            select: {
-                                id: true,
-                                queryNumber: true
+                            orderBy: { queryNumber: 'asc' },
+                            include: {
+                                options: {
+                                    select: {
+                                        id: true,
+                                        optionText: true
+                                    }
+                                }
                             }
                         }
                     }

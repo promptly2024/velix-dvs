@@ -31,5 +31,3 @@ userGameRouter.post("/attempt/:attemptId/complete", requireAuth, asyncHandler(co
 
 // retry failed level
 userGameRouter.post("/levels/:levelNumber/retry", requireAuth, asyncHandler(retryLevelController));
-
-
