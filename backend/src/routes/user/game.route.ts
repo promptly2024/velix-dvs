@@ -2,14 +2,14 @@ import { Router } from "express";
 import { requireAuth } from "../../middlewares/requireAuth";
 import asyncHandler from "../../utils/asyncHandler";
 import { getAllLevelsController } from "../../controllers/admin/level.controller";
-import { completeLevelController, getLevelDetailsController, getSceneController, retryLevelController, startLevelController, submitAnswerController, useLevelHintController } from "../../controllers/user/gameController";
+import { completeLevelController, getLevelDetailsController, getLevelFullDetailsController, getSceneController, retryLevelController, startLevelController, submitAnswerController, useLevelHintController } from "../../controllers/user/gameController";
 
 export const userGameRouter = Router();
 
 // base url: http://localhost:3001/api/v1/user/game
 
-// all available levels
-userGameRouter.get("/levels", requireAuth, asyncHandler(getAllLevelsController));
+// // all available levels
+// userGameRouter.get("/levels", requireAuth, asyncHandler(getAllLevelsController));
 
 // specific level details (before starting)
 userGameRouter.get("/levels/:levelNumber", requireAuth, asyncHandler(getLevelDetailsController));
@@ -20,8 +20,8 @@ userGameRouter.post("/levels/:levelNumber/start", requireAuth, asyncHandler(star
 // current scene for ongoing attempt
 userGameRouter.get("/attempt/:attemptId/scene", requireAuth, asyncHandler(getSceneController));
 
-// submit answer for current query
-userGameRouter.post("/attempt/:attemptId/answer", requireAuth, asyncHandler(submitAnswerController));
+// // submit answer for current query
+// userGameRouter.post("/attempt/:attemptId/answer", requireAuth, asyncHandler(submitAnswerController));
 
 // request hint for current query
 userGameRouter.post("/attempt/:attemptId/hint", requireAuth, asyncHandler(useLevelHintController));
@@ -31,3 +31,13 @@ userGameRouter.post("/attempt/:attemptId/complete", requireAuth, asyncHandler(co
 
 // retry failed level
 userGameRouter.post("/levels/:levelNumber/retry", requireAuth, asyncHandler(retryLevelController));
+
+
+// GET all levels with user progress
+userGameRouter.get("/levels", requireAuth, asyncHandler(getAllLevelsController));
+
+// GET single level complete details (scenes, queries, hints, options)
+userGameRouter.get("/levels/:levelNumber/full", requireAuth, asyncHandler(getLevelFullDetailsController));
+
+// POST submit answer for a query
+userGameRouter.post("/answer", requireAuth, asyncHandler(submitAnswerController));

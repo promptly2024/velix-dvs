@@ -275,6 +275,50 @@ export class GameService {
             }
         });
     }
+
+    // Get level with all details (scenes, queries, options, hints)
+    async getLevelFullDetails(levelNumber: number) {
+        return await prisma.gameLevel.findUnique({
+            where: { levelNumber },
+            include: {
+                scenes: {
+                    orderBy: { sceneNumber: 'asc' },
+                    include: {
+                        queries: {
+                            orderBy: { queryNumber: 'asc' },
+                            include: {
+                                options: {
+                                    select: {
+                                        id: true,
+                                        optionText: true,
+                                        pointsAwarded: true
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+
+    async getQueryById(queryId: string) {
+        return await prisma.sceneQuery.findUnique({
+            where: { id: queryId }
+        });
+    }
+
+    // Get scene by query
+    async getSceneByQuery(queryId: string) {
+        const query = await prisma.sceneQuery.findUnique({
+            where: { id: queryId },
+            include: {
+                scene: true
+            }
+        });
+        return query?.scene;
+    }
 }
 
 export default new GameService();
