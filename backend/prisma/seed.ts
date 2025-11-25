@@ -24,8 +24,8 @@ const levelsSeed = [
                         hintText: "OTP is One Time Password.",
                         options: [
                             { optionText: "Share the OTP to resolve the issue fast", isCorrect: false, pointsAwarded: 0 },
-                            { optionText: "Refuse and contact official support yourself", isCorrect: true, pointsAwarded: 50 },
-                            { optionText: "Ignore and block the number", isCorrect: true, pointsAwarded: 40 }
+                            { optionText: "Refuse and contact official support yourself", isCorrect: true, pointsAwarded: 80 },
+                            { optionText: "Ignore and block the number", isCorrect: true, pointsAwarded: 80 }
                         ]
                     }
                 ]
@@ -50,7 +50,7 @@ const levelsSeed = [
                         learningOutcome: "Suspicious links and urgent tone are classic phishing signs.",
                         hintText: "Look for urgency or mismatched domains.",
                         options: [
-                            { optionText: "Generic greeting and urgent action demand", isCorrect: true, pointsAwarded: 50 },
+                            { optionText: "Generic greeting and urgent action demand", isCorrect: true, pointsAwarded: 85 },
                             { optionText: "Proper company logo", isCorrect: false, pointsAwarded: 0 },
                             { optionText: "Email footer with address", isCorrect: false, pointsAwarded: 0 }
                         ]
@@ -79,7 +79,7 @@ const levelsSeed = [
                         options: [
                             { optionText: "Summer2024", isCorrect: false, pointsAwarded: 0 },
                             { optionText: "P@55w0rd!", isCorrect: false, pointsAwarded: 0 },
-                            { optionText: "Purple_Tiger!Drinks#7+Cloud", isCorrect: true, pointsAwarded: 60 }
+                            { optionText: "Purple_Tiger!Drinks#7+Cloud", isCorrect: true, pointsAwarded: 75 }
                         ]
                     }
                 ]
@@ -105,7 +105,7 @@ const levelsSeed = [
                         hintText: "Assert control.",
                         options: [
                             { optionText: "Provide partial info", isCorrect: false, pointsAwarded: 0 },
-                            { optionText: "Refuse and verify via official channel", isCorrect: true, pointsAwarded: 55 },
+                            { optionText: "Refuse and verify via official channel", isCorrect: true, pointsAwarded: 80 },
                             { optionText: "Continue and share after more questioning", isCorrect: false, pointsAwarded: 0 }
                         ]
                     }
@@ -132,7 +132,7 @@ const levelsSeed = [
                         hintText: "Encryption matters.",
                         options: [
                             { optionText: "Log into banking immediately", isCorrect: false, pointsAwarded: 0 },
-                            { optionText: "Use a VPN and limit sensitive activity", isCorrect: true, pointsAwarded: 55 },
+                            { optionText: "Use a VPN and limit sensitive activity", isCorrect: true, pointsAwarded: 85 },
                             { optionText: "Disable firewall for speed", isCorrect: false, pointsAwarded: 0 }
                         ]
                     }
