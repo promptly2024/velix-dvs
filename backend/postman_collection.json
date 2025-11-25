@@ -979,7 +979,7 @@
               }
             ],
             "url": {
-              "raw": "{{baseUrl}}/admin/levels/levels",
+              "raw": "{{baseUrl}}/admin/levels",
               "host": [
                 "{{baseUrl}}"
               ],
