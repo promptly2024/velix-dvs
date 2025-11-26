@@ -1,32 +1,27 @@
 export function calculateDeductions(
     totalPoints: number,
-    totalGames: number,
     easyGames: number,
     mediumGames: number,
     hardGames: number
 ) {
-    // Safety: easy + medium + hard = total games check
-    if (easyGames + mediumGames + hardGames !== totalGames) {
-        throw new Error("Easy + Medium + Hard must equal total games");
+    const ratio = { easy: 1, medium: 2, hard: 3 };
+
+    const totalWeight = (easyGames * ratio.easy) +
+        (mediumGames * ratio.medium) +
+        (hardGames * ratio.hard);
+
+    if (totalWeight === 0) {
+        return { easyDeduction: 0, mediumDeduction: 0, hardDeduction: 0 };
+    }
+    if ((easyGames === 0) && (mediumGames === 0) && (hardGames === 0)) {
+        return { easyDeduction: 0, mediumDeduction: 0, hardDeduction: 0 };
     }
 
-    // Per game deduction (base)
-    const perGame = totalPoints / totalGames;
-
-    const totalWeight = easyGames + mediumGames + hardGames;
-
-    const wEasy = easyGames / totalWeight;
-    const wMedium = mediumGames / totalWeight;
-    const wHard = hardGames / totalWeight;
-
-    // Final deduction values
-    const easyDeduction = perGame * wEasy;
-    const mediumDeduction = perGame * wMedium;
-    const hardDeduction = perGame * wHard;
+    const baseUnit = totalPoints / totalWeight;
 
     return {
-        easy: easyDeduction,
-        medium: mediumDeduction,
-        hard: hardDeduction
+        easyDeduction: baseUnit * ratio.easy,
+        mediumDeduction: baseUnit * ratio.medium,
+        hardDeduction: baseUnit * ratio.hard
     };
 }
