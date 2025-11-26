@@ -6,6 +6,7 @@ const createLevelSchema = z.object({
     levelNumber: z.number().int(),
     title: z.string().min(2),
     description: z.string().optional(),
+    type: z.enum(['EASY', 'MEDIUM', 'HARD']),
     requiredScore: z.number().int().min(1),
     basePoints: z.number().int().min(0)
 });
@@ -37,7 +38,7 @@ export const updateLevelController = async (req: Request, res: Response) => {
         res.status(200).json({ success: true, data: updatedLevel });
     } catch (error) {
         res.status(400).json({ success: false, message: error instanceof Error ? error.message : 'Invalid data' });
-    }   
+    }
 };
 
 export const getAllLevelsController = async (req: Request, res: Response) => {

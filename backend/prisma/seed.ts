@@ -9,6 +9,7 @@ const levelsSeed = [
         levelNumber: 1,
         title: "OTP Theft Awareness",
         description: "Recognize and block OTP theft attempts.",
+        type: "EASY",
         requiredScore: 80,
         basePoints: 100,
         scenes: [
@@ -36,6 +37,7 @@ const levelsSeed = [
         levelNumber: 2,
         title: "Phishing Email Detection",
         description: "Identify phishing red flags in emails.",
+        type: "MEDIUM",
         requiredScore: 85,
         basePoints: 120,
         scenes: [
@@ -63,6 +65,7 @@ const levelsSeed = [
         levelNumber: 3,
         title: "Password Hygiene",
         description: "Learn strong password practices.",
+        type: "HARD",
         requiredScore: 75,
         basePoints: 90,
         scenes: [
@@ -90,6 +93,7 @@ const levelsSeed = [
         levelNumber: 4,
         title: "Social Engineering Chat",
         description: "Spot manipulation in chat interactions.",
+        type: "MEDIUM",
         requiredScore: 80,
         basePoints: 110,
         scenes: [
@@ -117,6 +121,7 @@ const levelsSeed = [
         levelNumber: 5,
         title: "Public Wi-Fi Risk",
         description: "Understand dangers of unsecured networks.",
+        type: "MEDIUM",
         requiredScore: 85,
         basePoints: 130,
         scenes: [

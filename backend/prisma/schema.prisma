@@ -338,12 +338,19 @@ enum SceneMediaType {
   TEXT
 }
 
+enum LevelType {
+  EASY
+  MEDIUM
+  HARD
+}
+
 // Level structure (Admin Uploaded)
 model GameLevel {
   id               String             @id @default(uuid())
   levelNumber      Int                @unique // e.g., 1, 2, 3...
   title            String // e.g "OTP Theft"
   description      String?
+  type             LevelType          @default(EASY)
   requiredScore    Int // Score needed to pass the level
   basePoints       Int // Base points awarded for passing
   scenes           LevelScene[] // Scenes within this level
