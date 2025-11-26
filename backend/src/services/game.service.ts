@@ -1,3 +1,4 @@
+import { calculateDeductions } from "../lib/calculateDeduction";
 import { prisma } from "../lib/prisma";
 
 export class GameService {
@@ -193,27 +194,70 @@ export class GameService {
         pointsEarned: number;
         isFirstTry: boolean;
     }) {
-        return await prisma.userResponse.upsert({
-            where: {
-                attemptId_queryId: {
+        return await prisma.$transaction(async (tx) => {
+            const response = await tx.userResponse.upsert({
+                where: {
+                    attemptId_queryId: {
+                        attemptId: data.attemptId,
+                        queryId: data.queryId
+                    }
+                },
+                create: {
                     attemptId: data.attemptId,
-                    queryId: data.queryId
+                    queryId: data.queryId,
+                    selectedOptionId: data.selectedOptionId,
+                    isCorrect: data.isCorrect,
+                    pointsEarned: data.pointsEarned,
+                    isFirstTry: true
+                },
+                update: {
+                    selectedOptionId: data.selectedOptionId,
+                    isCorrect: data.isCorrect,
+                    pointsEarned: data.isCorrect && data.isFirstTry ? data.pointsEarned : 0,
+                    isFirstTry: false
                 }
-            },
-            create: {
-                attemptId: data.attemptId,
-                queryId: data.queryId,
-                selectedOptionId: data.selectedOptionId,
-                isCorrect: data.isCorrect,
-                pointsEarned: data.pointsEarned,
-                isFirstTry: true
-            },
-            update: {
-                selectedOptionId: data.selectedOptionId,
-                isCorrect: data.isCorrect,
-                pointsEarned: data.isCorrect && data.isFirstTry ? data.pointsEarned : 0,
-                isFirstTry: false
+            });
+
+            // Find total game, total easy game, total medium game, total hard game available
+            const [totalGames, totalEasyGames, totalMediumGames, totalHardGames] = await Promise.all([
+                tx.gameLevel.count(),
+                tx.gameLevel.count({ where: { type: 'EASY' } }),
+                tx.gameLevel.count({ where: { type: 'MEDIUM' } }),
+                tx.gameLevel.count({ where: { type: 'HARD' } })
+            ]);
+
+            const deduction = calculateDeductions(30, totalGames, totalEasyGames, totalMediumGames, totalHardGames);
+
+            // Deduct points from user based on level type
+            // Only deduct if the answer is correct and is first try
+            if (data.isCorrect && data.isFirstTry) {
+                const attempt = await tx.userLevelAttempt.findUnique({
+                    where: { id: data.attemptId },
+                    include: {
+                        level: true
+                    }
+                });
+
+                let pointsToDeduct = 0;
+                if (attempt?.level.type === 'EASY') {
+                    pointsToDeduct = deduction.easy;
+                } else if (attempt?.level.type === 'MEDIUM') {
+                    pointsToDeduct = deduction.medium;
+                } else if (attempt?.level.type === 'HARD') {
+                    pointsToDeduct = deduction.hard;
+                }
+
+                await tx.user.update({
+                    where: { id: attempt!.userId },
+                    data: {
+                        dvsScore: {
+                            decrement: pointsToDeduct
+                        }
+                    }
+                });
             }
+
+            return response;
         });
     }
 

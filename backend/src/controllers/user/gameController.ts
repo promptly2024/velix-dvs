@@ -173,7 +173,7 @@ export const submitAnswerController = async (req: Request, res: Response) => {
         pointsEarned: selectedOption.isCorrect && isFirstTry ? selectedOption.pointsAwarded : 0,
         isFirstTry
     });
-
+ 
     // Update attempt score if points earned
     if (response.pointsEarned > 0) {
         await gameService.incrementAttemptScore(attemptId, response.pointsEarned);
