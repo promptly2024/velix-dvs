@@ -274,6 +274,15 @@ export async function processScanData(scanJson: any, userId: string) {
     dvsScore = Math.min(dvsScore, 100);
     dvsScore = Math.round(dvsScore * 100) / 100;
 
+    await prisma.user.update({
+      where: {
+        id: userId
+      },
+      data: {
+        dvsScore: dvsScore
+      }
+    });
+
     log(`DVS Score: ${dvsScore}% (${ingredientFound}/${totalIngredient} ingredients)`);
     log("Scan data processing complete");
 
