@@ -219,14 +219,13 @@ export class GameService {
             });
 
             // Find total game, total easy game, total medium game, total hard game available
-            const [totalGames, totalEasyGames, totalMediumGames, totalHardGames] = await Promise.all([
-                tx.gameLevel.count(),
+            const [totalEasyGames, totalMediumGames, totalHardGames] = await Promise.all([
                 tx.gameLevel.count({ where: { type: 'EASY' } }),
                 tx.gameLevel.count({ where: { type: 'MEDIUM' } }),
                 tx.gameLevel.count({ where: { type: 'HARD' } })
             ]);
 
-            const deduction = calculateDeductions(30, totalGames, totalEasyGames, totalMediumGames, totalHardGames);
+            const deduction = calculateDeductions(30, totalEasyGames, totalMediumGames, totalHardGames);
 
             // Deduct points from user based on level type
             // Only deduct if the answer is correct and is first try
@@ -240,11 +239,11 @@ export class GameService {
 
                 let pointsToDeduct = 0;
                 if (attempt?.level.type === 'EASY') {
-                    pointsToDeduct = deduction.easy;
+                    pointsToDeduct = deduction.easyDeduction;
                 } else if (attempt?.level.type === 'MEDIUM') {
-                    pointsToDeduct = deduction.medium;
+                    pointsToDeduct = deduction.mediumDeduction;
                 } else if (attempt?.level.type === 'HARD') {
-                    pointsToDeduct = deduction.hard;
+                    pointsToDeduct = deduction.hardDeduction;
                 }
 
                 await tx.user.update({
