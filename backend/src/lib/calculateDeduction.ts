@@ -25,3 +25,31 @@ export function calculateDeductions(
         hardDeduction: baseUnit * ratio.hard
     };
 }
+
+/*
+Inputs: Total Points = 30, Easy = 5, Medium = 2, Hard = 1
+
+Step 1 (Total Parts):
+
+Easy shares: 5×1=5
+
+Medium shares: 2×2=4
+
+Hard shares: 1×3=3
+
+Sum: 5+4+3=12
+
+Step 2 (Base Unit / Easy):
+
+30/12=2.5
+
+Step 3 (Others):
+
+Easy: 2.5
+
+Medium: 2.5×2=5
+
+Hard: 2.5×3=7.5
+
+Check: (5×2.5)+(2×5)+(1×7.5)=12.5+10+7.5=30 (Correct)
+*/
