@@ -1,7 +1,51 @@
 import { PrismaClient } from "@prisma/client";
+import bcrypt from "bcryptjs";
 const prisma = new PrismaClient();
-
 // to run this seed file: npx prisma db seed or npx ts-node prisma/seed.ts
+
+async function hashPassword(password: string): Promise<string> {
+    const saltRounds = 10;
+    return await bcrypt.hash(password, saltRounds);
+}
+
+const adminUser = {
+    email: "admin@velix.com",
+    username: "admin",
+    password: "Admin@123456",
+    role: "ADMIN" as const,
+    emailVerified: true
+};
+
+async function seedAdmin() {
+    const existingAdmin = await prisma.user.findUnique({ 
+        where: { email: adminUser.email } 
+    });
+    
+    if (existingAdmin) {
+        console.log(`Admin user already exists: ${adminUser.email}`);
+        return;
+    }
+
+    const passwordHash = await hashPassword(adminUser.password);
+    
+    await prisma.user.create({
+        data: {
+            email: adminUser.email,
+            username: adminUser.username,
+            password: passwordHash,
+            role: adminUser.role,
+            emailVerified: adminUser.emailVerified,
+            otp: null,
+            otpExpiry: null
+        }
+    });
+    
+    console.log(`\n Admin user created successfully!`);
+    console.log(`  Email: ${adminUser.email}`);
+    console.log(`  Username: ${adminUser.username}`);
+    console.log(`  Password: ${adminUser.password}`);
+}
+
 
 // Default gamified mode levels configuration
 const levelsSeed = [
@@ -190,6 +234,10 @@ async function seedGamifiedLevels() {
 }
 
 async function main() {
+
+    console.log("Seeding Admin User");
+    await seedAdmin();
+
     console.log("Seeding Gamified mode Default five levels...");
     await seedGamifiedLevels();
     console.log("\nSeed Completed ✔");
