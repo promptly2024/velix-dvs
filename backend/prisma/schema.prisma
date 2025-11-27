@@ -40,12 +40,12 @@ enum UserRole {
 }
 
 model User {
-  id           String   @id @default(uuid())
-  email        String   @unique
-  password     String
-  username     String   @unique
-  profileImage String?
-  dvsScore     Decimal? @db.Decimal(10, 2)
+  id                     String                   @id @default(uuid())
+  email                  String                   @unique
+  password               String
+  username               String                   @unique
+  profileImage           String?
+  dvsScore               Decimal?                 @db.Decimal(10, 2)
   role                   UserRole                 @default(USER)
   otp                    String?
   otpExpiry              DateTime?
@@ -64,6 +64,7 @@ model User {
   UserIngredientExposure UserIngredientExposure[]
   ThreatAssessment       ThreatAssessment[]
   levelAttempts          UserLevelAttempt[]
+  IncidentReport         IncidentReport[]
 }
 
 model Document {
@@ -438,4 +439,107 @@ model UserResponse {
   query   SceneQuery       @relation(fields: [queryId], references: [id])
 
   @@unique([attemptId, queryId])
+}
+
+// INCIDENT RESPONSE WORKFLOW SYSTEM
+
+// 1. The Workflow Definition (For each of the 13 Threads)
+// Har Threat (Financial, Identity, etc.) ka ek unique workflow hoga
+model IncidentWorkflow {
+  id          String             @id @default(uuid())
+  category    AssessmentCategory @unique // Links to your existing Enum (13 Threads)
+  title       String // e.g., "Financial Fraud Response"
+  description String?
+
+  startNodeId String? // Pehla sawal kaun sa hoga?
+  nodes       WorkflowNode[] // Is workflow ke saare steps
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// 2. The Step/Node (Question, Info, or Action)
+model WorkflowNode {
+  id         String           @id @default(uuid())
+  workflowId String
+  workflow   IncidentWorkflow @relation(fields: [workflowId], references: [id])
+
+  title   String? // Internal logic ke liye (e.g., "Ask Bank Name")
+  content String // User ko dikhne wala text (Question or Instruction)
+  type    WorkflowNodeType @default(QUESTION)
+
+  // Options (Buttons: Yes, No, Next)
+  options WorkflowOption[]
+
+  // Resources (Agar type INFO/ACTION hai)
+  resourceLink String? // e.g., "https://cybercrime.gov.in" or "tel:1930"
+
+  // Template (Agar type TEMPLATE_FORM hai)
+  templateId String?
+  template   ResponseTemplate? @relation(fields: [templateId], references: [id])
+
+  // Back-linking for Start Node logic (Optional but good for graph traversal)
+  isStartNode Boolean @default(false)
+}
+
+// 3. The Options (Edges connecting Nodes)
+model WorkflowOption {
+  id     String       @id @default(uuid())
+  nodeId String
+  node   WorkflowNode @relation(fields: [nodeId], references: [id])
+
+  label String // Button Text: "Haan", "Nahi", "Skip"
+
+  // Logic: User ye dabayega to kahan jayega?
+  nextNodeId String? // Null matlab flow khatam (End)
+
+  // Logic: Kya ye button dabane se koi data save karna hai?
+  requiredInput String? // e.g., "bank_name", "transaction_id" (Frontend ko signal dega input box dikhane ka)
+
+  order Int @default(0) // Sorting order for UI buttons
+}
+
+// 4. Templates for FIR/Letters
+model ResponseTemplate {
+  id    String         @id @default(uuid())
+  name  String // e.g., "Bank Fraud Report Application"
+  body  String         @db.Text // The actual text with placeholders {{name}}, {{amount}}
+  nodes WorkflowNode[]
+}
+
+// 5. User's Active Incident Session (Upgrading your existing Incident concept)
+// Jab user "Help" mangta hai, ye record banta hai
+model IncidentReport {
+  id     String @id @default(uuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id])
+
+  category AssessmentCategory // 13 Threads mein se kaun sa hai
+  status   IncidentStatus     @default(OPEN)
+
+  // Tracking Progress
+  currentNodeId String? // User abhi kis sawal par atka hai
+
+  // Data collected during the flow (JSON)
+  // Example: { "bankName": "SBI", "amountLost": "5000", "didReportToPolice": true }
+  inputs Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// NEW ENUMS
+
+enum WorkflowNodeType {
+  QUESTION // Simple Yes/No question
+  INPUT_FORM // User needs to type something (e.g., Bank Name)
+  INFO // Just display text (e.g., "Don't panic")
+  ACTION // A button to call/visit website
+  TEMPLATE_FORM // Generate PDF step
+}
+
+enum IncidentStatus {
+  OPEN
+  RESOLVED
+  ABANDONED
 }
