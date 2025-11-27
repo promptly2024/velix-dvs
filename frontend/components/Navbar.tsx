@@ -36,7 +36,7 @@ export default function Navbar({ isAdmin = false }: NavbarProps) {
         ? [
               { href: "/admin/dashboard", label: "Dashboard" },
               { href: "/admin/users", label: "Users" },
-              { href: "/admin/levels", label: "Game Levels" },
+              { href: "/admin/games", label: "Games" },
               { href: "/admin/incidents", label: "Incidents" },
           ]
         : [

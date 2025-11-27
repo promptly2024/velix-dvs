@@ -81,11 +81,14 @@ export default function AdminDashboard() {
                     <button className="bg-green-600 hover:bg-green-700 text-white font-medium py-3 rounded-md transition">
                         Manage Incidents
                     </button>
-                    <button className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 rounded-md transition">
-                        Edit Game Levels
-                    </button>
                     <button className="bg-orange-600 hover:bg-orange-700 text-white font-medium py-3 rounded-md transition">
                         System Settings
+                    </button>
+                    <button 
+                        onClick={() => router.push("/admin/games")}
+                        className="bg-purple-600 hover:bg-purple-700 text-white font-medium py-3 px-4 rounded-md transition"
+                    >
+                        Manage Game Levels
                     </button>
                 </div>
             </div>
