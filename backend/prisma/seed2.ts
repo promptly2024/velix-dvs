@@ -22,7 +22,7 @@ const WORKFLOW_DATA = [
                     { label: "No, just suspicious", nextNodeId: "fin_prevention_tips" }
                 ]
             },
-            // --- BRANCH: YES (Money Lost) ---
+            // BRANCH: YES (Money Lost)
             {
                 id: "fin_block_check",
                 text: "Have you blocked your bank account or debit/credit card?",
@@ -83,7 +83,7 @@ const WORKFLOW_DATA = [
                 type: WorkflowNodeType.INFO,
                 options: [] // End of flow
             },
-            // --- BRANCH: NO (Prevention) ---
+            // BRANCH: NO (Prevention)
             {
                 id: "fin_prevention_tips",
                 text: "Do not panic. Change your passwords immediately and do not click on any unknown links.",
@@ -93,9 +93,9 @@ const WORKFLOW_DATA = [
         ]
     },
 
-    // ---------------------------------------------------------
+    // 
     // THREAT 2: SOCIAL MEDIA VULNERABILITY (Detailed Flow)
-    // ---------------------------------------------------------
+    
     {
         category: AssessmentCategory.SOCIAL_MEDIA_VULNERABILITY,
         title: "Social Media Harassment & Hacking",
@@ -112,7 +112,7 @@ const WORKFLOW_DATA = [
                     { label: "Fake profile created (Impersonation)", nextNodeId: "sm_impersonation" }
                 ]
             },
-            // --- BRANCH: HARASSMENT ---
+            // BRANCH: HARASSMENT ---
             {
                 id: "sm_harass_evidence",
                 text: "First Step: Secure the evidence. Have you taken screenshots of the chat, messages, and profile?",
@@ -162,7 +162,7 @@ const WORKFLOW_DATA = [
                 type: WorkflowNodeType.INFO,
                 options: []
             },
-            // --- BRANCH: HACKING (Placeholder logic) ---
+            // BRANCH: HACKING (Placeholder logic) ---
             {
                 id: "sm_hack_step1",
                 text: "Do you still have access to the email or phone number linked to the account?",
@@ -171,7 +171,7 @@ const WORKFLOW_DATA = [
                     { label: "Return to Menu", nextNodeId: "sm_start" }
                 ]
             },
-            // --- BRANCH: IMPERSONATION (Placeholder logic) ---
+            // BRANCH: IMPERSONATION (Placeholder logic) ---
             {
                 id: "sm_impersonation",
                 text: "Report the profile to the platform using your original ID proof.",
