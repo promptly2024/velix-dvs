@@ -18,6 +18,33 @@ export const startIncident = async (req: Request, res: Response) => {
             return res.status(404).json({ error: "Workflow not found for this threat." });
         }
 
+        // Check if user already has an open incident of this category
+        const existingIncident = await prisma.incidentReport.findFirst({
+            where: {
+                userId: userId,
+                category: category as any,
+                status: 'OPEN',
+                createdAt: { gte: new Date(Date.now() - 24 * 60 * 60 * 1000) } // within last 24 hours
+            }
+        });
+        if (existingIncident && existingIncident.currentNodeId) {
+            const currentNode = await prisma.workflowNode.findUnique({
+                where: { id: existingIncident.currentNodeId },
+                include: {
+                    options: { orderBy: { order: 'asc' } },
+                    template: true
+                }
+            });
+            // resume existing incident
+            return res.status(200).json({
+                message: "Resuming existing incident.",
+                incidentId: existingIncident.id,
+                node: currentNode,
+                restoredInput: existingIncident.inputs
+            });
+        }
+        // if no existing incident, create a new one
+
         // B. Fetch the First Question (Start Node) & its Options
         const firstNode = await prisma.workflowNode.findUnique({
             where: { id: workflow.startNodeId },
