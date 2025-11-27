@@ -19,6 +19,7 @@ import { orchestrationRouter } from "./routes/orchestration.route";
 import { shutdownWorkers, startWorkers } from "./workers";
 import { adminRouter } from "./routes/admin/admin.routes";
 import { userRouter } from "./routes/user/user.route";
+import incidentRouter from "./routes/incident.routes";
 
 const app = express();
 startWorkers();
@@ -66,6 +67,7 @@ app.use("/api/v1/perplexity-search", perplexitySearchRouter);
 app.use("/api/v1/orchestration", orchestrationRouter);
 app.use("/api/v1/admin", adminRouter);
 app.use("/api/v1/user", userRouter);
+app.use('/api/v1/incident', incidentRouter);
 
 
 
