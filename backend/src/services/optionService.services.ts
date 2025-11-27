@@ -21,6 +21,15 @@ export const optionServices = {
         return option;
     },
 
+    getQueryId: async (queryId: string) => {
+        const query = await prisma.sceneQuery.findUnique({
+            where: {
+                id: queryId
+            },
+        });
+        return query;
+    },
+
     updateOption: async (
         optionId: string,
         optionData: {

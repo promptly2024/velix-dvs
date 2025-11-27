@@ -1,5 +1,6 @@
-import { useRouter } from 'next/navigation'
-import React, { useEffect } from 'react'
+"use client"
+import { useRouter } from 'next/navigation';
+import { useEffect } from 'react';
 
 const Admin = () => {
     const router = useRouter();

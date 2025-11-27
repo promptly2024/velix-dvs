@@ -13,7 +13,7 @@ const createOptionSchema = z.object({
 export const createOptionController = async (req: Request, res: Response) => {
     try {
         const optionData = createOptionSchema.parse(req.body);
-        const existingQuery = await sceneService.getSceneById(optionData.queryId);
+        const existingQuery = await optionServices.getQueryId(optionData.queryId);
         if (!existingQuery) {
             return res.status(404).json({ success: false, message: 'Question not found' });
         }
