@@ -14,13 +14,16 @@ adminSceneRouter.post("/", requireAdminAuth, upload.array('media', 10), asyncHan
 // Get all scenes for a level
 adminSceneRouter.get("/level/:levelId/all", requireAdminAuth, asyncHandler(getAllScenesByLevelIdController));
 
+// Get scence by level ID
 adminSceneRouter.get("/level/:levelId", requireAdminAuth, asyncHandler(getSceneByLevelIdController));
 
 // Update scene
 adminSceneRouter.put("/:sceneId", requireAdminAuth, upload.array('media', 10), asyncHandler(updateSceneController));
 
 // DELETE scene
-adminSceneRouter.delete("/level/:levelId", requireAdminAuth, asyncHandler(deleteSceneController));  
+// adminSceneRouter.delete("/level/:levelId", requireAdminAuth, asyncHandler(deleteSceneController));  
+adminSceneRouter.delete("/:sceneId", requireAdminAuth, asyncHandler(deleteSceneController));
+
 
 // Get scene by ID
 adminSceneRouter.get("/:sceneId", requireAdminAuth, asyncHandler(getSceneByIdController));

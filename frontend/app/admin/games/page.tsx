@@ -19,6 +19,7 @@ export default function AdminGamesPage() {
     const [levels, setLevels] = useState<GameLevel[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState("");
+    const [deleting, setDeleting] = useState<number | null>(null);
 
     useEffect(() => {
         fetchLevels();
@@ -43,6 +44,48 @@ export default function AdminGamesPage() {
             setError(err.message);
         } finally {
             setLoading(false);
+        }
+    };
+
+    // DELETE LEVEL HANDLER
+    const handleDeleteLevel = async (levelNumber: number, levelTitle: string) => {
+        if (!window.confirm(
+            `Are you sure you want to delete Level ${levelNumber}: "${levelTitle}"?\n\n` +
+            `This will permanently delete:\n` +
+            `- The level\n` +
+            `- All scenes within it\n` +
+            `- All questions and options\n\n` +
+            `This action cannot be undone!`
+        )) {
+            return;
+        }
+
+        try {
+            setDeleting(levelNumber);
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `http://localhost:3001/api/v1/admin/levels/${levelNumber}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Remove level from state
+                setLevels(levels.filter(l => l.levelNumber !== levelNumber));
+                alert("Level deleted successfully");
+            } else {
+                alert(data.message || "Failed to delete level");
+            }
+        } catch (err: any) {
+            alert(err.message || "Error deleting level");
+        } finally {
+            setDeleting(null);
         }
     };
 
@@ -122,19 +165,29 @@ export default function AdminGamesPage() {
                             </div>
                         </div>
 
-                        <div className="flex gap-2">
-                            <Link
-                                href={`/admin/games/${level.levelNumber}`}
-                                className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-center text-sm transition"
+                        {/* Action Buttons */}
+                        <div className="space-y-2">
+                            <div className="flex gap-2">
+                                <Link
+                                    href={`/admin/games/${level.levelNumber}`}
+                                    className="flex-1 bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded text-center text-sm transition"
+                                >
+                                    View Details
+                                </Link>
+                                <Link
+                                    href={`/admin/games/${level.levelNumber}/edit`}
+                                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-center text-sm transition"
+                                >
+                                    Edit
+                                </Link>
+                            </div>
+                            <button
+                                onClick={() => handleDeleteLevel(level.levelNumber, level.title)}
+                                disabled={deleting === level.levelNumber}
+                                className="w-full bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded text-sm transition"
                             >
-                                View Details
-                            </Link>
-                            <Link
-                                href={`/admin/games/${level.levelNumber}/edit`}
-                                className="flex-1 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded text-center text-sm transition"
-                            >
-                                Edit
-                            </Link>
+                                {deleting === level.levelNumber ? "Deleting..." : "Delete Level"}
+                            </button>
                         </div>
                     </div>
                 ))}

@@ -45,4 +45,10 @@ export const levelService = {
         });
         return levels;
     },
+    deleteLevel: async (levelNumber: number) => {
+        const response = await prisma.gameLevel.delete({
+            where: { levelNumber },
+        });
+        return response;
+    },
 };

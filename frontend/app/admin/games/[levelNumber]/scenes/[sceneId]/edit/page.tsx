@@ -30,57 +30,27 @@ export default function EditScenePage() {
     const [error, setError] = useState("");
 
     useEffect(() => {
-        fetchScene();
-    }, [sceneId]);
+        fetchSceneDetails(sceneId);
+    }, []);
 
     useEffect(() => {
-        // Generate preview URLs when files change
         if (files) {
             const urls: string[] = [];
             Array.from(files).forEach((file) => {
                 urls.push(URL.createObjectURL(file));
             });
             setPreviewUrls(urls);
-
-            // Cleanup URLs on unmount
             return () => {
                 urls.forEach((url) => URL.revokeObjectURL(url));
             };
         }
     }, [files]);
 
-    const fetchScene = async () => {
-        try {
-            const token = localStorage.getItem("token");
-            // Note: You'll need to add a getSceneById endpoint or fetch from level details
-            const response = await fetch(
-                `http://localhost:3001/api/v1/admin/levels/${levelNumber}`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            const data = await response.json();
-            if (data.success) {
-                const levelId = data.data.id;
-                await fetchSceneDetails(levelId);
-            } else {
-                setError(data.message);
-            }
-        } catch (err: any) {
-            setError(err.message || "Failed to fetch scene");
-        } finally {
-            setLoading(false);
-        }
-    };
-
-    const fetchSceneDetails = async (levelId: string) => {
+    const fetchSceneDetails = async (sceneId: string) => {
         try {
             const token = localStorage.getItem("token");
             const response = await fetch(
-                `http://localhost:3001/api/v1/admin/scene/level/${levelId}`,
+                `http://localhost:3001/api/v1/admin/scene/${sceneId}`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -105,6 +75,9 @@ export default function EditScenePage() {
             }
         } catch (err: any) {
             console.error("Error fetching scene details:", err);
+        }
+        finally {
+            setLoading(false);
         }
     };
 

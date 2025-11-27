@@ -63,3 +63,17 @@ export const getLevelByNumberController = async (req: Request, res: Response) =>
         res.status(500).json({ success: false, message: 'Server error' });
     }
 };
+
+export const deleteLevelController = async (req: Request, res: Response) => {
+    try {
+        const levelNumber = parseInt(req.params.levelNumber, 10);
+        const existingLevel = await levelService.getLevelByNumber(levelNumber);
+        if (!existingLevel) {
+            return res.status(404).json({ success: false, message: 'Level not found' });
+        }
+        await levelService.deleteLevel(levelNumber);
+        res.status(200).json({ success: true, message: 'Level deleted successfully' });
+    } catch (error) {
+        res.status(500).json({ success: false, message: error instanceof Error ? error.message : 'Server error' });
+    }
+};

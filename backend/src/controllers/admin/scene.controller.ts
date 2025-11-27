@@ -220,16 +220,42 @@ export const updateSceneController = async (req: Request, res: Response) => {
     }
 };
 
+// export const deleteSceneController = async (req: Request, res: Response) => {
+//     try {
+//         const { levelId } = req.params;
+//         const scene = await sceneService.getSceneByLevelId(levelId);
+        
+//         if (!scene) {
+//             return res.status(404).json({ success: false, message: 'Scene not found' });
+//         }
+
+//         await sceneService.deleteScene(scene.id);
+//         res.status(200).json({ success: true, message: 'Scene deleted successfully' });
+        
+//     } catch (error) {
+//         const message = error instanceof Error ? error.message : String(error);
+//         res.status(500).json({ success: false, message });
+//     }
+// };
+
+
 export const deleteSceneController = async (req: Request, res: Response) => {
     try {
-        const { levelId } = req.params;
-        const scene = await sceneService.getSceneByLevelId(levelId);
-        
+        const { sceneId } = req.params;
+        if(!sceneId){
+            return res.status(404).json({
+                message: "Scence Id not found"
+            })
+        }
+        const scene = await sceneService.getSceneById(sceneId);
         if (!scene) {
-            return res.status(404).json({ success: false, message: 'Scene not found' });
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Scene not found' 
+            });
         }
 
-        await sceneService.deleteScene(scene.id);
+        await sceneService.deleteScene(sceneId);
         res.status(200).json({ success: true, message: 'Scene deleted successfully' });
         
     } catch (error) {

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import asyncHandler from "../../utils/asyncHandler";
-import { createLevelController, getAllLevelsController, getLevelByNumberController, updateLevelController } from "../../controllers/admin/level.controller";
+import { createLevelController, deleteLevelController, getAllLevelsController, getLevelByNumberController, updateLevelController } from "../../controllers/admin/level.controller";
 import { requireAdminAuth } from "../../middlewares/requireAuth";
 
 export const adminLevelRouter = Router();
@@ -16,3 +16,6 @@ adminLevelRouter.put("/:levelNumber", requireAdminAuth, asyncHandler(updateLevel
 // GET levels
 adminLevelRouter.get("/", requireAdminAuth, asyncHandler(getAllLevelsController));
 adminLevelRouter.get("/:levelNumber", requireAdminAuth, asyncHandler(getLevelByNumberController));
+
+// DELETE level by number
+adminLevelRouter.delete("/:levelNumber", requireAdminAuth, asyncHandler(deleteLevelController));

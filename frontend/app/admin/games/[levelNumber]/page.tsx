@@ -48,6 +48,7 @@ export default function LevelDetailsPage() {
     const [loading, setLoading] = useState(true);
     const [scenesLoading, setScenesLoading] = useState(true);
     const [error, setError] = useState("");
+    const [deleting, setDeleting] = useState<string | null>(null);
 
     useEffect(() => {
         fetchLevelDetails();
@@ -68,7 +69,6 @@ export default function LevelDetailsPage() {
             const data = await response.json();
             if (data.success) {
                 setLevel(data.data);
-                // Fetch scenes after getting level details
                 await fetchScenes(data.data.id);
             } else {
                 setError(data.message);
@@ -85,7 +85,7 @@ export default function LevelDetailsPage() {
             setScenesLoading(true);
             const token = localStorage.getItem("token");
             const response = await fetch(
-                `http://localhost:3001/api/v1/admin/scene/level/${levelId}/all`, // Changed URL
+                `http://localhost:3001/api/v1/admin/scene/level/${levelId}/all`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -108,6 +108,135 @@ export default function LevelDetailsPage() {
             setScenes([]);
         } finally {
             setScenesLoading(false);
+        }
+    };
+
+    // DELETE SCENE
+    const handleDeleteScene = async (sceneId: string, sceneNumber: number) => {
+        if (!window.confirm(`Are you sure you want to delete Scene ${sceneNumber}? This will also delete all questions and options within it.`)) {
+            return;
+        }
+
+        try {
+            setDeleting(sceneId);
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `http://localhost:3001/api/v1/admin/scene/${sceneId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Remove scene from state
+                setScenes(scenes.filter(s => s.id !== sceneId));
+                alert("Scene deleted successfully");
+            } else {
+                alert(data.message || "Failed to delete scene");
+            }
+        } catch (err: any) {
+            alert(err.message || "Error deleting scene");
+        } finally {
+            setDeleting(null);
+        }
+    };
+
+    // DELETE QUESTION
+    const handleDeleteQuestion = async (queryId: string, sceneId: string, queryNumber: number) => {
+        if (!window.confirm(`Are you sure you want to delete Question ${queryNumber}? This will also delete all its options.`)) {
+            return;
+        }
+
+        try {
+            setDeleting(queryId);
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `http://localhost:3001/api/v1/admin/question/${queryId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Remove query from state
+                setScenes(scenes.map(scene => {
+                    if (scene.id === sceneId) {
+                        return {
+                            ...scene,
+                            queries: scene.queries.filter(q => q.id !== queryId)
+                        };
+                    }
+                    return scene;
+                }));
+                alert("Question deleted successfully");
+            } else {
+                alert(data.message || "Failed to delete question");
+            }
+        } catch (err: any) {
+            alert(err.message || "Error deleting question");
+        } finally {
+            setDeleting(null);
+        }
+    };
+
+    // DELETE OPTION
+    const handleDeleteOption = async (optionId: string, sceneId: string, queryId: string, optionText: string) => {
+        if (!window.confirm(`Are you sure you want to delete option: "${optionText}"?`)) {
+            return;
+        }
+
+        try {
+            setDeleting(optionId);
+            const token = localStorage.getItem("token");
+            const response = await fetch(
+                `http://localhost:3001/api/v1/admin/option/${optionId}`,
+                {
+                    method: "DELETE",
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+
+            const data = await response.json();
+
+            if (data.success) {
+                // Remove option from state
+                setScenes(scenes.map(scene => {
+                    if (scene.id === sceneId) {
+                        return {
+                            ...scene,
+                            queries: scene.queries.map(query => {
+                                if (query.id === queryId) {
+                                    return {
+                                        ...query,
+                                        options: query.options.filter(opt => opt.id !== optionId)
+                                    };
+                                }
+                                return query;
+                            })
+                        };
+                    }
+                    return scene;
+                }));
+                alert("Option deleted successfully");
+            } else {
+                alert(data.message || "Failed to delete option");
+            }
+        } catch (err: any) {
+            alert(err.message || "Error deleting option");
+        } finally {
+            setDeleting(null);
         }
     };
 
@@ -242,6 +371,13 @@ export default function LevelDetailsPage() {
                                         >
                                             Edit
                                         </Link>
+                                        <button
+                                            onClick={() => handleDeleteScene(scene.id, scene.sceneNumber)}
+                                            disabled={deleting === scene.id}
+                                            className="bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white px-4 py-2 rounded text-sm transition"
+                                        >
+                                            {deleting === scene.id ? "Deleting..." : "Delete"}
+                                        </button>
                                     </div>
                                 </div>
 
@@ -290,17 +426,32 @@ export default function LevelDetailsPage() {
                                                 key={query.id}
                                                 className="bg-gray-700 border border-gray-600 rounded-lg p-4"
                                             >
-                                                {/* Question Header with Add Option Button */}
+                                                {/* Question Header with Buttons */}
                                                 <div className="flex justify-between items-start mb-2">
                                                     <p className="text-white font-medium flex-1">
                                                         Q{query.queryNumber}: {query.questionText}
                                                     </p>
-                                                    <Link
-                                                        href={`/admin/games/${levelNumber}/questions/${query.id}/options/create`}
-                                                        className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition ml-4"
-                                                    >
-                                                        + Add Option
-                                                    </Link>
+                                                    <div className="flex gap-2 ml-4">
+                                                        <Link
+                                                            href={`/admin/games/${levelNumber}/questions/${query.id}/options/create`}
+                                                            className="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded text-xs transition"
+                                                        >
+                                                            + Add Option
+                                                        </Link>
+                                                        <Link
+                                                            href={`/admin/games/${levelNumber}/questions/${query.id}/edit`}
+                                                            className="bg-blue-600 hover:bg-blue-700 text-white px-3 py-1 rounded text-xs transition"
+                                                        >
+                                                            Edit
+                                                        </Link>
+                                                        <button
+                                                            onClick={() => handleDeleteQuestion(query.id, scene.id, query.queryNumber)}
+                                                            disabled={deleting === query.id}
+                                                            className="bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white px-3 py-1 rounded text-xs transition"
+                                                        >
+                                                            {deleting === query.id ? "..." : "Delete"}
+                                                        </button>
+                                                    </div>
                                                 </div>
 
                                                 {/* Hint */}
@@ -330,7 +481,7 @@ export default function LevelDetailsPage() {
                                                                 }`}
                                                             >
                                                                 <div className="flex justify-between items-center">
-                                                                    <div className="flex items-center gap-2">
+                                                                    <div className="flex items-center gap-2 flex-1">
                                                                         <span className="text-white">
                                                                             {String.fromCharCode(65 + idx)}.{" "}
                                                                             {option.optionText}
@@ -341,9 +492,24 @@ export default function LevelDetailsPage() {
                                                                             </span>
                                                                         )}
                                                                     </div>
-                                                                    <span className="text-sm text-gray-400">
-                                                                        {option.pointsAwarded} pts
-                                                                    </span>
+                                                                    <div className="flex items-center gap-3">
+                                                                        <span className="text-sm text-gray-400">
+                                                                            {option.pointsAwarded} pts
+                                                                        </span>
+                                                                        <Link
+                                                                            href={`/admin/games/${levelNumber}/options/${option.id}/edit`}
+                                                                            className="bg-blue-600 hover:bg-blue-700 text-white px-2 py-1 rounded text-xs transition"
+                                                                        >
+                                                                            Edit
+                                                                        </Link>
+                                                                        <button
+                                                                            onClick={() => handleDeleteOption(option.id, scene.id, query.id, option.optionText)}
+                                                                            disabled={deleting === option.id}
+                                                                            className="bg-red-600 hover:bg-red-700 disabled:bg-red-800 disabled:cursor-not-allowed text-white px-2 py-1 rounded text-xs transition"
+                                                                        >
+                                                                            {deleting === option.id ? "..." : "Delete"}
+                                                                        </button>
+                                                                    </div>
                                                                 </div>
                                                             </div>
                                                         ))
