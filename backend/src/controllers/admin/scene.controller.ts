@@ -104,6 +104,25 @@ export const createSceneController = async (req: Request, res: Response) => {
     }
 };
 
+export const getAllScenesByLevelIdController = async (req: Request, res: Response) => {
+    try {
+        const { levelId } = req.params;
+        const scenes = await sceneService.getAllScenesByLevelId(levelId);
+        
+        if (!scenes || scenes.length === 0) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'No scenes found for this level' 
+            });
+        }
+
+        res.status(200).json({ success: true, data: scenes });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        res.status(500).json({ success: false, message });
+    }
+};
+
 export const getSceneByLevelIdController = async (req: Request, res: Response) => {
     try {
         const { levelId } = req.params;
@@ -122,6 +141,26 @@ export const getSceneByLevelIdController = async (req: Request, res: Response) =
         res.status(500).json({ success: false, message });
     }
 };
+
+export const getSceneByIdController = async (req: Request, res: Response) => {
+    try {
+        const { sceneId } = req.params;
+        const scene = await sceneService.getSceneById(sceneId);
+        
+        if (!scene) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'Scene not found' 
+            });
+        }
+
+        res.status(200).json({ success: true, data: scene });
+    } catch (error) {
+        const message = error instanceof Error ? error.message : String(error);
+        res.status(500).json({ success: false, message });
+    }
+};
+
 
 export const updateSceneController = async (req: Request, res: Response) => {
     try {

@@ -143,7 +143,6 @@ export default function AdminGamesPage() {
             {/* Empty State */}
             {levels.length === 0 && !loading && (
                 <div className="text-center py-16 bg-gray-800 rounded-lg border border-gray-700">
-                    <div className="text-6xl mb-4">🎮</div>
                     <h3 className="text-xl font-semibold text-white mb-2">No Levels Created Yet</h3>
                     <p className="text-gray-400 mb-6">Create your first game level to get started</p>
                     <Link

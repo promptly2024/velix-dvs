@@ -37,6 +37,21 @@ export const sceneService = {
         });
         return scene;
     },
+    getAllScenesByLevelId: async (levelId: string) => {
+        const scenes = await prisma.levelScene.findMany({
+            where: { levelId },
+            orderBy: { sceneNumber: 'asc' },
+            include: {
+                queries: {
+                    include: {
+                        options: true
+                    },
+                    orderBy: { queryNumber: 'asc' }
+                }
+            }
+        });
+        return scenes;
+    },
     deleteScene: async (sceneId: string) => {
         const response = await prisma.levelScene.delete({
             where: { id: sceneId },

@@ -1,6 +1,6 @@
 import { Router } from "express";
 import asyncHandler from "../../utils/asyncHandler";
-import { createSceneController, deleteSceneController, getSceneByLevelIdController, updateSceneController } from "../../controllers/admin/scene.controller";
+import { createSceneController, deleteSceneController, getAllScenesByLevelIdController, getSceneByIdController, getSceneByLevelIdController, updateSceneController } from "../../controllers/admin/scene.controller";
 import { requireAdminAuth } from "../../middlewares/requireAuth";
 import { upload } from "../../middlewares/upload";
 
@@ -10,7 +10,15 @@ export const adminSceneRouter = Router();
 
 // POST scene
 adminSceneRouter.post("/", requireAdminAuth, upload.array('media', 10), asyncHandler(createSceneController));
+
+// Get all scenes for a level
+adminSceneRouter.get("/level/:levelId/all", requireAdminAuth, asyncHandler(getAllScenesByLevelIdController));
+
 adminSceneRouter.get("/level/:levelId", requireAdminAuth, asyncHandler(getSceneByLevelIdController));
+
+// Get scene by ID
+adminSceneRouter.get("/:sceneId", requireAdminAuth, asyncHandler(getSceneByIdController));
+
 // Update scene
 adminSceneRouter.put("/:sceneId", requireAdminAuth, upload.array('media', 10), asyncHandler(updateSceneController));
 // DELETE scene
