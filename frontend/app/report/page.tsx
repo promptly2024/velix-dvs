@@ -47,6 +47,10 @@ const IncidentReportPage = () => {
     const [threats, setThreats] = useState<Threats[]>([]);
     const [finishMessage, setFinishMessage] = useState("");
     const [showThreatSelection, setShowThreatSelection] = useState(true);
+    // Template form state
+    const [templateInputs, setTemplateInputs] = useState<Record<string, string>>({});
+    const [generatedText, setGeneratedText] = useState<string>("");
+    const [isGenerating, setIsGenerating] = useState<boolean>(false);
 
     // 1. INITIALIZE WORKFLOW
     // useEffect(() => {
@@ -132,6 +136,44 @@ const IncidentReportPage = () => {
         } finally {
             setLoading(false);
         }
+    };
+
+    // Generate template without advancing the node
+    const handleGenerateTemplate = async () => {
+        if (!incidentId) return;
+        setIsGenerating(true);
+        setGeneratedText("");
+        try {
+            const res = await fetch(`${API_BASE}/generate-template`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': TOKEN,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ incidentId, inputData: templateInputs })
+            });
+            const data = await res.json();
+            if (!res.ok) {
+                console.error('Generate template failed:', data);
+                return;
+            }
+            setGeneratedText(data.filledText || "");
+        } catch (e) {
+            console.error('Generate template error:', e);
+        } finally {
+            setIsGenerating(false);
+        }
+    };
+
+    const downloadText = () => {
+        if (!generatedText) return;
+        const blob = new Blob([generatedText], { type: 'text/plain;charset=utf-8' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'complaint_letter.txt';
+        a.click();
+        URL.revokeObjectURL(url);
     };
 
     // Icon based on node type
@@ -258,9 +300,26 @@ const IncidentReportPage = () => {
                     {currentNode?.type === 'TEMPLATE_FORM' && (
                         <div className="mb-6 p-4 bg-blue-50 border border-blue-100 rounded-lg">
                             <p className="text-sm text-blue-700 mb-2 font-medium">Generate Complaint Letter</p>
-                            <input type="text" placeholder="Enter Bank Name" className="w-full p-2 mb-2 border rounded" />
-                            <input type="text" placeholder="Transaction Amount" className="w-full p-2 mb-2 border rounded" />
-                            <button className="text-xs bg-blue-600 text-white px-3 py-1 rounded">Generate Preview</button>
+                            <div className="grid grid-cols-1 gap-2">
+                                <input value={templateInputs.BankName || ''} onChange={(e) => setTemplateInputs({ ...templateInputs, BankName: e.target.value })} type="text" placeholder="Bank Name ({{BankName}})" className="w-full p-2 border rounded" />
+                                <input value={templateInputs.Amount || ''} onChange={(e) => setTemplateInputs({ ...templateInputs, Amount: e.target.value })} type="text" placeholder="Amount ({{Amount}})" className="w-full p-2 border rounded" />
+                                <input value={templateInputs.Date || ''} onChange={(e) => setTemplateInputs({ ...templateInputs, Date: e.target.value })} type="text" placeholder="Date ({{Date}})" className="w-full p-2 border rounded" />
+                                <input value={templateInputs.UserName || ''} onChange={(e) => setTemplateInputs({ ...templateInputs, UserName: e.target.value })} type="text" placeholder="Your Name ({{UserName}})" className="w-full p-2 border rounded" />
+                                <input value={templateInputs.AccountNumber || ''} onChange={(e) => setTemplateInputs({ ...templateInputs, AccountNumber: e.target.value })} type="text" placeholder="Account Number ({{AccountNumber}})" className="w-full p-2 border rounded" />
+                                <input value={templateInputs.TransactionID || ''} onChange={(e) => setTemplateInputs({ ...templateInputs, TransactionID: e.target.value })} type="text" placeholder="Transaction ID ({{TransactionID}})" className="w-full p-2 border rounded" />
+                                <input value={templateInputs.Phone || ''} onChange={(e) => setTemplateInputs({ ...templateInputs, Phone: e.target.value })} type="text" placeholder="Phone ({{Phone}})" className="w-full p-2 border rounded" />
+                            </div>
+                            <div className="flex items-center gap-3 mt-3">
+                                <button disabled={isGenerating} onClick={handleGenerateTemplate} className="text-xs bg-blue-600 hover:bg-blue-700 disabled:opacity-60 text-white px-3 py-1 rounded">
+                                    {isGenerating ? 'Generating...' : 'Generate Preview'}
+                                </button>
+                                {generatedText && (
+                                    <button onClick={downloadText} className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">Download</button>
+                                )}
+                            </div>
+                            {generatedText && (
+                                <textarea className="mt-3 w-full h-48 p-2 border rounded text-sm" readOnly value={generatedText} />
+                            )}
                         </div>
                     )}
 
@@ -268,8 +327,8 @@ const IncidentReportPage = () => {
                     <div className="space-y-3 mt-6">
                         {loading ? (
                             <div className="text-center text-gray-400">Processing...</div>
-                        ) : (
-                            currentNode?.options.map((option) => (
+                        ) : currentNode?.options && currentNode.options.length > 0 ? (
+                            currentNode.options.map((option) => (
                                 <button
                                     key={option.id}
                                     onClick={() => handleOptionClick(option.id)}
@@ -283,6 +342,23 @@ const IncidentReportPage = () => {
                                     <ArrowRight size={18} className="opacity-0 group-hover:opacity-100 transition-opacity" />
                                 </button>
                             ))
+                        ) : (
+                            <div className="text-center">
+                                <p className="text-gray-600 mb-4">Process completed. No further actions available.</p>
+                                <button
+                                    onClick={() => {
+                                        setShowThreatSelection(true);
+                                        setIncidentId(null);
+                                        setCurrentNode(null);
+                                        setIsFinished(false);
+                                        setTemplateInputs({});
+                                        setGeneratedText("");
+                                    }}
+                                    className="flex items-center justify-center gap-2 mx-auto bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 px-6 rounded-lg transition-all"
+                                >
+                                    <RefreshCcw size={18} /> Return to Home
+                                </button>
+                            </div>
                         )}
                     </div>
 
