@@ -51,6 +51,7 @@ const IncidentReportPage = () => {
     const [templateInputs, setTemplateInputs] = useState<Record<string, string>>({});
     const [generatedText, setGeneratedText] = useState<string>("");
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
+    const [isDownloadingPdf, setIsDownloadingPdf] = useState<boolean>(false);
 
     // 1. INITIALIZE WORKFLOW
     // useEffect(() => {
@@ -174,6 +175,39 @@ const IncidentReportPage = () => {
         a.download = 'complaint_letter.txt';
         a.click();
         URL.revokeObjectURL(url);
+    };
+
+    const downloadPdf = async () => {
+        if (!incidentId) return;
+        setIsDownloadingPdf(true);
+        try {
+            const res = await fetch(`${API_BASE}/generate-template-pdf`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': TOKEN,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ incidentId, inputData: templateInputs })
+            });
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                alert('Failed to generate PDF. ');
+                return;
+            }
+            const blob = await res.blob();
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'incident_template.pdf';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+        } catch (e) {
+            alert('Error generating PDF. ');
+            console.error('Download PDF error:', e);
+        } finally {
+            setIsDownloadingPdf(false);
+        }
     };
 
     // Icon based on node type
@@ -316,6 +350,9 @@ const IncidentReportPage = () => {
                                 {generatedText && (
                                     <button onClick={downloadText} className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">Download</button>
                                 )}
+                                <button disabled={isDownloadingPdf} onClick={downloadPdf} className="text-xs bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white px-3 py-1 rounded">
+                                    {isDownloadingPdf ? 'Preparing PDF...' : 'Download PDF'}
+                                </button>
                             </div>
                             {generatedText && (
                                 <textarea className="mt-3 w-full h-48 p-2 border rounded text-sm" readOnly value={generatedText} />

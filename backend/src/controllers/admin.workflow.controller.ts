@@ -1,11 +1,11 @@
 import { Request, Response } from 'express';
-import {  WorkflowNodeType } from '@prisma/client';
+import { WorkflowNodeType } from '@prisma/client';
 import { prisma } from '../lib/prisma';
 
 
-// ==========================================
+
 // 1. WORKFLOW MANAGEMENT
-// ==========================================
+
 
 // Get All Threats (List for Dropdown)
 export const getAllWorkflows = async (req: Request, res: Response) => {
@@ -57,9 +57,9 @@ export const setStartNode = async (req: Request, res: Response) => {
     }
 };
 
-// ==========================================
+
 // 2. NODE MANAGEMENT (Questions/Steps)
-// ==========================================
+
 
 // Create a New Node
 export const createNode = async (req: Request, res: Response) => {
@@ -111,9 +111,9 @@ export const deleteNode = async (req: Request, res: Response) => {
     }
 };
 
-// ==========================================
+
 // 3. OPTION MANAGEMENT (Connecting Nodes)
-// ==========================================
+
 
 // Add a Button/Link (Edge)
 export const addOption = async (req: Request, res: Response) => {

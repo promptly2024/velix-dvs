@@ -5,9 +5,9 @@ const prisma = new PrismaClient();
 async function seedGuardianMode() {
   console.log('🌱 Starting Guardian Mode seed...');
 
-  // ============================================
+  ==
   // 1. FINANCIAL THREAT
-  // ============================================
+  ==
   const financialThreat = await prisma.threatCategory.upsert({
     where: { key: 'FINANCIAL_THREAT' },
     update: {},
@@ -256,9 +256,9 @@ async function seedGuardianMode() {
 
   console.log('✅ Financial Threat workflow created');
 
-  // ============================================
+  ==
   // 2. IDENTITY THEFT RISK
-  // ============================================
+  ==
   const identityThreat = await prisma.threatCategory.upsert({
     where: { key: 'IDENTITY_THEFT_RISK' },
     update: {},
@@ -464,9 +464,9 @@ async function seedGuardianMode() {
 
   console.log('✅ Identity Theft workflow created');
 
-  // ============================================
+  ==
   // 3. PROFESSIONAL EXPOSURE
-  // ============================================
+  ==
   const professionalThreat = await prisma.threatCategory.upsert({
     where: { key: 'PROFESSIONAL_EXPOSURE' },
     update: {},
@@ -673,9 +673,9 @@ async function seedGuardianMode() {
 
   console.log('✅ Professional Exposure workflow created');
 
-  // ============================================
+  ==
   // 4. SOCIAL MEDIA VULNERABILITY
-  // ============================================
+  ==
   const socialMediaThreat = await prisma.threatCategory.upsert({
     where: { key: 'SOCIAL_MEDIA_VULNERABILITY' },
     update: {},
@@ -889,9 +889,9 @@ async function seedGuardianMode() {
 
   console.log('✅ Social Media Vulnerability workflow created');
 
-  // ============================================
+  ==
   // 5. HEALTHCARE PRIVACY RISK
-  // ============================================
+  ==
   const healthcareThreat = await prisma.threatCategory.upsert({
     where: { key: 'HEALTHCARE_PRIVACY_RISK' },
     update: {},
@@ -1098,9 +1098,9 @@ async function seedGuardianMode() {
 
   console.log('✅ Healthcare Privacy Risk workflow created');
 
-  // ============================================
+  ==
   // 6. LOCATION PRIVACY THREAT
-  // ============================================
+  ==
   const locationThreat = await prisma.threatCategory.upsert({
     where: { key: 'LOCATION_PRIVACY_THREAT' },
     update: {},
@@ -1309,9 +1309,9 @@ async function seedGuardianMode() {
 
   console.log('✅ Location Privacy Threat workflow created');
 
-  // ============================================
+  ==
   // 7. COMMUNICATION SECURITY (Shorter workflows for remaining threats)
-  // ============================================
+  ==
   const commThreat = await prisma.threatCategory.upsert({
     where: { key: 'COMMUNICATION_SECURITY' },
     update: {},
@@ -1415,9 +1415,9 @@ async function seedGuardianMode() {
 
   console.log('✅ Communication Security workflow created');
 
-  // ============================================
+  ==
   // 8-13: Remaining Workflows (Streamlined)
-  // ============================================
+  ==
 
   // 8. DIGITAL FOOTPRINT RISK
   const digitalFootprintThreat = await prisma.threatCategory.upsert({

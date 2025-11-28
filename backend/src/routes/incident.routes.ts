@@ -1,5 +1,5 @@
 import express from 'express';
-import { startIncident, nextStep, getAllThreats, generateTemplateForCurrentNode } from '../controllers/incident.controller';
+import { startIncident, nextStep, getAllThreats, generateTemplateForCurrentNode, generateTemplatePdf } from '../controllers/incident.controller';
 import { requireAuth } from '../middlewares/requireAuth';
 
 const incidentRouter = express.Router();
@@ -16,6 +16,7 @@ incidentRouter.post('/next', requireAuth, nextStep);
 // POST: /generate-template
 // Body: { "incidentId": "...", "inputData": { key: value } }
 incidentRouter.post('/generate-template', requireAuth, generateTemplateForCurrentNode);
+incidentRouter.post('/generate-template-pdf', requireAuth, generateTemplatePdf);
 
 // get all 13 threats
 incidentRouter.get('/threats', requireAuth, getAllThreats);

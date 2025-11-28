@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { PrismaClient } from '@prisma/client';
+import puppeteer from 'puppeteer';
 
 const prisma = new PrismaClient();
 
@@ -44,7 +45,6 @@ export const startIncident = async (req: Request, res: Response) => {
                 console.log("Current node not found for incident:", existingIncident.id);
                 return res.status(500).json({ error: "Corrupted incident data. Please start a new incident." });
             }
-            console.log("\n\nFound existing incident:", currentNode);
 
             // Check if incident is completed (no options OR all options lead to null)
             const isCompleted = currentNode.options.length === 0 ||
@@ -106,9 +106,8 @@ export const startIncident = async (req: Request, res: Response) => {
     }
 };
 
-// ==========================================
+
 // 2. NEXT STEP (User clicks an option)
-// ==========================================
 export const nextStep = async (req: Request, res: Response) => {
     try {
         const { incidentId, selectedOptionId } = req.body;
@@ -160,9 +159,9 @@ export const nextStep = async (req: Request, res: Response) => {
     }
 };
 
-// ==========================================
+
 // 3. GENERATE TEMPLATE (for TEMPLATE_FORM node)
-// ==========================================
+
 export const generateTemplateForCurrentNode = async (req: Request, res: Response) => {
     try {
         const { incidentId, inputData } = req.body as { incidentId?: string; inputData?: Record<string, string> };
@@ -203,6 +202,82 @@ export const generateTemplateForCurrentNode = async (req: Request, res: Response
         });
     } catch (error) {
         console.error('Generate Template Error:', error);
+        return res.status(500).json({ error: 'Internal Server Error' });
+    }
+};
+
+export const generateTemplatePdf = async (req: Request, res: Response) => {
+    try {
+        const { incidentId, inputData } = req.body as { incidentId?: string; inputData?: Record<string, string> };
+        
+        if (!incidentId) return res.status(400).json({ error: 'incidentId is required' });
+
+        const incident = await prisma.incidentReport.findUnique({ where: { id: incidentId } });
+      
+        if (!incident) return res.status(404).json({ error: 'Incident not found' });
+        if (!incident.currentNodeId) return res.status(400).json({ error: 'Incident has no active node' });
+
+        const node = await prisma.workflowNode.findUnique({
+            where: { id: incident.currentNodeId },
+            include: { template: true }
+        });
+       
+        if (!node) return res.status(404).json({ error: 'Current node not found' });
+        if (node.type !== 'TEMPLATE_FORM') return res.status(400).json({ error: 'Current node is not a TEMPLATE_FORM' });
+        if (!node.template) return res.status(404).json({ error: 'Template not linked to current node' });
+
+        const templateBody = node.template.body || '';
+        const inputValues = inputData || {};
+       
+        // Fill placeholders like {{Key}}
+        const filledText = templateBody.replace(/\{\{\s*([A-Za-z0-9_]+)\s*\}\}/g, (_match, key: string) => {
+            return inputValues[key] ?? `{{${key}}}`;
+        });
+        // Save the inputs
+        await prisma.incidentReport.update({
+            where: { id: incidentId },
+            data: { inputs: { ...(incident.inputs as any), ...(inputValues as any) } }
+        });
+        console.log('Generate PDF - Inputs saved to incident');
+
+        // Convert to PDF (use stable launch args for Windows/server envs)
+        console.log('Generate PDF - Launching browser...');
+        const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+        const page = await browser.newPage();
+
+        const html = `
+            <html>
+                <head>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 32px; line-height: 1.6; }
+                        h1, h2, h3 { margin-bottom: 8px; }
+                        p { margin-bottom: 12px; }
+                        pre { white-space: pre-wrap; }
+                    </style>
+                </head>
+                <body>
+                    <pre>${filledText}</pre>
+                </body>
+            </html>
+        `;
+
+        await page.setContent(html, { waitUntil: 'load' });
+       
+        const pdfBuffer = await page.pdf({
+            format: 'A4',
+            margin: { top: '20mm', bottom: '20mm', left: '15mm', right: '15mm' }
+        });
+       
+        await browser.close();
+       
+        const fileName = `${node.template.name || 'template'}.pdf`;
+        
+        res.setHeader('Content-Type', 'application/pdf');
+        res.setHeader('Content-Disposition', `attachment; filename="${fileName}"`);
+        return res.send(pdfBuffer);
+
+    } catch (error) {
+        console.error('PDF Generate Template Error:', error);
         return res.status(500).json({ error: 'Internal Server Error' });
     }
 };
