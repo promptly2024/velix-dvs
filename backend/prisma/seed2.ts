@@ -1304,12 +1304,4 @@ main()
         console.log('🌿 Prisma Client Disconnected.')
     })
 
-/** jaha se chhode wahi se khule
- * Template download ho har jagah jaha required ho
- * 
- * Admin Login
- * User Management (List, Deactivate, Role Change)
- * Game create and edit (CRUD)
- * Guardian mode 
- * 
-*/
+    
