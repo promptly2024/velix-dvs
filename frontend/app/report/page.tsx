@@ -348,7 +348,7 @@ const IncidentReportPage = () => {
                                     {isGenerating ? 'Generating...' : 'Generate Preview'}
                                 </button>
                                 {generatedText && (
-                                    <button onClick={downloadText} className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">Download</button>
+                                    <button onClick={downloadText} className="text-xs bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded">Download Text</button>
                                 )}
                                 <button disabled={isDownloadingPdf} onClick={downloadPdf} className="text-xs bg-purple-600 hover:bg-purple-700 disabled:opacity-60 text-white px-3 py-1 rounded">
                                     {isDownloadingPdf ? 'Preparing PDF...' : 'Download PDF'}

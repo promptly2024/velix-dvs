@@ -9,6 +9,49 @@ Note: Verify links periodically, as portals change.
   - Article outline: When to call 1930 (Golden Hour), what to say, tracking complaint number, follow-up steps.
 - Digital Police (Lost Articles): https://digitalpolice.gov.in/
   - Steps: State selection → Lost Article report → receive NCR PDF → how to use it later.
+  
+### State/UT Police Online Portals (for FIR/Complaints)
+Use the official state/UT police citizen portals where available. Create articles with step-by-step filing guidance per portal.
+
+States
+- Andhra Pradesh: https://citizen.appolice.gov.in
+- Arunachal Pradesh: http://arunpol.nic.in
+- Assam: https://police.assam.gov.in
+- Bihar: http://police.bihar.gov.in
+- Chhattisgarh: http://cgpolice.gov.in
+- Goa: https://citizen.goapolice.gov.in
+- Gujarat: http://www.police.gujarat.gov.in
+- Haryana: https://haryanapolice.gov.in/login
+- Himachal Pradesh: https://citizenportal.hppolice.gov.in/citizen
+- Jharkhand: https://www.jhpolice.gov.in
+- Karnataka: https://ksp.karnataka.gov.in
+- Kerala: https://keralapolice.gov.in
+- Madhya Pradesh: https://www.mppolice.gov.in
+- Maharashtra: https://www.mahapolice.gov.in
+- Manipur: http://www.manipurpolice.gov.in
+- Meghalaya: https://megpolice.gov.in
+- Mizoram: http://police.mizoram.gov.in
+- Nagaland: https://police.nagaland.gov.in
+- Odisha: https://odishapolice.gov.in
+- Punjab: http://www.punjabpolice.gov.in
+- Rajasthan: http://police.rajasthan.gov.in
+- Sikkim: https://police.sikkim.gov.in
+- Tamil Nadu: http://www.tnpolice.gov.in
+- Telangana: https://www.tspolice.gov.in
+- Tripura: https://tripurapolice.gov.in
+- Uttar Pradesh: https://uppolice.gov.in
+- Uttarakhand: https://uttarakhandpolice.uk.gov.in
+- West Bengal: https://wbpolice.gov.in
+
+Union Territories
+- Andaman and Nicobar Islands: https://police.andaman.gov.in
+- Chandigarh: https://chandigarhpolice.gov.in
+- Dadra & Nagar Haveli and Daman & Diu: https://dnhpd.gov.in
+- Delhi (NCT): https://delhipolice.gov.in
+- Jammu & Kashmir: https://www.jkpolice.gov.in
+- Ladakh: https://police.ladakh.gov.in
+- Lakshadweep: https://police.lakshadweep.gov.in
+- Puducherry: https://police.py.gov.in
 - DoT Sanchar Saathi (Reporting/Info): https://www.sancharsaathi.gov.in/
   - Steps: Logging in → filing SIM/telecom fraud complaints → tracking complaints.
 - TAFCOP (Mobile numbers linked to Aadhaar): https://tafcop.sancharsaathi.gov.in/

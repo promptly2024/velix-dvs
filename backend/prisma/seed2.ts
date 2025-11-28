@@ -36,7 +36,7 @@ const WORKFLOW_DATA = [
                 id: "fin_action_block_card",
                 text: "Block your card immediately! Use the link below to find your bank's helpline number.",
                 type: WorkflowNodeType.ACTION,
-                resourceLink: "https://rbi.org.in/Scripts/CommonPersonDescriptions.aspx?Id=1443", // List of bank numbers
+                resourceLink: "https://rbi.org.in/",
                 options: [
                     { label: "I have blocked it now", nextNodeId: "fin_1930_check" }
                 ]
@@ -46,7 +46,7 @@ const WORKFLOW_DATA = [
                 text: "Did you file a complaint on the 'National Cyber Crime Portal' (1930)?",
                 type: WorkflowNodeType.QUESTION,
                 options: [
-                    { label: "Yes, filed it", nextNodeId: "fin_fir_check" },
+                    { label: "Yes, filed it", nextNodeId: "fin_evidence" },
                     { label: "No", nextNodeId: "fin_action_1930" }
                 ]
             },
@@ -56,8 +56,14 @@ const WORKFLOW_DATA = [
                 type: WorkflowNodeType.ACTION,
                 resourceLink: "https://cybercrime.gov.in",
                 options: [
-                    { label: "Complaint filed", nextNodeId: "fin_fir_check" }
+                    { label: "Complaint filed", nextNodeId: "fin_evidence" }
                 ]
+            },
+            {
+                id: "fin_evidence",
+                text: "Evidence Checklist: 1) Screenshot of SMS/Email for the unauthorized transaction. 2) Mini statement or bank app screenshot. 3) Call/Chat logs with bank. Keep these ready for FIR/Bank letter.",
+                type: WorkflowNodeType.INFO,
+                options: [ { label: "Next", nextNodeId: "fin_fir_check" } ]
             },
             {
                 id: "fin_fir_check",
@@ -112,7 +118,7 @@ const WORKFLOW_DATA = [
                     { label: "Fake profile created (Impersonation)", nextNodeId: "sm_impersonation" }
                 ]
             },
-            // BRANCH: HARASSMENT ---
+            // BRANCH: HARASSMENT
             {
                 id: "sm_harass_evidence",
                 text: "First Step: Secure the evidence. Have you taken screenshots of the chat, messages, and profile?",
@@ -162,7 +168,7 @@ const WORKFLOW_DATA = [
                 type: WorkflowNodeType.INFO,
                 options: []
             },
-            // BRANCH: HACKING (Placeholder logic) ---
+            // BRANCH: HACKING (Placeholder logic)
             {
                 id: "sm_hack_step1",
                 text: "Do you still have access to the email or phone number linked to the account?",
@@ -203,7 +209,7 @@ const WORKFLOW_DATA = [
                 id: "sm_hack_twitter",
                 text: "X/Twitter Recovery: Request a password reset or file a hacked-account report if email/phone changed.",
                 type: WorkflowNodeType.ACTION,
-                resourceLink: "https://help.twitter.com/en/safety-and-security/hacked-account",
+                resourceLink: "https://help.x.com/en/forms/account-access/regain-access/hacked-or-compromised",
                 options: [{ label: "Done / Back", nextNodeId: "sm_end_safe" }]
             },
             {
@@ -217,7 +223,7 @@ const WORKFLOW_DATA = [
                 id: "sm_hack_whatsapp",
                 text: "WhatsApp Recovery: Log in with your number → verify via SMS → if unauthorized, email support to deactivate temporarily.",
                 type: WorkflowNodeType.ACTION,
-                resourceLink: "https://faq.whatsapp.com/general/security-and-privacy/stolen-accounts",
+                resourceLink: "https://faq.whatsapp.com/1131652977717250",
                 options: [{ label: "Done / Back", nextNodeId: "sm_end_safe" }]
             },
             {
@@ -226,7 +232,7 @@ const WORKFLOW_DATA = [
                 type: WorkflowNodeType.INFO,
                 options: [{ label: "Back", nextNodeId: "sm_end_safe" }]
             },
-            // BRANCH: IMPERSONATION (Placeholder logic) ---
+            // BRANCH: IMPERSONATION
             {
                 id: "sm_impersonation",
                 text: "Report the profile to the platform using your original ID proof.",
@@ -236,9 +242,9 @@ const WORKFLOW_DATA = [
         ]
     },
 
-    // ---------------------------------------------------------
+
     // THREAT 3: IDENTITY THEFT RISK (Detailed & Victim Centric)
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.IDENTITY_THEFT_RISK,
         title: "Identity Theft Recovery Assistant",
@@ -257,7 +263,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === BRANCH 1: LOAN FRAUD (Financially Scariest) ===
+            // BRANCH 1: LOAN FRAUD (Financially Scariest)
             {
                 id: "id_loan_fraud",
                 text: "First, don't panic. You are NOT liable for fraud if you report it. Have you formally disputed this with the Bank/Lender?",
@@ -280,7 +286,7 @@ const WORKFLOW_DATA = [
                 id: "id_cibil_dispute",
                 text: "Great. Now, you also need to inform the Credit Bureau (CIBIL/Experian) to remove this entry from your report.",
                 type: WorkflowNodeType.ACTION,
-                resourceLink: "https://www.cibil.com/dispute-resolution",
+                resourceLink: "https://www.cibil.com/",
                 options: [
                     { label: "I will do this", nextNodeId: "id_police_cyber" }
                 ]
@@ -293,7 +299,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Okay", nextNodeId: "id_end" }]
             },
 
-            // === BRANCH 2: LOST DOCUMENTS (Prevention) ===
+            // BRANCH 2: LOST DOCUMENTS (Prevention)
             {
                 id: "id_lost_docs",
                 text: "Losing IDs is risky. Have you filed a 'Lost Article Report' (NCR) with the police? This proves your innocence if IDs are misused later.",
@@ -307,7 +313,7 @@ const WORKFLOW_DATA = [
                 id: "id_action_lost_report",
                 text: "You can file a 'Lost Report' online in most states without visiting the station. Do this NOW.",
                 type: WorkflowNodeType.ACTION,
-                resourceLink: "https://digitalpolice.gov.in/", // Can be state specific later
+                resourceLink: "https://digitalpolice.gov.in/",
                 options: [{ label: "Filed it", nextNodeId: "id_lock_biometrics" }]
             },
             {
@@ -318,7 +324,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Biometrics Locked", nextNodeId: "id_end" }]
             },
 
-            // === BRANCH 3: FAKE SIM CARDS ===
+            // BRANCH 3: FAKE SIM CARDS
             {
                 id: "id_sim_check",
                 text: "The Govt of India has a portal (TAFCOP) to check all mobile numbers linked to your Aadhaar.",
@@ -330,7 +336,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === COMMON END ===
+            // COMMON END
             {
                 id: "id_police_cyber",
                 text: "Finally, report this identity theft on the National Cyber Crime Portal as 'Identity Theft'.",
@@ -346,9 +352,9 @@ const WORKFLOW_DATA = [
             }
         ]
     },
-    // ---------------------------------------------------------
+
     // THREAT 4: PROFESSIONAL EXPOSURE (Career Protection)
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.PROFESSIONAL_EXPOSURE,
         title: "Workplace Security Incident Response",
@@ -366,7 +372,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === BRANCH 1: HACKED ACCOUNT ===
+            // BRANCH 1: HACKED ACCOUNT
             {
                 id: "prof_account_hack",
                 text: "Can you still login to your account?",
@@ -383,7 +389,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Done", nextNodeId: "prof_notify_it_urgent" }]
             },
 
-            // === BRANCH 2: DATA LEAK (Human Error) ===
+            // BRANCH 2: DATA LEAK (Human Error)
             {
                 id: "prof_data_leak",
                 text: "Did you send the data to the wrong email or upload it publicly?",
@@ -406,7 +412,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Next", nextNodeId: "prof_report_protocol" }]
             },
 
-            // === CRITICAL STEP: REPORTING ===
+            // CRITICAL STEP: REPORTING
             {
                 id: "prof_notify_it_urgent",
                 text: "You MUST notify your IT Security Team / CISO immediately.",
@@ -430,7 +436,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Report Sent", nextNodeId: "prof_legal_check" }]
             },
 
-            // === LEGAL ===
+            // LEGAL
             {
                 id: "prof_legal_check",
                 text: "Review your Employment Contract or NDA regarding 'Data Breach'. It helps to know your liability limits.",
@@ -438,7 +444,7 @@ const WORKFLOW_DATA = [
                 options: []
             },
 
-            // === BRANCH 3: DEVICE LOST ===
+            // BRANCH 3: DEVICE LOST
             {
                 id: "prof_device_lost",
                 text: "Contact IT immediately to 'Remote Wipe' the device. File a police lost report for the asset.",
@@ -447,9 +453,9 @@ const WORKFLOW_DATA = [
             }
         ]
     },
-    // ---------------------------------------------------------
+
     // THREAT 5: HEALTHCARE PRIVACY RISK
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.HEALTHCARE_PRIVACY_RISK,
         title: "Medical Data Breach Response",
@@ -467,7 +473,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === BRANCH 1: INSURANCE FRAUD ===
+            // BRANCH 1: INSURANCE FRAUD
             {
                 id: "health_insurance_fraud",
                 text: "This is urgent. Someone might be using your policy limit. Have you informed your TPA (Third Party Administrator)?",
@@ -490,7 +496,7 @@ const WORKFLOW_DATA = [
                 options: []
             },
 
-            // === BRANCH 2: DATA LEAK / STIGMA ===
+            // BRANCH 2: DATA LEAK / STIGMA
             {
                 id: "health_leak_source",
                 text: "Where is the data visible?",
@@ -522,7 +528,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Letter Ready", nextNodeId: "health_end" }]
             },
 
-            // === BRANCH 3: RIGHT TO ERASURE ===
+            // BRANCH 3: RIGHT TO ERASURE
             {
                 id: "health_right_erasure",
                 text: "Under the new Data Protection laws, you have the 'Right to Erasure'. Use the template above to enforce this.",
@@ -538,9 +544,9 @@ const WORKFLOW_DATA = [
             }
         ]
     },
-    // ---------------------------------------------------------
+
     // THREAT 6: LOCATION PRIVACY THREAT (High Risk / Physical Safety)
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.LOCATION_PRIVACY_THREAT,
         title: "Stalking & Location Tracking Detection",
@@ -557,16 +563,16 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === BRANCH 1: EMERGENCY ===
+            // BRANCH 1: EMERGENCY
             {
                 id: "loc_emergency_sos",
                 text: "Stop using this app. Go to a public place immediately. Dial 112 or 100 now.",
                 type: WorkflowNodeType.ACTION,
                 resourceLink: "tel:112",
-                options: [] // End flow here for safety
+                options: []
             },
 
-            // === BRANCH 2: INVESTIGATION ===
+            // BRANCH 2: INVESTIGATION
             {
                 id: "loc_tracking_type",
                 text: "Why do you think you are being tracked?",
@@ -578,7 +584,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // --- SUB-BRANCH: GOOGLE/APPLE SHARING ---
+            // SUB-BRANCH: GOOGLE/APPLE SHARING
             {
                 id: "loc_check_sharing",
                 text: "Most stalking happens via 'Location Sharing' left ON. Let's check Google Maps.",
@@ -606,7 +612,7 @@ const WORKFLOW_DATA = [
                 options: []
             },
 
-            // --- SUB-BRANCH: SPYWARE ---
+            // SUB-BRANCH: SPYWARE
             {
                 id: "loc_spyware_check",
                 text: "Spyware is hard to find. Have you installed any apps recently outside of Play Store (APK files)?",
@@ -623,7 +629,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "I will do this", nextNodeId: "loc_police_stalking" }]
             },
 
-            // --- SUB-BRANCH: AIRTAGS / PHYSICAL TRACKERS ---
+            // SUB-BRANCH: AIRTAGS / PHYSICAL TRACKERS
             {
                 id: "loc_airtag_found",
                 text: "If you found a tracker, DO NOT throw it away. It is evidence.",
@@ -637,14 +643,15 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Next", nextNodeId: "loc_police_stalking" }]
             },
 
-            // --- LEGAL ACTION ---
+            // LEGAL ACTION
             {
                 id: "loc_police_stalking",
                 text: "Stalking (Physical or Cyber) is a serious crime under Section 354D IPC. You should file a police complaint.",
                 type: WorkflowNodeType.QUESTION,
                 options: [
                     { label: "Generate Complaint Letter", nextNodeId: "loc_template_stalking" },
-                    { label: "I will visit station", nextNodeId: "loc_end_safe" }
+                    { label: "I will visit station", nextNodeId: "loc_end_safe" },
+                    { label: "See Safety Tips", nextNodeId: "loc_safety_plan" }
                 ]
             },
             {
@@ -655,6 +662,12 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Done", nextNodeId: "loc_end_safe" }]
             },
             {
+                id: "loc_safety_plan",
+                text: "Safety Plan: 1) Share your live location with a trusted contact. 2) Prefer public places. 3) Keep emergency numbers (112/100) ready. 4) Preserve evidence; do not confront alone.",
+                type: WorkflowNodeType.INFO,
+                options: [ { label: "Understood", nextNodeId: "loc_end_safe" } ]
+            },
+            {
                 id: "loc_end_safe",
                 text: "Stay safe. Trust your instincts. If you feel unsafe, call the police.",
                 type: WorkflowNodeType.INFO,
@@ -662,9 +675,9 @@ const WORKFLOW_DATA = [
             }
         ]
     },
-    // ---------------------------------------------------------
+
     // THREAT 7: COMMUNICATION SECURITY (SIM Swap & Privacy)
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.COMMUNICATION_SECURITY,
         title: "SIM Swap & Call Privacy Protection",
@@ -682,7 +695,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === BRANCH 1: SIM SWAP (CRITICAL) ===
+            // BRANCH 1: SIM SWAP (CRITICAL)
             {
                 id: "comm_sim_swap_urgent",
                 text: "⚠️ DANGER: If your SIM stopped working without reason, hackers might have cloned it to steal Bank OTPs.",
@@ -730,7 +743,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Noted", nextNodeId: "comm_end_safe" }]
             },
 
-            // === BRANCH 2: CALL TAPPING / FORWARDING ===
+            // BRANCH 2: CALL TAPPING / FORWARDING
             {
                 id: "comm_call_fwd_check",
                 text: "Hackers often set up 'Call Forwarding' to listen to your calls. Let's check.",
@@ -748,7 +761,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Done, erased", nextNodeId: "comm_end_safe" }]
             },
 
-            // === BRANCH 3: SMS BOMBING ===
+            // BRANCH 3: SMS BOMBING
             {
                 id: "comm_sms_bombing",
                 text: "This is usually done to hide a 'Real Bank OTP' amidst 100 fake messages. Check your Bank Transaction SMS carefully.",
@@ -769,9 +782,9 @@ const WORKFLOW_DATA = [
                 options: []
             }
         ]
-    },// ---------------------------------------------------------
+    },
     // THREAT 8: DIGITAL FOOTPRINT RISK (Privacy Cleanup)
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.DIGITAL_FOOTPRINT_RISK,
         title: "Clean Your Digital Footprint",
@@ -789,7 +802,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === BRANCH 1: GOOGLE SEARCH REMOVAL ===
+            // BRANCH 1: GOOGLE SEARCH REMOVAL
             {
                 id: "foot_google_removal",
                 text: "Google has a special tool called 'Results about you' to request removal of personal contact info.",
@@ -800,7 +813,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === BRANCH 2: SOCIAL MEDIA ===
+            // BRANCH 2: SOCIAL MEDIA
             {
                 id: "foot_social_audit",
                 text: "There is no 'Delete All' button for the internet. You must manually delete posts or set your profile to 'Private'.",
@@ -816,7 +829,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Done", nextNodeId: "foot_end" }]
             },
 
-            // === BRANCH 3: DELETE UNUSED ACCOUNTS ===
+            // BRANCH 3: DELETE UNUSED ACCOUNTS
             {
                 id: "foot_saymine",
                 text: "Many old websites hold your data. Use a service like 'JustDelete.me' to find delete links for popular sites.",
@@ -833,9 +846,9 @@ const WORKFLOW_DATA = [
             }
         ]
     },
-    // ---------------------------------------------------------
+
     // THREAT 9: ACCOUNT SECURITY THREAT (Hacked Account Recovery)
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.ACCOUNT_SECURITY_THREAT,
         title: "Account Breach Recovery",
@@ -852,7 +865,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === BRANCH 1: STILL HAVE ACCESS ===
+            // BRANCH 1: STILL HAVE ACCESS
             {
                 id: "acc_secure_session",
                 text: "First Step: Force logout everyone else. Go to Settings -> Security -> 'Log out of all sessions'.",
@@ -873,10 +886,16 @@ const WORKFLOW_DATA = [
                 id: "acc_setup_2fa",
                 text: "Enable 'Two-Factor Authentication' (2FA) using an App like Google Authenticator. SMS 2FA is not safe enough.",
                 type: WorkflowNodeType.ACTION,
-                options: [{ label: "2FA Enabled", nextNodeId: "acc_check_breach" }]
+                options: [{ label: "2FA Enabled", nextNodeId: "acc_review_apps" }]
+            },
+            {
+                id: "acc_review_apps",
+                text: "Review connected apps and sessions: remove unknown third-party app access, sign out of other devices, and rotate backup codes if available.",
+                type: WorkflowNodeType.INFO,
+                options: [ { label: "Done", nextNodeId: "acc_check_breach" } ]
             },
 
-            // === BRANCH 2: LOCKED OUT ===
+            // BRANCH 2: LOCKED OUT
             {
                 id: "acc_recovery_process",
                 text: "Use the 'Forgot Password' link. If the hacker changed recovery email/phone, look for 'Try another way' or 'Account Hacked' support form.",
@@ -943,7 +962,7 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Done", nextNodeId: "acc_check_breach" }]
             },
 
-            // === COMMON CHECK ===
+            // COMMON CHECK
             {
                 id: "acc_check_breach",
                 text: "Check if your email was leaked in a data breach using 'Have I Been Pwned'.",
@@ -953,9 +972,9 @@ const WORKFLOW_DATA = [
             }
         ]
     },
-    // ---------------------------------------------------------
+
     // THREAT 10: FAMILY & PERSONAL SAFETY
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.FAMILY_PERSONAL_SAFETY,
         title: "Family Online Safety Center",
@@ -973,7 +992,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === BRANCH 1: CHILD SAFETY ===
+            // BRANCH 1: CHILD SAFETY
             {
                 id: "fam_child_safety",
                 text: "Is the child facing bullying or talking to strangers?",
@@ -997,13 +1016,29 @@ const WORKFLOW_DATA = [
             },
             {
                 id: "fam_parental_tools",
-                text: "Set up 'Google Family Link' (Android) or 'Apple Family Sharing' to monitor screen time and apps.",
+                text: "Set up parental controls to protect kids online.",
+                type: WorkflowNodeType.QUESTION,
+                options: [
+                    { label: "Google Family Link (Android)", nextNodeId: "fam_parental_tools_google" },
+                    { label: "Apple Family Sharing (iOS)", nextNodeId: "fam_parental_tools_apple" }
+                ]
+            },
+            {
+                id: "fam_parental_tools_google",
+                text: "Use Google Family Link to manage screen time and apps.",
                 type: WorkflowNodeType.ACTION,
                 resourceLink: "https://families.google.com/familylink/",
                 options: []
             },
+            {
+                id: "fam_parental_tools_apple",
+                text: "Use Apple Family Sharing & Screen Time restrictions to manage an iPhone/iPad.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://support.apple.com/en-in/HT201088",
+                options: []
+            },
 
-            // === BRANCH 2: SENIOR CITIZENS ===
+            // BRANCH 2: SENIOR CITIZENS
             {
                 id: "fam_senior_scam",
                 text: "Seniors are targets for KYC/Electricity Bill scams. Have they shared any OTP recently?",
@@ -1020,7 +1055,7 @@ const WORKFLOW_DATA = [
                 options: []
             },
 
-            // === BRANCH 3: HOME WIFI ===
+            // BRANCH 3: HOME WIFI
             {
                 id: "fam_home_wifi",
                 text: "Secure your Home WiFi. Change the default router password (e.g., admin/admin) to something strong.",
@@ -1029,9 +1064,9 @@ const WORKFLOW_DATA = [
             }
         ]
     },
-    // ---------------------------------------------------------
+
     // THREAT 11: LEGAL COMPLIANCE RISK (Data Rights)
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.LEGAL_COMPLIANCE_RISK,
         title: "Data Privacy Rights Helper",
@@ -1055,12 +1090,12 @@ const WORKFLOW_DATA = [
                 options: [{ label: "Letter Ready", nextNodeId: "legal_end" }]
             },
 
-            // === SPAM CALLS ===
+            // SPAM CALLS
             {
                 id: "legal_dnd_violation",
                 text: "If you are registered on DND and still get calls, it is illegal. You can report them to TRAI.",
                 type: WorkflowNodeType.ACTION,
-                resourceLink: "https://trai.gov.in/faqcategory/unsolicited-commercial-communications",
+                resourceLink: "https://trai.gov.in/",
                 options: [{ label: "Reported", nextNodeId: "legal_end" }]
             },
 
@@ -1072,9 +1107,9 @@ const WORKFLOW_DATA = [
             }
         ]
     },
-    // ---------------------------------------------------------
+
     // THREAT 12: EDUCATIONAL RECORDS EXPOSURE
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.EDUCATIONAL_RECORDS_EXPOSURE,
         title: "Academic Records Protection",
@@ -1104,9 +1139,9 @@ const WORKFLOW_DATA = [
             }
         ]
     },
-    // ---------------------------------------------------------
+
     // THREAT 13: DIGITAL REPUTATION THREAT (Defamation/Deepfake)
-    // ---------------------------------------------------------
+
     {
         category: AssessmentCategory.DIGITAL_REPUTATION_THREAT,
         title: "Reputation Defender",
@@ -1124,7 +1159,7 @@ const WORKFLOW_DATA = [
                 ]
             },
 
-            // === BRANCH 1: DEEPFAKE (High Priority) ===
+            // BRANCH 1: DEEPFAKE (High Priority)
             {
                 id: "rep_deepfake_urgent",
                 text: "Deepfakes are a punishable offense. Report immediately to the platform (Instagram/X) as 'Non-Consensual Imagery'.",
@@ -1139,7 +1174,7 @@ const WORKFLOW_DATA = [
                 options: []
             },
 
-            // === BRANCH 2: DEFAMATION ===
+            // BRANCH 2: DEFAMATION
             {
                 id: "rep_defamation_notice",
                 text: "If someone is spreading lies to harm your image, you can send a Legal Notice for Defamation.",
@@ -1517,3 +1552,50 @@ main()
         console.log('🌿 Prisma Client Disconnected.')
     })
 
+
+export interface PoliceWebsite {
+    name: string;
+    website: string;
+}
+
+export const STATE_POLICE_WEBSITES: PoliceWebsite[] = [
+    { name: "Andhra Pradesh", website: "https://citizen.appolice.gov.in" },
+    { name: "Arunachal Pradesh", website: "http://arunpol.nic.in" },
+    { name: "Assam", website: "https://police.assam.gov.in" },
+    { name: "Bihar", website: "http://police.bihar.gov.in" },
+    { name: "Chhattisgarh", website: "http://cgpolice.gov.in" },
+    { name: "Goa", website: "https://citizen.goapolice.gov.in" },
+    { name: "Gujarat", website: "http://www.police.gujarat.gov.in" },
+    { name: "Haryana", website: "https://haryanapolice.gov.in/login" },
+    { name: "Himachal Pradesh", website: "https://citizenportal.hppolice.gov.in/citizen" },
+    { name: "Jharkhand", website: "https://www.jhpolice.gov.in" },
+    { name: "Karnataka", website: "https://ksp.karnataka.gov.in" },
+    { name: "Kerala", website: "https://keralapolice.gov.in" },
+    { name: "Madhya Pradesh", website: "https://www.mppolice.gov.in" },
+    { name: "Maharashtra", website: "https://www.mahapolice.gov.in" },
+    { name: "Manipur", website: "http://www.manipurpolice.gov.in" },
+    { name: "Meghalaya", website: "https://megpolice.gov.in" },
+    { name: "Mizoram", website: "http://police.mizoram.gov.in" },
+    { name: "Nagaland", website: "https://police.nagaland.gov.in" },
+    { name: "Odisha", website: "https://odishapolice.gov.in" },
+    { name: "Punjab", website: "http://www.punjabpolice.gov.in" },
+    { name: "Rajasthan", website: "http://police.rajasthan.gov.in" },
+    { name: "Sikkim", website: "https://police.sikkim.gov.in" },
+    { name: "Tamil Nadu", website: "http://www.tnpolice.gov.in" },
+    { name: "Telangana", website: "https://www.tspolice.gov.in" },
+    { name: "Tripura", website: "https://tripurapolice.gov.in" },
+    { name: "Uttar Pradesh", website: "https://uppolice.gov.in" },
+    { name: "Uttarakhand", website: "https://uttarakhandpolice.uk.gov.in" },
+    { name: "West Bengal", website: "https://wbpolice.gov.in" }
+];
+
+export const UT_POLICE_WEBSITES: PoliceWebsite[] = [
+    { name: "Andaman and Nicobar Islands", website: "https://police.andaman.gov.in" },
+    { name: "Chandigarh", website: "https://chandigarhpolice.gov.in" },
+    { name: "Dadra & Nagar Haveli and Daman & Diu", website: "https://dnhpd.gov.in" },
+    { name: "Delhi (NCT)", website: "https://delhipolice.gov.in" },
+    { name: "Jammu & Kashmir", website: "https://www.jkpolice.gov.in" },
+    { name: "Ladakh", website: "https://police.ladakh.gov.in" },
+    { name: "Lakshadweep", website: "https://police.lakshadweep.gov.in" },
+    { name: "Puducherry", website: "https://police.py.gov.in" }
+];
