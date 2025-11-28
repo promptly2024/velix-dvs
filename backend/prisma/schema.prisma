@@ -364,7 +364,7 @@ model LevelScene {
   sceneType   SceneMediaType @default(VIDEO) // VIDEO, IMAGES, TEXT
   mediaUrls   String[] // Array of media URLs (video or images)
   queries     SceneQuery[] // One or more questions/queries after the visual
-  level       GameLevel      @relation(fields: [levelId], references: [id])
+  level       GameLevel      @relation(fields: [levelId], references: [id], onDelete: Cascade)
 
   @@unique([levelId, sceneNumber])
 }
@@ -379,7 +379,7 @@ model SceneQuery {
   hintText        String?       @db.Text // Hint available on request
   options         QueryOption[]
 
-  scene        LevelScene     @relation(fields: [sceneId], references: [id])
+  scene        LevelScene     @relation(fields: [sceneId], references: [id], onDelete: Cascade)
   UserResponse UserResponse[] // Linking user response to the specific query
 
   @@unique([sceneId, queryNumber])
@@ -393,7 +393,7 @@ model QueryOption {
   isCorrect     Boolean @default(false)
   pointsAwarded Int     @default(0) // Points for selecting this option
 
-  query SceneQuery @relation(fields: [queryId], references: [id])
+  query SceneQuery @relation(fields: [queryId], references: [id], onDelete: Cascade)
 
   @@index([queryId])
 }
@@ -414,8 +414,8 @@ model UserLevelAttempt {
   startedAt  DateTime  @default(now())
   finishedAt DateTime?
 
-  user      User           @relation(fields: [userId], references: [id])
-  level     GameLevel      @relation(fields: [levelId], references: [id])
+  user      User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  level     GameLevel      @relation(fields: [levelId], references: [id], onDelete: Cascade)
   responses UserResponse[]
 
   @@unique([userId, levelId, attemptNumber])
@@ -435,7 +435,7 @@ model UserResponse {
 
   respondedAt DateTime @default(now())
 
-  attempt UserLevelAttempt @relation(fields: [attemptId], references: [id])
+  attempt UserLevelAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
   query   SceneQuery       @relation(fields: [queryId], references: [id])
 
   @@unique([attemptId, queryId])
