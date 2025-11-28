@@ -168,8 +168,63 @@ const WORKFLOW_DATA = [
                 text: "Do you still have access to the email or phone number linked to the account?",
                 type: WorkflowNodeType.QUESTION,
                 options: [
+                    { label: "Show Recovery Steps", nextNodeId: "sm_hack_platform" },
                     { label: "Return to Menu", nextNodeId: "sm_start" }
                 ]
+            },
+            {
+                id: "sm_hack_platform",
+                text: "Select the platform to view official recovery steps",
+                type: WorkflowNodeType.QUESTION,
+                options: [
+                    { label: "Instagram", nextNodeId: "sm_hack_instagram" },
+                    { label: "Facebook", nextNodeId: "sm_hack_facebook" },
+                    { label: "X / Twitter", nextNodeId: "sm_hack_twitter" },
+                    { label: "Google Account (Gmail)", nextNodeId: "sm_hack_google" },
+                    { label: "WhatsApp", nextNodeId: "sm_hack_whatsapp" },
+                    { label: "Other / Not listed", nextNodeId: "sm_support_portal" }
+                ]
+            },
+            {
+                id: "sm_hack_instagram",
+                text: "Instagram Recovery: 1) Open the app → Get help logging in → Need more help. 2) Use the email/phone on file to verify. 3) If changed, request a security code and identity verification.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://help.instagram.com/149494825257596",
+                options: [{ label: "Done / Back", nextNodeId: "sm_end_safe" }]
+            },
+            {
+                id: "sm_hack_facebook",
+                text: "Facebook Recovery: Use facebook.com/hacked → Secure your account → review devices, email/phone, and 2FA settings.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://www.facebook.com/hacked",
+                options: [{ label: "Done / Back", nextNodeId: "sm_end_safe" }]
+            },
+            {
+                id: "sm_hack_twitter",
+                text: "X/Twitter Recovery: Request a password reset or file a hacked-account report if email/phone changed.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://help.twitter.com/en/safety-and-security/hacked-account",
+                options: [{ label: "Done / Back", nextNodeId: "sm_end_safe" }]
+            },
+            {
+                id: "sm_hack_google",
+                text: "Google Account Recovery: Go to g.co/recover → answer known questions → add recovery email/phone once restored.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://support.google.com/accounts/answer/6294825",
+                options: [{ label: "Done / Back", nextNodeId: "sm_end_safe" }]
+            },
+            {
+                id: "sm_hack_whatsapp",
+                text: "WhatsApp Recovery: Log in with your number → verify via SMS → if unauthorized, email support to deactivate temporarily.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://faq.whatsapp.com/general/security-and-privacy/stolen-accounts",
+                options: [{ label: "Done / Back", nextNodeId: "sm_end_safe" }]
+            },
+            {
+                id: "sm_support_portal",
+                text: "Use the platform’s official Help Center and search ‘Hacked account’ / ‘Recover account’. Avoid third-party ‘unlock’ services.",
+                type: WorkflowNodeType.INFO,
+                options: [{ label: "Back", nextNodeId: "sm_end_safe" }]
             },
             // BRANCH: IMPERSONATION (Placeholder logic) ---
             {
@@ -257,7 +312,7 @@ const WORKFLOW_DATA = [
             },
             {
                 id: "id_lock_biometrics",
-                text: "Crucial Step: Lock your Aadhaar Biometrics so no one can use your fingerprint for verification.",
+                text: "Crucial Step: Lock your Aadhaar Biometrics so no one can use your fingerprint for verification.\nSteps:\n1) Visit myaadhaar.uidai.gov.in and Sign In.\n2) Go to ‘Aadhaar Lock/Unlock’ → Biometrics.\n3) Turn ON ‘Lock Biometrics’.\n4) Confirm via OTP.",
                 type: WorkflowNodeType.ACTION,
                 resourceLink: "https://myaadhaar.uidai.gov.in/",
                 options: [{ label: "Biometrics Locked", nextNodeId: "id_end" }]
@@ -644,9 +699,35 @@ const WORKFLOW_DATA = [
             },
             {
                 id: "comm_sim_complaint",
-                text: "You must visit the operator store to get a new SIM and file a formal complaint.",
+                text: "You must visit the operator store to get a new SIM and file a formal complaint.\nNext: Report the incident to DoT and keep a ticket ID.",
                 type: WorkflowNodeType.INFO,
-                options: []
+                options: [
+                    { label: "Report to DoT / Sanchar Saathi", nextNodeId: "comm_report_dot" },
+                    { label: "Find Telco Nodal Officer", nextNodeId: "comm_telco_nodal" },
+                    { label: "Generate Telco Complaint Letter", nextNodeId: "comm_template_sim_swap" },
+                    { label: "Done", nextNodeId: "comm_end_safe" }
+                ]
+            },
+            {
+                id: "comm_template_sim_swap",
+                text: "Generate a formal complaint letter to your telecom operator for suspected SIM swap.",
+                type: WorkflowNodeType.TEMPLATE_FORM,
+                templateId: "temp_sim_swap_telco",
+                options: [{ label: "Letter Ready", nextNodeId: "comm_end_safe" }]
+            },
+            {
+                id: "comm_report_dot",
+                text: "Report SIM swap/fraud to DoT portal. Keep acknowledgement handy for bank and police.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://www.sancharsaathi.gov.in/",
+                options: [{ label: "Reported", nextNodeId: "comm_end_safe" }]
+            },
+            {
+                id: "comm_telco_nodal",
+                text: "Escalate to your operator’s Nodal/Appellate officer with your complaint and KYC.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://www.trai.gov.in/consumer-connect/ccs/contact-details-nodal-officers",
+                options: [{ label: "Noted", nextNodeId: "comm_end_safe" }]
             },
 
             // === BRANCH 2: CALL TAPPING / FORWARDING ===
@@ -807,9 +888,59 @@ const WORKFLOW_DATA = [
             },
             {
                 id: "acc_platform_support",
-                text: "You will need to contact the platform support with ID proof. We cannot hack it back for you.",
-                type: WorkflowNodeType.INFO,
-                options: []
+                text: "Select your platform for the official account recovery process.",
+                type: WorkflowNodeType.QUESTION,
+                options: [
+                    { label: "Google (Gmail)", nextNodeId: "acc_support_google" },
+                    { label: "Instagram", nextNodeId: "acc_support_instagram" },
+                    { label: "Facebook", nextNodeId: "acc_support_facebook" },
+                    { label: "X / Twitter", nextNodeId: "acc_support_twitter" },
+                    { label: "WhatsApp", nextNodeId: "acc_support_whatsapp" },
+                    { label: "Generate Appeal Email", nextNodeId: "acc_template_platform" },
+                    { label: "Back", nextNodeId: "acc_check_breach" }
+                ]
+            },
+            {
+                id: "acc_template_platform",
+                text: "Generate a recovery appeal email for your platform support.",
+                type: WorkflowNodeType.TEMPLATE_FORM,
+                templateId: "temp_platform_recovery",
+                options: [{ label: "Letter Ready", nextNodeId: "acc_check_breach" }]
+            },
+            {
+                id: "acc_support_google",
+                text: "Google Account Recovery → g.co/recover → add recovery options once restored.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://support.google.com/accounts/answer/6294825",
+                options: [{ label: "Done", nextNodeId: "acc_check_breach" }]
+            },
+            {
+                id: "acc_support_instagram",
+                text: "Instagram hacked / no access → Request security code and ID verification.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://help.instagram.com/149494825257596",
+                options: [{ label: "Done", nextNodeId: "acc_check_breach" }]
+            },
+            {
+                id: "acc_support_facebook",
+                text: "Facebook hacked → Use facebook.com/hacked → secure devices and change credentials.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://www.facebook.com/hacked",
+                options: [{ label: "Done", nextNodeId: "acc_check_breach" }]
+            },
+            {
+                id: "acc_support_twitter",
+                text: "X/Twitter hacked → follow official guidance; remove suspicious apps and enable 2FA.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://help.twitter.com/en/safety-and-security/hacked-account",
+                options: [{ label: "Done", nextNodeId: "acc_check_breach" }]
+            },
+            {
+                id: "acc_support_whatsapp",
+                text: "WhatsApp account stolen → verify via SMS; email support to lock if needed.",
+                type: WorkflowNodeType.ACTION,
+                resourceLink: "https://faq.whatsapp.com/general/security-and-privacy/stolen-accounts",
+                options: [{ label: "Done", nextNodeId: "acc_check_breach" }]
             },
 
             // === COMMON CHECK ===
@@ -913,8 +1044,15 @@ const WORKFLOW_DATA = [
                 isStartNode: true,
                 options: [
                     { label: "Spam Calls/SMS after unsubscribing", nextNodeId: "legal_dnd_violation" },
-                    { label: "Company refuses to delete my account", nextNodeId: "health_template_generate" } // Reuse Deletion Template logic
+                    { label: "Company refuses to delete my account", nextNodeId: "legal_erasure_template" }
                 ]
+            },
+            {
+                id: "legal_erasure_template",
+                text: "Generate a 'Right to Erasure / Account Deletion' request to the company.",
+                type: WorkflowNodeType.TEMPLATE_FORM,
+                templateId: "temp_right_to_erasure_company",
+                options: [{ label: "Letter Ready", nextNodeId: "legal_end" }]
             },
 
             // === SPAM CALLS ===
@@ -1199,6 +1337,81 @@ Failure to comply within 24 hours will force me to initiate criminal proceedings
 
 Regards,
 {{UserName}}`
+    },
+    {
+        id: "temp_right_to_erasure_company",
+        name: "Right to Erasure / Account Deletion Request",
+        body: `To,
+Data Protection / Grievance Officer,
+{{CompanyName}},
+
+Subject: Request for Erasure of Personal Data and Account Deletion (DPDP Compliance)
+
+Sir/Madam,
+
+I, {{UserName}}, associated with the email {{Email}} and phone {{Phone}}, request deletion of my account and erasure of all personal data held by {{CompanyName}}.
+
+Basis: I am exercising my rights under applicable data protection laws. Please confirm:
+1. Erasure of my personal data and deactivation of my account.
+2. Deletion of my data from backups/logs as per policy.
+3. Notification of erasure completion within a reasonable period.
+
+If you rely on any legal basis to retain specific data, kindly inform me with reasons and retention duration.
+
+Sincerely,
+{{UserName}}`
+    },
+    {
+        id: "temp_sim_swap_telco",
+        name: "SIM Swap Complaint to Telecom Operator",
+        body: `To,
+Nodal/Appellate Officer,
+{{OperatorName}} ({{Circle}}),
+
+Subject: Urgent Complaint – Suspected SIM Swap / Unauthorized SIM Replacement
+
+Sir/Madam,
+
+I, {{UserName}} (Phone: {{PhoneNumber}}), report a suspected SIM swap. My SIM stopped working on {{DateTime}} without request.
+
+Details:
+• Last known location: {{Location}}
+• Store visited / Complaint No (if any): {{ComplaintRef}}
+
+Requests:
+1. Block any unauthorized SIM replacement immediately.
+2. Restore service to my rightful SIM after KYC verification.
+3. Provide an incident report and store/CSP details involved.
+
+I am also reporting this to DoT.
+
+Sincerely,
+{{UserName}}
+{{Email}}`
+    },
+    {
+        id: "temp_platform_recovery",
+        name: "Account Recovery Appeal (Platform)",
+        body: `To,
+Support Team – {{PlatformName}},
+
+Subject: Account Recovery Request – Unauthorized Access
+
+Dear Team,
+
+My account (Username/Email: {{AccountIdentifier}}) appears to be compromised. I no longer have access to the registered email/phone.
+
+Evidence:
+• Last successful login: {{LastLogin}}
+• Suspicious changes observed: {{ChangesObserved}}
+
+I request identity verification and restoration of access. I consent to provide ID proof if needed.
+
+Post-recovery, I will enable 2FA and review security settings.
+
+Regards,
+{{UserName}}
+{{ContactEmail}}`
     }
 ];
 
@@ -1304,4 +1517,3 @@ main()
         console.log('🌿 Prisma Client Disconnected.')
     })
 
-    
